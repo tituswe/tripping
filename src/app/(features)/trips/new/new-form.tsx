@@ -95,6 +95,7 @@ export function NewForm() {
   return (
     <Card className="rounded-lg border-none mt-6">
       <CardContent className="p-6">
+        <h2 className="text-2xl font-semibold pb-4">Create a New Trip</h2>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField

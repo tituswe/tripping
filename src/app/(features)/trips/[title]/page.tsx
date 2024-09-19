@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 import { ContentLayout } from "@/components/admin-panel/content-layout";
-import PlaceholderContent from "@/components/demo/placeholder-content";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,6 +9,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
+import { TripItems } from "./trip-items";
 
 export default function TripPage({ params }: { params: { title: string } }) {
   return (
@@ -35,7 +35,7 @@ export default function TripPage({ params }: { params: { title: string } }) {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <PlaceholderContent />
+      <TripItems />
     </ContentLayout>
   );
 }

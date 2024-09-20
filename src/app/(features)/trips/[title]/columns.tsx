@@ -33,6 +33,9 @@ const sortableColumn = (title: string) => {
 const dateRow = (property: keyof TripItem) => {
   const DateRowComponent = ({ row }: { row: Row<TripItem> }) => {
     const propertyValue = row.original[property];
+    if (propertyValue === null || propertyValue === undefined) {
+      return "";
+    }
     const date = new Date(propertyValue as string | number | Date);
     return format(date, "d MMM, h:mm a");
   };
@@ -129,13 +132,18 @@ export const columns: ColumnDef<TripItem>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
+              className="cursor-pointer"
               onClick={() => navigator.clipboard.writeText(tripItem.address)}
             >
               Copy address
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Placeholder 1</DropdownMenuItem>
-            <DropdownMenuItem>Placeholder 2</DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">
+              Placeholder 1
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">
+              Placeholder 2
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

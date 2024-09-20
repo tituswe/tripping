@@ -48,11 +48,23 @@ export function DataTableViewOptions<TData>({
                 className="capitalize"
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                onSelect={(event) => event.preventDefault()}
               >
                 {column.id}
               </DropdownMenuCheckboxItem>
             );
           })}
+        <DropdownMenuSeparator />
+        <DropdownMenuCheckboxItem
+          className="capitalize"
+          checked={table
+            .getAllColumns()
+            .every((column) => column.getIsVisible())}
+          onCheckedChange={(value) => table.toggleAllColumnsVisible(value)}
+          onSelect={(event) => event.preventDefault()}
+        >
+          All
+        </DropdownMenuCheckboxItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

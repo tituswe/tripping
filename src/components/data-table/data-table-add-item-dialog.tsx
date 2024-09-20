@@ -17,7 +17,6 @@ import {
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { addDays } from "date-fns";
 import { Plus } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
@@ -30,11 +29,8 @@ const formSchema = z.object({
   activity: z.string(),
   description: z.string(),
   price: z.number(),
-  // media: z.array(z.string()),
-  duration: z.object({
-    from: z.date(),
-    to: z.date()
-  })
+  from: z.date().optional(),
+  to: z.date().optional()
 });
 
 export type AddItemFormSchema = z.infer<typeof formSchema>;
@@ -57,12 +53,8 @@ export function DataTableAddItemDialog<
       activity: "",
       description: "",
       price: 0,
-      // TODO: Add media support
-      // media: [],
-      duration: {
-        from: new Date(Date.now()),
-        to: addDays(new Date(Date.now()), 1)
-      }
+      from: undefined,
+      to: undefined
     }
   });
 
@@ -104,7 +96,7 @@ export function DataTableAddItemDialog<
           New item
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-h-[calc(100vh-64px)] overflow-y-auto overflow-x-hidden">
         <DialogHeader>
           <DialogTitle>New item</DialogTitle>
           <DialogDescription>

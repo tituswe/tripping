@@ -31,8 +31,8 @@ export async function createTripItem(tripTitle: string, formData: any) {
       price: formData.price,
       tripId: trip.id,
       media: formData.media,
-      from: formData.duration.from,
-      to: formData.duration.to
+      from: formData.from,
+      to: formData.to
     }
   });
 

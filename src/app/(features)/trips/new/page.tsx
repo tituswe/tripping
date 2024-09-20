@@ -9,7 +9,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
-import { NewForm } from "./new-form";
+import { NewTripForm } from "./new-trip-form";
 
 export default function NewTripPage() {
   return (
@@ -33,7 +33,7 @@ export default function NewTripPage() {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <NewForm />
+      <NewTripForm />
     </ContentLayout>
   );
 }

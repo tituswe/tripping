@@ -39,4 +39,6 @@ model TripItem {
   to          DateTime
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@unique([name, tripId])
 }

@@ -33,22 +33,20 @@ import { useRouter } from "next/navigation";
 import { DateRange } from "react-day-picker";
 
 const formSchema = z.object({
-  title: z.string().min(2, {
-    message: "Username must be at least 2 characters."
+  title: z.string().min(1, {
+    message: "Please input a title for your trip."
   }),
-  location: z.string().min(2, {
-    message: "Location must be at least 2 characters."
+  location: z.string().min(1, {
+    message: "Please input a location for your trip."
   }),
-  description: z.string().min(0, {
-    message: "Description must be at least 2 characters."
-  }),
+  description: z.string().min(0),
   duration: z.object({
     from: z.date(),
     to: z.date()
   })
 });
 
-export function NewForm() {
+export function NewTripForm() {
   const { toast } = useToast();
   const router = useRouter();
 
@@ -75,7 +73,6 @@ export function NewForm() {
         router.push(`/trips/${values.title}`);
       })
       .catch((e) => {
-        console.log(e);
         toast({
           variant: "destructive",
           title: "This title already exists",
@@ -95,7 +92,7 @@ export function NewForm() {
   return (
     <Card className="rounded-lg border-none mt-6">
       <CardContent className="p-6">
-        <h2 className="text-2xl font-semibold pb-4">Create a New Trip</h2>
+        <h2 className="text-2xl font-semibold pb-4">Create a new trip</h2>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField

@@ -1,5 +1,10 @@
 "use client";
 
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+import { createTripItem } from "@/actions/actions";
+import { NewTripItemForm } from "@/app/(features)/trips/[title]/new-trip-item-form";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -9,8 +14,30 @@ import {
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog";
+import { ToastAction } from "@/components/ui/toast";
+import { useToast } from "@/hooks/use-toast";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { addDays } from "date-fns";
 import { Plus } from "lucide-react";
+import { useParams } from "next/navigation";
 import { useState } from "react";
+
+const formSchema = z.object({
+  name: z.string().min(1, {
+    message: "Please input a name."
+  }),
+  address: z.string().min(1),
+  activity: z.string(),
+  description: z.string(),
+  price: z.number(),
+  // media: z.array(z.string()),
+  duration: z.object({
+    from: z.date(),
+    to: z.date()
+  })
+});
+
+export type AddItemFormSchema = z.infer<typeof formSchema>;
 
 interface DataTableAddItemDialogProps<TData> {}
 
@@ -18,6 +45,52 @@ export function DataTableAddItemDialog<
   TData
 >({}: DataTableAddItemDialogProps<TData>) {
   const [open, setOpen] = useState(false);
+  const { toast } = useToast();
+  const params = useParams<{ title: string }>();
+  const tripTitle = params.title.replaceAll("%20", " ");
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      address: "",
+      activity: "",
+      description: "",
+      price: 0,
+      // TODO: Add media support
+      // media: [],
+      duration: {
+        from: new Date(Date.now()),
+        to: addDays(new Date(Date.now()), 1)
+      }
+    }
+  });
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    await createTripItem(tripTitle, values)
+      .then(() => {
+        toast({
+          title: "Item added."
+        });
+        setOpen(false);
+        form.reset();
+      })
+      .catch((e) => {
+        toast({
+          variant: "destructive",
+          title: "Item already exists",
+          description: "Please give your item another name.",
+          action: (
+            <ToastAction
+              altText="Try again"
+              className="border border-white px-2 py-1 rounded-md transition hover:border-transparent"
+            >
+              Try again
+            </ToastAction>
+          )
+        });
+      });
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -38,7 +111,7 @@ export function DataTableAddItemDialog<
             Fill in the details below to create a new item.
           </DialogDescription>
         </DialogHeader>
-        Placeholder
+        <NewTripItemForm form={form} onSubmit={onSubmit} />
       </DialogContent>
     </Dialog>
   );

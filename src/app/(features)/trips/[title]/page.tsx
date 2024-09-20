@@ -12,6 +12,8 @@ import {
 import { TripItems } from "./trip-items";
 
 export default function TripPage({ params }: { params: { title: string } }) {
+  const tripTitle = params.title.replaceAll("%20", " ");
+
   return (
     <ContentLayout title="Dashboard">
       <Breadcrumb>
@@ -29,13 +31,11 @@ export default function TripPage({ params }: { params: { title: string } }) {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>
-              {params.title.replaceAll("%20", " ")}
-            </BreadcrumbPage>
+            <BreadcrumbPage>{tripTitle}</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <TripItems />
+      <TripItems tripTitle={tripTitle} />
     </ContentLayout>
   );
 }

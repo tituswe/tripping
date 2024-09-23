@@ -39,6 +39,31 @@ export async function createTripItem(tripTitle: string, formData: any) {
   revalidatePath(`/trips/${tripTitle}`);
 }
 
+export async function updateTripItem(
+  tripTitle: string,
+  tripItemId: string | undefined,
+  formData: any
+) {
+  console.log(tripItemId);
+  if (!tripItemId) return;
+
+  await prisma.tripItem.update({
+    where: { id: tripItemId },
+    data: {
+      name: formData.name,
+      address: formData.address,
+      activity: formData.activity,
+      description: formData.description,
+      price: formData.price,
+      media: formData.media,
+      from: formData.from,
+      to: formData.to
+    }
+  });
+
+  revalidatePath(`/trips/${tripTitle}`);
+}
+
 export async function deleteTripItem(tripTitle: string, tripItemId: string) {
   await prisma.tripItem.delete({
     where: { id: tripItemId }

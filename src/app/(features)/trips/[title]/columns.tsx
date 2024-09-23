@@ -63,6 +63,7 @@ const orFilter = (row: Row<TripItem>, id: string, value: any) => {
 
 export const getColumns = (
   setActionableTripItem: (item: TripItem | null) => void,
+  handleEdit: () => void,
   handleDelete: () => void,
   toast: any
 ): ColumnDef<TripItem>[] => [
@@ -139,7 +140,7 @@ export const getColumns = (
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem className="cursor-pointer" onClick={() => {}}>
+              <DropdownMenuItem className="cursor-pointer" onClick={handleEdit}>
                 Edit
               </DropdownMenuItem>
               <DropdownMenuItem

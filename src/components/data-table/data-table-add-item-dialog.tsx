@@ -16,22 +16,11 @@ import {
 } from "@/components/ui/dialog";
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/hooks/use-toast";
+import { formSchema } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
-
-const formSchema = z.object({
-  name: z.string().min(1, {
-    message: "Please input a name."
-  }),
-  address: z.string().min(1),
-  activity: z.string(),
-  description: z.string(),
-  price: z.number(),
-  from: z.date().optional(),
-  to: z.date().optional()
-});
 
 export type AddItemFormSchema = z.infer<typeof formSchema>;
 

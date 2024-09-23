@@ -19,6 +19,11 @@ export function TripItems({ tripTitle, data }: TripItemsProps) {
   const [actionableTripItem, setActionableTripItem] = useState<TripItem | null>(
     null
   );
+  const [editing, setEditing] = useState(false);
+
+  const handleEdit = () => {
+    setEditing(!editing);
+  };
 
   const handleDelete = async () => {
     if (!actionableTripItem) return;
@@ -28,7 +33,12 @@ export function TripItems({ tripTitle, data }: TripItemsProps) {
     });
   };
 
-  const columns = getColumns(setActionableTripItem, handleDelete, toast);
+  const columns = getColumns(
+    setActionableTripItem,
+    handleEdit,
+    handleDelete,
+    toast
+  );
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -52,7 +62,11 @@ export function TripItems({ tripTitle, data }: TripItemsProps) {
           columns={columns}
           data={data}
           tripTitle={tripTitle}
+          actionableTripItem={actionableTripItem}
           setActionableTripItem={setActionableTripItem}
+          editing={editing}
+          setEditing={setEditing}
+          handleEdit={handleEdit}
           handleDelete={handleDelete}
         />
       </CardContent>

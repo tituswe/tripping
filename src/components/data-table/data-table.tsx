@@ -15,12 +15,8 @@ import {
   VisibilityState
 } from "@tanstack/react-table";
 
+import { EditTripItemSheet } from "@/app/(features)/trips/[title]/edit-trip-item-sheet";
 import { Button } from "@/components/ui/button";
-import {
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuTrigger
-} from "@/components/ui/context-menu";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -30,24 +26,25 @@ import {
   TableHeader,
   TableRow
 } from "@/components/ui/table";
-import { useToast } from "@/hooks/use-toast";
 import { TripItem } from "@prisma/client";
-import { ContextMenu } from "@radix-ui/react-context-menu";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { useState } from "react";
-import { CommandShortcut } from "../ui/command";
-import { Separator } from "../ui/separator";
 import { DataTableAddItemDialog } from "./data-table-add-item-dialog";
 import { DataTableDeleteButton } from "./data-table-delete-button";
 import { DataTableFacetedFilter } from "./data-table-faceted-filter";
 import { DataTablePagination } from "./data-table-pagination";
+import { DataTableRow } from "./data-table-row";
 import { DataTableViewOptions } from "./data-table-view-options";
 
 interface DataTableProps<TValue> {
   columns: ColumnDef<TripItem, TValue>[];
   data: TripItem[];
   tripTitle: string;
+  actionableTripItem: TripItem | null;
   setActionableTripItem: (item: TripItem | null) => void;
+  editing: boolean;
+  setEditing: (editing: boolean) => void;
+  handleEdit: () => void;
   handleDelete: () => void;
 }
 
@@ -55,10 +52,13 @@ export function DataTable<TValue>({
   columns,
   data,
   tripTitle,
+  actionableTripItem,
   setActionableTripItem,
+  editing,
+  setEditing,
+  handleEdit,
   handleDelete
 }: DataTableProps<TValue>) {
-  const { toast } = useToast();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
@@ -92,7 +92,11 @@ export function DataTable<TValue>({
 
   const isFiltered = table.getState().columnFilters.length > 0;
   const activities = Array.from(
-    new Set((data as TripItem[]).map((item) => item.activity))
+    new Set(
+      (data as TripItem[])
+        .filter((item) => item.activity !== "")
+        .map((item) => item.activity)
+    )
   ).map((activity) => ({
     value: activity,
     label: activity
@@ -158,60 +162,17 @@ export function DataTable<TValue>({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <ContextMenu
-                  key={row.id}
-                  onOpenChange={(open) =>
-                    setActionableTripItem(open ? row.original : null)
-                  }
-                >
-                  <ContextMenuTrigger asChild>
-                    <TableRow
-                      key={row.id}
-                      data-state={row.getIsSelected() && "selected"}
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell
-                          key={cell.id}
-                          className="truncate overflow-hidden whitespace-nowrap"
-                        >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  </ContextMenuTrigger>
-                  <ContextMenuContent>
-                    <ContextMenuItem
-                      className="cursor-pointer"
-                      onClick={() => {}}
-                    >
-                      Edit
-                    </ContextMenuItem>
-                    <ContextMenuItem
-                      className="cursor-pointer"
-                      onClick={() => {
-                        navigator.clipboard.writeText(row.original.address);
-                        toast({
-                          title: "Address copied!"
-                        });
-                      }}
-                    >
-                      Copy address
-                    </ContextMenuItem>
-                    <Separator className="mt-1" />
-                    <ContextMenuItem
-                      className="cursor-pointer mt-1"
-                      onClick={handleDelete}
-                    >
-                      Delete
-                      <CommandShortcut>⌫</CommandShortcut>
-                    </ContextMenuItem>
-                  </ContextMenuContent>
-                </ContextMenu>
-              ))
+              table
+                .getRowModel()
+                .rows.map((row) => (
+                  <DataTableRow
+                    key={row.id}
+                    row={row}
+                    setActionableTripItem={setActionableTripItem}
+                    handleEdit={handleEdit}
+                    handleDelete={handleDelete}
+                  />
+                ))
             ) : (
               <TableRow>
                 <TableCell
@@ -226,6 +187,13 @@ export function DataTable<TValue>({
         </Table>
       </div>
       <DataTablePagination table={table} />
+      <EditTripItemSheet
+        open={editing}
+        onOpenChange={setEditing}
+        tripTitle={tripTitle}
+        activities={activities.map((activity) => activity.label)}
+        actionableTripItem={actionableTripItem}
+      />
     </div>
   );
 }

@@ -69,7 +69,7 @@ export function ActivitySelectInput({
                 !field.value && "text-muted-foreground"
               )}
             >
-              {field.value || "Select language"}
+              {field.value || "Select or add activity"}
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </FormControl>
@@ -100,7 +100,7 @@ export function ActivitySelectInput({
                     <Badge>{activity}</Badge>
                   </CommandItem>
                 ))}
-                {inputValue &&
+                {inputValue.trim() !== "" &&
                   !activities.find((activity) => activity === inputValue) && (
                     <CommandItem
                       value={inputValue}

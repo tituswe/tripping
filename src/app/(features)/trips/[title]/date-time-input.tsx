@@ -87,7 +87,7 @@ export function DateTimeInput({ field }: DateTimeInputProps) {
                 )}
               >
                 {field.value ? (
-                  format(field.value, "PPP")
+                  format(field.value, "MMM do, yyyy")
                 ) : (
                   <span>Pick a date</span>
                 )}

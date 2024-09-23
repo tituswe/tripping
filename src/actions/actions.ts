@@ -38,3 +38,26 @@ export async function createTripItem(tripTitle: string, formData: any) {
 
   revalidatePath(`/trips/${tripTitle}`);
 }
+
+export async function deleteTripItem(tripTitle: string, tripItemId: string) {
+  await prisma.tripItem.delete({
+    where: { id: tripItemId }
+  });
+
+  revalidatePath(`/trips/${tripTitle}`);
+}
+
+export async function deleteTripItems(
+  tripTitle: string,
+  tripItemIds: string[]
+) {
+  await prisma.tripItem.deleteMany({
+    where: {
+      id: {
+        in: tripItemIds
+      }
+    }
+  });
+
+  revalidatePath(`/trips/${tripTitle}`);
+}

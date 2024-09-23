@@ -7,11 +7,11 @@ import { MoreHorizontal } from "lucide-react";
 
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
 import { Button } from "@/components/ui/button";
+import { CommandShortcut } from "@/components/ui/command";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
@@ -61,7 +61,10 @@ const orFilter = (row: Row<TripItem>, id: string, value: any) => {
   return value.includes(row.getValue(id));
 };
 
-export const columns: ColumnDef<TripItem>[] = [
+export const getColumns = (
+  setActionableTripItem: (item: TripItem | null) => void,
+  handleDelete: () => void
+): ColumnDef<TripItem>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -122,31 +125,42 @@ export const columns: ColumnDef<TripItem>[] = [
       const tripItem = row.original;
 
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              className="cursor-pointer"
-              onClick={() => navigator.clipboard.writeText(tripItem.address)}
-            >
-              Copy address
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer">
-              Placeholder 1
-            </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer">
-              Placeholder 2
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex justify-end">
+          <DropdownMenu
+            onOpenChange={(open) =>
+              setActionableTripItem(open ? tripItem : null)
+            }
+          >
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem className="cursor-pointer" onClick={() => {}}>
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => navigator.clipboard.writeText(tripItem.address)}
+              >
+                Copy address
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={handleDelete}
+              >
+                Delete
+                <CommandShortcut>⌫</CommandShortcut>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       );
-    }
+    },
+    enableSorting: false,
+    enableHiding: false
   }
 ];

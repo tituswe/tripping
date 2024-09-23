@@ -9,10 +9,20 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
+import prisma from "@/lib/db";
+import { TripItem } from "@prisma/client";
 import { TripItems } from "./trip-items";
 
-export default function TripPage({ params }: { params: { title: string } }) {
+export default async function TripPage({
+  params
+}: {
+  params: { title: string };
+}) {
   const tripTitle = params.title.replaceAll("%20", " ");
+
+  const data: TripItem[] = await prisma.tripItem.findMany({
+    where: { trip: { title: tripTitle } }
+  });
 
   return (
     <ContentLayout title="Dashboard">
@@ -35,7 +45,7 @@ export default function TripPage({ params }: { params: { title: string } }) {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <TripItems tripTitle={tripTitle} />
+      <TripItems tripTitle={tripTitle} data={data} />
     </ContentLayout>
   );
 }

@@ -29,19 +29,22 @@ import { TripItem } from "@prisma/client";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { useState } from "react";
 import { DataTableAddItemDialog } from "./data-table-add-item-dialog";
+import { DataTableDeleteButton } from "./data-table-delete-button";
 import { DataTableFacetedFilter } from "./data-table-faceted-filter";
 import { DataTablePagination } from "./data-table-pagination";
 import { DataTableViewOptions } from "./data-table-view-options";
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+interface DataTableProps<TValue> {
+  columns: ColumnDef<TripItem, TValue>[];
+  data: TripItem[];
+  tripTitle: string;
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TValue>({
   columns,
-  data
-}: DataTableProps<TData, TValue>) {
+  data,
+  tripTitle
+}: DataTableProps<TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
@@ -112,6 +115,7 @@ export function DataTable<TData, TValue>({
           )}
         </div>
         <div className="flex flex-1 items-center space-x-2">
+          <DataTableDeleteButton table={table} tripTitle={tripTitle} />
           <DataTableAddItemDialog
             activities={activities.map((activity) => activity.label)}
           />

@@ -35,11 +35,13 @@ const formSchema = z.object({
 
 export type AddItemFormSchema = z.infer<typeof formSchema>;
 
-interface DataTableAddItemDialogProps<TData> {}
+interface DataTableAddItemDialogProps<TData> {
+  activities: string[];
+}
 
-export function DataTableAddItemDialog<
-  TData
->({}: DataTableAddItemDialogProps<TData>) {
+export function DataTableAddItemDialog<TData>({
+  activities
+}: DataTableAddItemDialogProps<TData>) {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
   const params = useParams<{ title: string }>();
@@ -103,7 +105,11 @@ export function DataTableAddItemDialog<
             Fill in the details below to create a new item.
           </DialogDescription>
         </DialogHeader>
-        <NewTripItemForm form={form} onSubmit={onSubmit} />
+        <NewTripItemForm
+          form={form}
+          onSubmit={onSubmit}
+          activities={activities}
+        />
       </DialogContent>
     </Dialog>
   );

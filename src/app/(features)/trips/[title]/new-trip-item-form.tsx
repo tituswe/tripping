@@ -16,14 +16,20 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { ActivitySelectInput } from "./activity-select-input";
 import { DateTimeInput } from "./date-time-input";
 
 interface NewTripItemFormProps {
   form: UseFormReturn<AddItemFormSchema>;
   onSubmit: (data: AddItemFormSchema) => void;
+  activities: string[];
 }
 
-export function NewTripItemForm({ form, onSubmit }: NewTripItemFormProps) {
+export function NewTripItemForm({
+  form,
+  onSubmit,
+  activities
+}: NewTripItemFormProps) {
   return (
     <Card className="rounded-lg border-none">
       <CardContent className="pt-2">
@@ -65,28 +71,15 @@ export function NewTripItemForm({ form, onSubmit }: NewTripItemFormProps) {
                 </FormItem>
               )}
             />
-            {/* <FormField
+            <FormField
               control={form.control}
               name="activity"
               render={({ field }) => (
                 <ActivitySelectInput
                   form={form}
                   field={field}
-                  activities={["Hiking", "Camping", "Sightseeing"]}
+                  activities={activities}
                 />
-              )}
-            /> */}
-            <FormField
-              control={form.control}
-              name="activity"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Activity</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Activity" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
               )}
             />
             <CurrencyInput

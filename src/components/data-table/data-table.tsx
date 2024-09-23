@@ -112,7 +112,9 @@ export function DataTable<TData, TValue>({
           )}
         </div>
         <div className="flex flex-1 items-center space-x-2">
-          <DataTableAddItemDialog />
+          <DataTableAddItemDialog
+            activities={activities.map((activity) => activity.label)}
+          />
           <DataTableViewOptions table={table} />
         </div>
       </div>

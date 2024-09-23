@@ -63,7 +63,8 @@ const orFilter = (row: Row<TripItem>, id: string, value: any) => {
 
 export const getColumns = (
   setActionableTripItem: (item: TripItem | null) => void,
-  handleDelete: () => void
+  handleDelete: () => void,
+  toast: any
 ): ColumnDef<TripItem>[] => [
   {
     id: "select",
@@ -143,7 +144,12 @@ export const getColumns = (
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="cursor-pointer"
-                onClick={() => navigator.clipboard.writeText(tripItem.address)}
+                onClick={() => {
+                  navigator.clipboard.writeText(tripItem.address);
+                  toast({
+                    title: "Address copied!"
+                  });
+                }}
               >
                 Copy address
               </DropdownMenuItem>

@@ -16,6 +16,11 @@ import {
 } from "@tanstack/react-table";
 
 import { Button } from "@/components/ui/button";
+import {
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger
+} from "@/components/ui/context-menu";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -25,9 +30,13 @@ import {
   TableHeader,
   TableRow
 } from "@/components/ui/table";
+import { useToast } from "@/hooks/use-toast";
 import { TripItem } from "@prisma/client";
+import { ContextMenu } from "@radix-ui/react-context-menu";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { useState } from "react";
+import { CommandShortcut } from "../ui/command";
+import { Separator } from "../ui/separator";
 import { DataTableAddItemDialog } from "./data-table-add-item-dialog";
 import { DataTableDeleteButton } from "./data-table-delete-button";
 import { DataTableFacetedFilter } from "./data-table-faceted-filter";
@@ -38,13 +47,18 @@ interface DataTableProps<TValue> {
   columns: ColumnDef<TripItem, TValue>[];
   data: TripItem[];
   tripTitle: string;
+  setActionableTripItem: (item: TripItem | null) => void;
+  handleDelete: () => void;
 }
 
 export function DataTable<TValue>({
   columns,
   data,
-  tripTitle
+  tripTitle,
+  setActionableTripItem,
+  handleDelete
 }: DataTableProps<TValue>) {
+  const { toast } = useToast();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
@@ -145,22 +159,58 @@ export function DataTable<TValue>({
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
+                <ContextMenu
                   key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
+                  onOpenChange={(open) =>
+                    setActionableTripItem(open ? row.original : null)
+                  }
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      className="truncate overflow-hidden whitespace-nowrap"
+                  <ContextMenuTrigger asChild>
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
                     >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell
+                          key={cell.id}
+                          className="truncate overflow-hidden whitespace-nowrap"
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent>
+                    <ContextMenuItem
+                      className="cursor-pointer"
+                      onClick={() => {}}
+                    >
+                      Edit
+                    </ContextMenuItem>
+                    <ContextMenuItem
+                      className="cursor-pointer"
+                      onClick={() => {
+                        navigator.clipboard.writeText(row.original.address);
+                        toast({
+                          title: "Address copied!"
+                        });
+                      }}
+                    >
+                      Copy address
+                    </ContextMenuItem>
+                    <Separator className="mt-1" />
+                    <ContextMenuItem
+                      className="cursor-pointer mt-1"
+                      onClick={handleDelete}
+                    >
+                      Delete
+                      <CommandShortcut>⌫</CommandShortcut>
+                    </ContextMenuItem>
+                  </ContextMenuContent>
+                </ContextMenu>
               ))
             ) : (
               <TableRow>

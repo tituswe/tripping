@@ -3,6 +3,7 @@
 import { deleteTripItem } from "@/actions/actions";
 import { DataTable } from "@/components/data-table/data-table";
 import { Card, CardContent } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
 import { TripItem } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { getColumns } from "./columns";
@@ -13,6 +14,8 @@ interface TripItemsProps {
 }
 
 export function TripItems({ tripTitle, data }: TripItemsProps) {
+  const { toast } = useToast();
+
   const [actionableTripItem, setActionableTripItem] = useState<TripItem | null>(
     null
   );
@@ -25,7 +28,7 @@ export function TripItems({ tripTitle, data }: TripItemsProps) {
     });
   };
 
-  const columns = getColumns(setActionableTripItem, handleDelete);
+  const columns = getColumns(setActionableTripItem, handleDelete, toast);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -45,7 +48,13 @@ export function TripItems({ tripTitle, data }: TripItemsProps) {
     <Card className="rounded-lg border-none mt-6">
       <CardContent className="p-6">
         <h2 className="text-2xl font-semibold">Itinerary</h2>
-        <DataTable columns={columns} data={data} tripTitle={tripTitle} />
+        <DataTable
+          columns={columns}
+          data={data}
+          tripTitle={tripTitle}
+          setActionableTripItem={setActionableTripItem}
+          handleDelete={handleDelete}
+        />
       </CardContent>
     </Card>
   );

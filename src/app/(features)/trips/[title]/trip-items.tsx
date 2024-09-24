@@ -149,7 +149,7 @@ export function TripItems({ tripTitle, data }: TripItemsProps) {
 							/>
 						</TabsContent>
 						<TabsContent value="gallery">
-							<Gallery />
+							<Gallery data={data} tripTitle={tripTitle} />
 						</TabsContent>
 						<TabsContent value="map">
 							<Map />

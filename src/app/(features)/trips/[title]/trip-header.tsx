@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 
+import placeholder from "@/app/opengraph-image.png";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +10,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Trip } from "@prisma/client";
 import { format } from "date-fns";
 import { CalendarDays } from "lucide-react";
-import placeholder from "/Users/tituswe/Desktop/Projects/tripping/public/placeholder.png";
 
 interface TripHeaderProps {
 	trip: Trip;

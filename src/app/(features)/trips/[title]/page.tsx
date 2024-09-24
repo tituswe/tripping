@@ -9,6 +9,7 @@ import {
 	BreadcrumbPage,
 	BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
+import { Separator } from "@/components/ui/separator";
 import prisma from "@/lib/db";
 import { Trip, TripItem } from "@prisma/client";
 import { TripHeader } from "./trip-header";
@@ -52,6 +53,7 @@ export default async function TripPage({
 				</BreadcrumbList>
 			</Breadcrumb>
 			<TripHeader trip={trip} />
+			<Separator className="my-8" />
 			<TripItems tripTitle={tripTitle} data={data} />
 		</ContentLayout>
 	);

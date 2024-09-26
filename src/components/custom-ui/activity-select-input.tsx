@@ -24,14 +24,14 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
-import { AddItemFormSchema } from "@/components/data-table/data-table-add-item-dialog";
 import { Badge } from "@/components/ui/badge";
+import { ItemFormSchema } from "@/lib/validation";
 import { useState } from "react";
 import { ControllerRenderProps, UseFormReturn } from "react-hook-form";
 
 interface ActivitySelectInputProps {
-  form: UseFormReturn<AddItemFormSchema>;
-  field: ControllerRenderProps<AddItemFormSchema, "activity">;
+  form: UseFormReturn<ItemFormSchema>;
+  field: ControllerRenderProps<ItemFormSchema, "activity">;
   activities: string[];
 }
 

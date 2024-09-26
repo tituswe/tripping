@@ -2,10 +2,9 @@
 
 import { UseFormReturn } from "react-hook-form";
 
-import { AddItemFormSchema } from "@/components/data-table/data-table-add-item-dialog";
+import CurrencyInput from "@/components/custom-ui/currency-input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import CurrencyInput from "@/components/ui/currency-input";
 import {
   Form,
   FormControl,
@@ -16,12 +15,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ActivitySelectInput } from "./activity-select-input";
-import { DateTimeInput } from "./date-time-input";
+import { ItemFormSchema } from "@/lib/validation";
+import { ActivitySelectInput } from "../custom-ui/activity-select-input";
+import { DateTimeInput } from "../custom-ui/date-time-input";
 
 interface NewTripItemFormProps {
-  form: UseFormReturn<AddItemFormSchema>;
-  onSubmit: (data: AddItemFormSchema) => void;
+  form: UseFormReturn<ItemFormSchema>;
+  onSubmit: (data: ItemFormSchema) => void;
   activities: string[];
 }
 
@@ -51,12 +51,28 @@ export function NewTripItemForm({
             <FormField
               control={form.control}
               name="from"
-              render={({ field }) => <DateTimeInput field={field} />}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>From</FormLabel>
+                  <FormControl>
+                    <DateTimeInput field={field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
             <FormField
               control={form.control}
               name="to"
-              render={({ field }) => <DateTimeInput field={field} />}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>To</FormLabel>
+                  <FormControl>
+                    <DateTimeInput field={field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
             <FormField
               control={form.control}

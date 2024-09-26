@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const formSchema = z.object({
+export const itemFormSchema = z.object({
   name: z.string().min(1, {
     message: "Please input a name."
   }),
@@ -11,3 +11,5 @@ export const formSchema = z.object({
   from: z.date().optional(),
   to: z.date().optional()
 });
+
+export type ItemFormSchema = z.infer<typeof itemFormSchema>;

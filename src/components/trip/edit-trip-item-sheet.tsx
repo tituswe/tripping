@@ -14,7 +14,7 @@ import {
 import { useEffect, useState } from "react";
 
 import { updateTripItem } from "@/actions/actions";
-import CurrencyInput from "@/components/ui/currency-input";
+import CurrencyInput from "@/components/custom-ui/currency-input";
 import {
   Form,
   FormControl,
@@ -26,13 +26,12 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/hooks/use-toast";
-import { formSchema } from "@/lib/validation";
+import { ItemFormSchema, itemFormSchema } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TripItem } from "@prisma/client";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { ActivitySelectInput } from "./activity-select-input";
-import { DateTimeInput } from "./date-time-input";
+import { ActivitySelectInput } from "../custom-ui/activity-select-input";
+import { DateTimeInput } from "../custom-ui/date-time-input";
 
 interface EditTripItemSheetProps {
   open: boolean;
@@ -52,8 +51,8 @@ export function EditTripItemSheet({
   const { toast } = useToast();
   const [itemId, setItemId] = useState<string | undefined>(undefined);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<ItemFormSchema>({
+    resolver: zodResolver(itemFormSchema),
     defaultValues: {
       name: "",
       address: "",
@@ -79,7 +78,7 @@ export function EditTripItemSheet({
     }
   }, [open, actionableTripItem, form]);
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: ItemFormSchema) {
     await updateTripItem(tripTitle, itemId, values)
       .then(() => {
         toast({
@@ -132,12 +131,28 @@ export function EditTripItemSheet({
             <FormField
               control={form.control}
               name="from"
-              render={({ field }) => <DateTimeInput field={field} />}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>From</FormLabel>
+                  <FormControl>
+                    <DateTimeInput field={field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
             <FormField
               control={form.control}
               name="to"
-              render={({ field }) => <DateTimeInput field={field} />}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>To</FormLabel>
+                  <FormControl>
+                    <DateTimeInput field={field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
             <FormField
               control={form.control}

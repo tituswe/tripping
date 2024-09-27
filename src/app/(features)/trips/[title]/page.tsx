@@ -52,9 +52,9 @@ export default async function TripPage({
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <TripHeader trip={trip} tripItems={tripItems} />
+      <TripHeader trip={trip} />
       <Separator className="my-8" />
-      <TripItems tripTitle={tripTitle} tripItems={tripItems} />
+      <TripItems tripTitle={tripTitle} trip={trip} tripItems={tripItems} />
     </ContentLayout>
   );
 }

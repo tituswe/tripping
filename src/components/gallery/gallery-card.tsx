@@ -11,23 +11,70 @@ import {
   TooltipTrigger
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
-import { currencyFormatter } from "@/lib/utils";
-import { TripItem } from "@prisma/client";
+import { cn, currencyFormatter } from "@/lib/utils";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { cva } from "class-variance-authority";
 import { Copy, ImagePlus, MapPin } from "lucide-react";
+import { Item, ItemDragData } from "../kanban-board/types";
 
 interface GalleryCardProps {
-  item: TripItem;
+  item: Item;
+  isOverlay?: boolean;
 }
 
-export function GalleryCard({ item }: GalleryCardProps) {
+export function GalleryCard({ item, isOverlay }: GalleryCardProps) {
   const { toast } = useToast();
 
+  const {
+    setNodeRef,
+    attributes,
+    listeners,
+    transform,
+    transition,
+    isDragging
+  } = useSortable({
+    id: item.id,
+    data: {
+      type: "Item",
+      item: item
+    } satisfies ItemDragData,
+    attributes: {
+      roleDescription: "Item"
+    }
+  });
+
+  const style = {
+    transition,
+    transform: CSS.Translate.toString(transform)
+  };
+
+  const variants = cva("", {
+    variants: {
+      dragging: {
+        over: "ring-2 opacity-30",
+        overlay: "ring-2 ring-primary"
+      }
+    }
+  });
+
   return (
-    <Card className="flex flex-col cursor-pointer border-[3px] transition hover:border-primary">
+    <Card
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className={cn(
+        "flex flex-col cursor-pointer border-[3px] transition hover:border-primary",
+        variants({
+          dragging: isOverlay ? "overlay" : isDragging ? "over" : undefined
+        })
+      )}
+    >
       <CardHeader className="p-0 rounded-lg">
-        {item.media[0] ? (
+        {item.content.media[0] ? (
           <Image
-            src={item.media[0]}
+            src={item.content.media[0]}
             alt="Project"
             width="400"
             height="225"
@@ -42,7 +89,7 @@ export function GalleryCard({ item }: GalleryCardProps) {
       <CardContent className="p-4 space-y-1 flex-grow rounded-lg">
         <div className="flex flex-col justify-between h-full">
           <div className="flex flex-col justify-between">
-            <span className="text-lg font-semibold">{item.name}</span>
+            <span className="text-lg font-semibold">{item.content.name}</span>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
@@ -51,13 +98,13 @@ export function GalleryCard({ item }: GalleryCardProps) {
                     <span
                       className="text-xs text-gray-500 dark:text-gray-400 cursor-pointer transition hover:bg-secondary rounded-md py-1/2 px-1.5"
                       onClick={() => {
-                        navigator.clipboard.writeText(item.address);
+                        navigator.clipboard.writeText(item.content.address);
                         toast({
                           title: "Address copied!"
                         });
                       }}
                     >
-                      {item.address}{" "}
+                      {item.content.address}{" "}
                       <Copy className="w-3 h-3 inline-block ml-1" />
                     </span>
                   </div>
@@ -69,9 +116,9 @@ export function GalleryCard({ item }: GalleryCardProps) {
             </TooltipProvider>
           </div>
           <div className="flex justify-between mt-3">
-            <Badge>{item.activity}</Badge>
+            <Badge>{item.content.activity}</Badge>
             <Badge variant="outline">
-              {currencyFormatter.format(item.price)}
+              {currencyFormatter.format(item.content.price)}
             </Badge>
           </div>
         </div>

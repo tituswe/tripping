@@ -11,30 +11,15 @@ import {
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { cn, currencyFormatter } from "@/lib/utils";
-import type { UniqueIdentifier } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { TripItem } from "@prisma/client";
 import { cva } from "class-variance-authority";
 import { Copy, GripVertical, MapPin } from "lucide-react";
-import { ColumnId } from "./types";
-
-export interface Item {
-  id: UniqueIdentifier;
-  columnId: ColumnId;
-  content: TripItem;
-}
+import { Item, ItemDragData } from "./types";
 
 interface ItemCardProps {
   item: Item;
   isOverlay?: boolean;
-}
-
-export type ItemType = "Item";
-
-export interface ItemDragData {
-  type: ItemType;
-  item: Item;
 }
 
 export function ItemCard({ item, isOverlay }: ItemCardProps) {

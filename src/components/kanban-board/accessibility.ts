@@ -1,13 +1,11 @@
 import { Announcements, UniqueIdentifier } from "@dnd-kit/core";
 import { MutableRefObject } from "react";
-import { Column } from "./BoardColumn";
-import { Item } from "./ItemCard";
-import { ColumnId } from "./types";
+import { Column, ColumnId, Item } from "./types";
 import { hasDraggableData } from "./utils";
 
 const getDraggingItemData = (
   itemId: UniqueIdentifier,
-  columnId: ColumnId,
+  columnId: ColumnId | null,
   items: Item[],
   columns: Column[]
 ) => {

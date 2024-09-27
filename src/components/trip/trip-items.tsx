@@ -1,31 +1,49 @@
 "use client";
 
+import { createPortal } from "react-dom";
+
 import { deleteTripItem } from "@/actions/actions";
+import { getColumns } from "@/components/data-table/columns";
 import { DataTable } from "@/components/data-table/data-table";
 import { Gallery } from "@/components/gallery/gallery";
+import { BoardColumn } from "@/components/kanban-board/BoardColumn";
+import { ItemCard } from "@/components/kanban-board/ItemCard";
+import { coordinateGetter } from "@/components/kanban-board/multipleContainersKeyboardPreset";
 import { Card, CardContent } from "@/components/ui/card";
-import { CommandShortcut } from "@/components/ui/command";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
+import { TabsContent } from "@/components/ui/tabs";
+import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
 import { useToast } from "@/hooks/use-toast";
-import { controlSymbol } from "@/lib/utils";
-import { TripItem } from "@prisma/client";
-import { Images, Map, Table } from "lucide-react";
-import { useEffect, useState } from "react";
-import { getColumns } from "../data-table/columns";
+import {
+  DndContext,
+  DragOverlay,
+  KeyboardSensor,
+  MouseSensor,
+  TouchSensor,
+  useSensor,
+  useSensors
+} from "@dnd-kit/core";
+import { Trip, TripItem } from "@prisma/client";
+import { Map } from "lucide-react";
+import { useState } from "react";
+import { useDrag } from "../../hooks/use-drag";
+import { KanbanBoard } from "../kanban-board/KanbanBoard";
+import { TripTabs } from "./trip-tabs";
 
 interface TripItemsProps {
   tripTitle: string;
+  trip: Trip;
   tripItems: TripItem[];
 }
 
-export function TripItems({ tripTitle, tripItems }: TripItemsProps) {
+export function TripItems({ tripTitle, trip, tripItems }: TripItemsProps) {
   const { toast } = useToast();
 
+  const [editing, setEditing] = useState(false);
+  const [tab, setTab] = useState("table");
   const [actionableTripItem, setActionableTripItem] = useState<TripItem | null>(
     null
   );
-  const [editing, setEditing] = useState(false);
-  const [tab, setTab] = useState("table");
 
   const handleEdit = () => {
     setEditing(!editing);
@@ -39,106 +57,51 @@ export function TripItems({ tripTitle, tripItems }: TripItemsProps) {
     });
   };
 
-  const columns = getColumns(
+  const tableColumns = getColumns(
     setActionableTripItem,
     handleEdit,
     handleDelete,
     toast
   );
 
-  useEffect(() => {
-    if (!actionableTripItem) return;
+  const {
+    columns,
+    activeColumn,
+    items,
+    activeItem,
+    onDragStart,
+    onDragEnd,
+    onDragOver
+  } = useDrag(trip, tripItems);
+  console.log(columns);
+  console.log(items);
 
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Backspace") {
-        handleDelete();
-      }
-    };
+  const sensors = useSensors(
+    useSensor(MouseSensor),
+    useSensor(TouchSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: coordinateGetter
+    })
+  );
 
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [actionableTripItem]);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "1" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        setTab("table");
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "2" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        setTab("gallery");
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "3" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        setTab("map");
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []);
+  useKeyboardShortcuts(actionableTripItem, handleDelete, setTab);
 
   return (
-    <>
-      <Tabs value={tab} onValueChange={setTab}>
-        <TabsList>
-          <TabsTrigger value="table">
-            <Table className="h-4 w-4 mr-2" />
-            <span className="mr-2">Table</span>
-            <CommandShortcut>
-              <span className="text-xs">{controlSymbol()} </span>
-              <span className="text-md">1</span>
-            </CommandShortcut>
-          </TabsTrigger>
-          <TabsTrigger value="gallery">
-            <Images className="h-4 w-4 mr-2" />
-            <span className="mr-2">Gallery</span>
-            <CommandShortcut>
-              <span className="text-xs">{controlSymbol()} </span>
-              <span className="text-md">2</span>
-            </CommandShortcut>
-          </TabsTrigger>
-          <TabsTrigger value="map">
-            <Map className="h-4 w-4 mr-2" />
-            <span className="mr-2">Map</span>
-            <CommandShortcut>
-              <span className="text-xs">{controlSymbol()} </span>
-              <span className="text-md">3</span>
-            </CommandShortcut>
-          </TabsTrigger>
-        </TabsList>
-        <Card className="rounded-lg border-none mt-6">
-          <CardContent className="p-6">
-            <h2 className="text-2xl font-semibold">Itinerary</h2>
+    <Card className="rounded-lg border-none mt-6">
+      <CardContent className="p-6 space-y-6">
+        <h2 className="text-2xl font-semibold">Itinerary</h2>
+        <DndContext
+          sensors={sensors}
+          onDragStart={onDragStart}
+          onDragEnd={onDragEnd}
+          onDragOver={onDragOver}
+        >
+          <KanbanBoard columns={columns} items={items} />
+          <Separator />
+          <TripTabs tab={tab} setTab={setTab}>
             <TabsContent value="table">
               <DataTable
-                columns={columns}
+                columns={tableColumns}
                 data={tripItems}
                 tripTitle={tripTitle}
                 actionableTripItem={actionableTripItem}
@@ -155,9 +118,26 @@ export function TripItems({ tripTitle, tripItems }: TripItemsProps) {
             <TabsContent value="map">
               <Map />
             </TabsContent>
-          </CardContent>
-        </Card>
-      </Tabs>
-    </>
+          </TripTabs>
+
+          {"document" in window &&
+            createPortal(
+              <DragOverlay>
+                {activeColumn && (
+                  <BoardColumn
+                    isOverlay
+                    column={activeColumn}
+                    items={items.filter(
+                      (item) => item.columnId === activeColumn.id
+                    )}
+                  />
+                )}
+                {activeItem && <ItemCard item={activeItem} isOverlay />}
+              </DragOverlay>,
+              document.body
+            )}
+        </DndContext>
+      </CardContent>
+    </Card>
   );
 }

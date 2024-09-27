@@ -4,24 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { useDndContext, type UniqueIdentifier } from "@dnd-kit/core";
+import { useDndContext } from "@dnd-kit/core";
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cva } from "class-variance-authority";
 import { GripVertical } from "lucide-react";
 import { useMemo } from "react";
-import { Item, ItemCard } from "./ItemCard";
-import { ColumnType } from "./types";
-
-export interface Column {
-  id: UniqueIdentifier;
-  title: string;
-}
-
-export interface ColumnDragData {
-  type: ColumnType;
-  column: Column;
-}
+import { ItemCard } from "./ItemCard";
+import { Column, ColumnDragData, Item } from "./types";
 
 interface BoardColumnProps {
   column: Column;

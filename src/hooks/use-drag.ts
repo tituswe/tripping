@@ -1,3 +1,4 @@
+import { updateTripItem } from "@/actions/actions";
 import { DragEndEvent, DragOverEvent, DragStartEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { Trip, TripItem } from "@prisma/client";
@@ -90,7 +91,7 @@ export const useDrag = (trip: Trip, tripItems: TripItem[]) => {
 
 		// Im dropping a Item over another Item
 		if (isActiveAItem && isOverAItem) {
-			setItems((items) => {
+			const updateItems = async (items: Item[]) => {
 				const activeIndex = items.findIndex((t) => t.id === activeId);
 				const overIndex = items.findIndex((t) => t.id === overId);
 				const activeItem = items[activeIndex];
@@ -101,10 +102,16 @@ export const useDrag = (trip: Trip, tripItems: TripItem[]) => {
 					activeItem.columnId !== overItem.columnId
 				) {
 					activeItem.columnId = overItem.columnId;
+					await updateServerItem(activeItem);
 					return arrayMove(items, activeIndex, overIndex - 1);
 				}
-
+				await updateServerItem(activeItem);
 				return arrayMove(items, activeIndex, overIndex);
+			};
+
+			setItems((items) => {
+				updateItems(items).then(setItems);
+				return items;
 			});
 		}
 
@@ -112,16 +119,30 @@ export const useDrag = (trip: Trip, tripItems: TripItem[]) => {
 
 		// Im dropping a Item over a column
 		if (isActiveAItem && isOverAColumn) {
-			setItems((items) => {
+			const updateItems = async (items: Item[]) => {
 				const activeIndex = items.findIndex((t) => t.id === activeId);
 				const activeItem = items[activeIndex];
 				if (activeItem) {
 					activeItem.columnId = overId as ColumnId;
+					await updateServerItem(activeItem);
 					return arrayMove(items, activeIndex, activeIndex);
 				}
 				return items;
+			};
+
+			setItems((items) => {
+				updateItems(items).then(setItems);
+				return items;
 			});
 		}
+	};
+
+	const updateServerItem = async (activeItem: Item) => {
+		await updateTripItem(trip.title, activeItem.content.id, {
+			...activeItem.content,
+			from: new Date(activeItem.columnId as string),
+			to: new Date(activeItem.columnId as string)
+		});
 	};
 
 	useEffect(() => {

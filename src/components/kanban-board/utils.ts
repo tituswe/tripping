@@ -4,19 +4,19 @@ import { ColumnDragData, ItemDragData } from "./types";
 type DraggableData = ColumnDragData | ItemDragData;
 
 export function hasDraggableData<T extends Active | Over>(
-  entry: T | null | undefined
+	entry: T | null | undefined
 ): entry is T & {
-  data: DataRef<DraggableData>;
+	data: DataRef<DraggableData>;
 } {
-  if (!entry) {
-    return false;
-  }
+	if (!entry) {
+		return false;
+	}
 
-  const data = entry.data.current;
+	const data = entry.data.current;
 
-  if (data?.type === "Column" || data?.type === "Item") {
-    return true;
-  }
+	if (data?.type === "Column" || data?.type === "Item") {
+		return true;
+	}
 
-  return false;
+	return false;
 }

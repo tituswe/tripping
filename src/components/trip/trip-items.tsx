@@ -15,13 +15,13 @@ import { TabsContent } from "@/components/ui/tabs";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
 import { useToast } from "@/hooks/use-toast";
 import {
-  DndContext,
-  DragOverlay,
-  KeyboardSensor,
-  MouseSensor,
-  TouchSensor,
-  useSensor,
-  useSensors
+	DndContext,
+	DragOverlay,
+	KeyboardSensor,
+	MouseSensor,
+	TouchSensor,
+	useSensor,
+	useSensors
 } from "@dnd-kit/core";
 import { Trip, TripItem } from "@prisma/client";
 import { Map } from "lucide-react";
@@ -31,113 +31,111 @@ import { KanbanBoard } from "../kanban-board/KanbanBoard";
 import { TripTabs } from "./trip-tabs";
 
 interface TripItemsProps {
-  tripTitle: string;
-  trip: Trip;
-  tripItems: TripItem[];
+	tripTitle: string;
+	trip: Trip;
+	tripItems: TripItem[];
 }
 
 export function TripItems({ tripTitle, trip, tripItems }: TripItemsProps) {
-  const { toast } = useToast();
+	const { toast } = useToast();
 
-  const [editing, setEditing] = useState(false);
-  const [tab, setTab] = useState("table");
-  const [actionableTripItem, setActionableTripItem] = useState<TripItem | null>(
-    null
-  );
+	const [editing, setEditing] = useState(false);
+	const [tab, setTab] = useState("gallery");
+	const [actionableTripItem, setActionableTripItem] = useState<TripItem | null>(
+		null
+	);
 
-  const handleEdit = () => {
-    setEditing(!editing);
-  };
+	const handleEdit = () => {
+		setEditing(!editing);
+	};
 
-  const handleDelete = async () => {
-    if (!actionableTripItem) return;
+	const handleDelete = async () => {
+		if (!actionableTripItem) return;
 
-    await deleteTripItem(tripTitle, actionableTripItem.id).then(() => {
-      setActionableTripItem(null);
-    });
-  };
+		await deleteTripItem(tripTitle, actionableTripItem.id).then(() => {
+			setActionableTripItem(null);
+		});
+	};
 
-  const tableColumns = getColumns(
-    setActionableTripItem,
-    handleEdit,
-    handleDelete,
-    toast
-  );
+	const tableColumns = getColumns(
+		setActionableTripItem,
+		handleEdit,
+		handleDelete,
+		toast
+	);
 
-  const {
-    columns,
-    activeColumn,
-    items,
-    activeItem,
-    onDragStart,
-    onDragEnd,
-    onDragOver
-  } = useDrag(trip, tripItems);
-  console.log(columns);
-  console.log(items);
+	const {
+		columns,
+		activeColumn,
+		items,
+		activeItem,
+		onDragStart,
+		onDragEnd,
+		onDragOver
+	} = useDrag(trip, tripItems);
 
-  const sensors = useSensors(
-    useSensor(MouseSensor),
-    useSensor(TouchSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: coordinateGetter
-    })
-  );
+	const sensors = useSensors(
+		useSensor(MouseSensor),
+		useSensor(TouchSensor),
+		useSensor(KeyboardSensor, {
+			coordinateGetter: coordinateGetter
+		})
+	);
 
-  useKeyboardShortcuts(actionableTripItem, handleDelete, setTab);
+	useKeyboardShortcuts(actionableTripItem, handleDelete, setTab);
 
-  return (
-    <Card className="rounded-lg border-none mt-6">
-      <CardContent className="p-6 space-y-6">
-        <h2 className="text-2xl font-semibold">Itinerary</h2>
-        <DndContext
-          sensors={sensors}
-          onDragStart={onDragStart}
-          onDragEnd={onDragEnd}
-          onDragOver={onDragOver}
-        >
-          <KanbanBoard columns={columns} items={items} />
-          <Separator />
-          <TripTabs tab={tab} setTab={setTab}>
-            <TabsContent value="table">
-              <DataTable
-                columns={tableColumns}
-                data={tripItems}
-                tripTitle={tripTitle}
-                actionableTripItem={actionableTripItem}
-                setActionableTripItem={setActionableTripItem}
-                editing={editing}
-                setEditing={setEditing}
-                handleEdit={handleEdit}
-                handleDelete={handleDelete}
-              />
-            </TabsContent>
-            <TabsContent value="gallery">
-              <Gallery data={tripItems} tripTitle={tripTitle} />
-            </TabsContent>
-            <TabsContent value="map">
-              <Map />
-            </TabsContent>
-          </TripTabs>
+	return (
+		<Card className="rounded-lg border-none mt-6">
+			<CardContent className="p-6 space-y-6">
+				<h2 className="text-2xl font-semibold">Itinerary</h2>
+				<DndContext
+					sensors={sensors}
+					onDragStart={onDragStart}
+					onDragEnd={onDragEnd}
+					onDragOver={onDragOver}
+				>
+					<KanbanBoard columns={columns} items={items} />
+					<Separator />
+					<TripTabs tab={tab} setTab={setTab}>
+						<TabsContent value="gallery">
+							<Gallery data={items} />
+						</TabsContent>
+						<TabsContent value="table">
+							<DataTable
+								columns={tableColumns}
+								data={tripItems}
+								tripTitle={tripTitle}
+								actionableTripItem={actionableTripItem}
+								setActionableTripItem={setActionableTripItem}
+								editing={editing}
+								setEditing={setEditing}
+								handleEdit={handleEdit}
+								handleDelete={handleDelete}
+							/>
+						</TabsContent>
+						<TabsContent value="map">
+							<Map />
+						</TabsContent>
+					</TripTabs>
 
-          {"document" in window &&
-            createPortal(
-              <DragOverlay>
-                {activeColumn && (
-                  <BoardColumn
-                    isOverlay
-                    column={activeColumn}
-                    items={items.filter(
-                      (item) => item.columnId === activeColumn.id
-                    )}
-                  />
-                )}
-                {activeItem && <ItemCard item={activeItem} isOverlay />}
-              </DragOverlay>,
-              document.body
-            )}
-        </DndContext>
-      </CardContent>
-    </Card>
-  );
+					{"document" in window &&
+						createPortal(
+							<DragOverlay>
+								{activeColumn && (
+									<BoardColumn
+										isOverlay
+										column={activeColumn}
+										items={items.filter(
+											(item) => item.columnId === activeColumn.id
+										)}
+									/>
+								)}
+								{activeItem && <ItemCard item={activeItem} isOverlay />}
+							</DragOverlay>,
+							document.body
+						)}
+				</DndContext>
+			</CardContent>
+		</Card>
+	);
 }

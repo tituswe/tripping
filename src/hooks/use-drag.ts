@@ -7,140 +7,148 @@ import { Column, ColumnId, Item } from "../components/kanban-board/types";
 import { hasDraggableData } from "../components/kanban-board/utils";
 
 export const useDrag = (trip: Trip, tripItems: TripItem[]) => {
-  const [activeColumn, setActiveColumn] = useState<Column | null>(null);
+	const [activeColumn, setActiveColumn] = useState<Column | null>(null);
 
-  const [activeItem, setActiveItem] = useState<Item | null>(null);
+	const [activeItem, setActiveItem] = useState<Item | null>(null);
 
-  const [items, setItems] = useState<Item[]>([]);
+	const [items, setItems] = useState<Item[]>([]);
 
-  const dateRange = eachDayOfInterval({
-    start: new Date(trip.from),
-    end: new Date(trip.to)
-  }).map((date) => format(date, "yyyy-MM-dd"));
+	const dateRange = eachDayOfInterval({
+		start: new Date(trip.from),
+		end: new Date(trip.to)
+	}).map((date) => format(date, "yyyy-MM-dd"));
 
-  const defaultCols = dateRange.map((date, index) => ({
-    id: date,
-    title: `Day ${differenceInDays(new Date(date), new Date(trip.from)) + 1}`
-  })) satisfies Column[];
+	const defaultCols = dateRange.map((date, index) => ({
+		id: date,
+		title: `Day ${differenceInDays(new Date(date), new Date(trip.from)) + 1}`
+	})) satisfies Column[];
 
-  const [columns, setColumns] = useState<Column[]>(defaultCols);
+	const [columns, setColumns] = useState<Column[]>(defaultCols);
 
-  const onDragStart = (event: DragStartEvent) => {
-    if (!hasDraggableData(event.active)) return;
-    const data = event.active.data.current;
-    if (data?.type === "Column") {
-      setActiveColumn(data.column);
-      return;
-    }
+	const onDragStart = (event: DragStartEvent) => {
+		if (!hasDraggableData(event.active)) return;
 
-    if (data?.type === "Item") {
-      setActiveItem(data.item);
-      return;
-    }
-  };
+		const data = event.active.data.current;
 
-  const onDragEnd = (event: DragEndEvent) => {
-    setActiveColumn(null);
-    setActiveItem(null);
+		if (data?.type === "Column") {
+			setActiveColumn(data.column);
+			return;
+		}
 
-    const { active, over } = event;
-    if (!over) return;
+		if (data?.type === "Item") {
+			setActiveItem(data.item);
+			return;
+		}
+	};
 
-    const activeId = active.id;
-    const overId = over.id;
+	const onDragEnd = (event: DragEndEvent) => {
+		setActiveColumn(null);
+		setActiveItem(null);
 
-    if (!hasDraggableData(active)) return;
+		const { active, over } = event;
+		if (!over) return;
 
-    const activeData = active.data.current;
+		const activeId = active.id;
+		const overId = over.id;
 
-    if (activeId === overId) return;
+		if (!hasDraggableData(active)) return;
 
-    const isActiveAColumn = activeData?.type === "Column";
-    if (!isActiveAColumn) return;
+		const activeData = active.data.current;
 
-    setColumns((columns) => {
-      const activeColumnIndex = columns.findIndex((col) => col.id === activeId);
+		if (activeId === overId) return;
 
-      const overColumnIndex = columns.findIndex((col) => col.id === overId);
+		const isActiveAColumn = activeData?.type === "Column";
+		if (!isActiveAColumn) return;
 
-      return arrayMove(columns, activeColumnIndex, overColumnIndex);
-    });
-  };
+		setColumns((columns) => {
+			const activeColumnIndex = columns.findIndex((col) => col.id === activeId);
 
-  const onDragOver = (event: DragOverEvent) => {
-    const { active, over } = event;
-    if (!over) return;
+			const overColumnIndex = columns.findIndex((col) => col.id === overId);
 
-    const activeId = active.id;
-    const overId = over.id;
+			return arrayMove(columns, activeColumnIndex, overColumnIndex);
+		});
+	};
 
-    if (activeId === overId) return;
+	const onDragOver = (event: DragOverEvent) => {
+		const { active, over } = event;
+		if (!over) return;
 
-    if (!hasDraggableData(active) || !hasDraggableData(over)) return;
+		const activeId = active.id;
+		const overId = over.id;
 
-    const activeData = active.data.current;
-    const overData = over.data.current;
+		if (activeId === overId) return;
 
-    const isActiveAItem = activeData?.type === "Item";
-    const isOverAItem = overData?.type === "Item";
+		if (!hasDraggableData(active) || !hasDraggableData(over)) return;
 
-    if (!isActiveAItem) return;
+		const activeData = active.data.current;
+		const overData = over.data.current;
 
-    // Im dropping a Item over another Item
-    if (isActiveAItem && isOverAItem) {
-      setItems((items) => {
-        const activeIndex = items.findIndex((t) => t.id === activeId);
-        const overIndex = items.findIndex((t) => t.id === overId);
-        const activeItem = items[activeIndex];
-        const overItem = items[overIndex];
-        if (
-          activeItem &&
-          overItem &&
-          activeItem.columnId !== overItem.columnId
-        ) {
-          activeItem.columnId = overItem.columnId;
-          return arrayMove(items, activeIndex, overIndex - 1);
-        }
+		const isActiveAItem = activeData?.type === "Item";
+		const isOverAItem = overData?.type === "Item";
 
-        return arrayMove(items, activeIndex, overIndex);
-      });
-    }
+		if (!isActiveAItem) return;
 
-    const isOverAColumn = overData?.type === "Column";
+		// Im dropping a Item over another Item
+		if (isActiveAItem && isOverAItem) {
+			setItems((items) => {
+				const activeIndex = items.findIndex((t) => t.id === activeId);
+				const overIndex = items.findIndex((t) => t.id === overId);
+				const activeItem = items[activeIndex];
+				const overItem = items[overIndex];
+				if (
+					activeItem &&
+					overItem &&
+					activeItem.columnId !== overItem.columnId
+				) {
+					activeItem.columnId = overItem.columnId;
+					return arrayMove(items, activeIndex, overIndex - 1);
+				}
 
-    // Im dropping a Item over a column
-    if (isActiveAItem && isOverAColumn) {
-      setItems((items) => {
-        const activeIndex = items.findIndex((t) => t.id === activeId);
-        const activeItem = items[activeIndex];
-        if (activeItem) {
-          activeItem.columnId = overId as ColumnId;
-          return arrayMove(items, activeIndex, activeIndex);
-        }
-        return items;
-      });
-    }
-  };
+				return arrayMove(items, activeIndex, overIndex);
+			});
+		}
 
-  useEffect(() => {
-    const initialItems = tripItems
-      .filter((item) => item.from)
-      .map((item) => ({
-        id: item.id,
-        columnId: format(new Date(item.from!), "yyyy-MM-dd"),
-        content: item
-      }));
+		const isOverAColumn = overData?.type === "Column";
 
-    setItems(initialItems);
-  }, [tripItems]);
+		// Im dropping a Item over a column
+		if (isActiveAItem && isOverAColumn) {
+			setItems((items) => {
+				const activeIndex = items.findIndex((t) => t.id === activeId);
+				const activeItem = items[activeIndex];
+				if (activeItem) {
+					activeItem.columnId = overId as ColumnId;
+					return arrayMove(items, activeIndex, activeIndex);
+				}
+				return items;
+			});
+		}
+	};
 
-  return {
-    columns,
-    activeColumn,
-    items,
-    activeItem,
-    onDragStart,
-    onDragEnd,
-    onDragOver
-  };
+	useEffect(() => {
+		const initialItems = tripItems.map((item) =>
+			item.from
+				? {
+						id: item.id,
+						columnId: format(new Date(item.from!), "yyyy-MM-dd"),
+						content: item
+				  }
+				: {
+						id: item.id,
+						columnId: "unbound",
+						content: item
+				  }
+		);
+
+		setItems(initialItems);
+	}, [tripItems]);
+
+	return {
+		columns,
+		activeColumn,
+		items,
+		activeItem,
+		onDragStart,
+		onDragEnd,
+		onDragOver
+	};
 };

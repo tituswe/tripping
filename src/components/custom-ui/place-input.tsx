@@ -71,7 +71,7 @@ export const PlaceInput = ({
 			setPredictionResults(filteredPlaces);
 			setSelectedIndex(0); // Reset selected index when new predictions are fetched
 		},
-		[autocompleteService, sessionToken]
+		[autocompleteService, sessionToken, existingPlaces]
 	);
 
 	const onInputChange = useCallback(

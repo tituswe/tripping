@@ -91,7 +91,7 @@ export function NewTrip() {
 					<div className="w-full pt-6 flex justify-center">
 						<Button size="xl" onClick={onSubmit} disabled={!location}>
 							<Plane className="mr-2 h-6 w-6" />{" "}
-							<span className="text-lg">Let's go!</span>
+							<span className="text-lg">Let&apos;s go!</span>
 						</Button>
 					</div>
 					<Map

@@ -1,29 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the column `description` on the `Trip` table. All the data in the column will be lost.
-  - You are about to drop the column `location` on the `Trip` table. All the data in the column will be lost.
-  - You are about to drop the `TripItem` table. If the table is not empty, all the data it contains will be lost.
-  - Added the required column `locationId` to the `Trip` table without a default value. This is not possible if the table is not empty.
-
-*/
--- DropForeignKey
-ALTER TABLE "TripItem" DROP CONSTRAINT "TripItem_tripId_fkey";
-
--- DropIndex
-DROP INDEX "Trip_title_key";
-
--- AlterTable
-ALTER TABLE "Trip" DROP COLUMN "description",
-DROP COLUMN "location",
-ADD COLUMN     "locationId" TEXT NOT NULL,
-ALTER COLUMN "title" DROP NOT NULL,
-ALTER COLUMN "from" DROP NOT NULL,
-ALTER COLUMN "to" DROP NOT NULL;
-
--- DropTable
-DROP TABLE "TripItem";
-
 -- CreateTable
 CREATE TABLE "Location" (
     "id" TEXT NOT NULL,
@@ -41,6 +15,19 @@ CREATE TABLE "Location" (
     "updatedAt" TIMESTAMP(3),
 
     CONSTRAINT "Location_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Trip" (
+    "id" TEXT NOT NULL,
+    "locationId" TEXT NOT NULL,
+    "title" TEXT,
+    "from" TIMESTAMP(3),
+    "to" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Trip_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable

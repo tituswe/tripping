@@ -1,13 +1,15 @@
 import AdminPanelLayout from "@/components/admin-panel/admin-panel-layout";
 import prisma from "@/lib/db";
-import { Trip } from "@prisma/client";
+import { TripModel } from "@/lib/types";
 
 export default async function TabLayout({
-  children
+	children
 }: {
-  children: React.ReactNode;
+	children: React.ReactNode;
 }) {
-  const trips: Trip[] = await prisma.trip.findMany();
+	const trips: TripModel[] = await prisma.trip.findMany({
+		include: { location: true, places: { include: { reviews: true } } }
+	});
 
-  return <AdminPanelLayout trips={trips}>{children}</AdminPanelLayout>;
+	return <AdminPanelLayout trips={trips}>{children}</AdminPanelLayout>;
 }

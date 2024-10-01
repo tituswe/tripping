@@ -1,59 +1,59 @@
-import { Trip } from "@prisma/client";
 import { CirclePlus, LayoutGrid, LucideIcon, MapPin } from "lucide-react";
+import { TripModel } from "./types";
 
 type Submenu = {
-  href: string;
-  label: string;
-  active: boolean;
+	href: string;
+	label: string;
+	active: boolean;
 };
 
 type Menu = {
-  href: string;
-  label: string;
-  active: boolean;
-  icon: LucideIcon;
-  submenus: Submenu[];
+	href: string;
+	label: string;
+	active: boolean;
+	icon: LucideIcon;
+	submenus: Submenu[];
 };
 
 type Group = {
-  groupLabel: string;
-  menus: Menu[];
+	groupLabel: string;
+	menus: Menu[];
 };
 
-export function getMenuList(pathname: string, trips: Trip[]): Group[] {
-  return [
-    {
-      groupLabel: "",
-      menus: [
-        {
-          href: "/dashboard",
-          label: "Dashboard",
-          active: pathname.includes("/dashboard"),
-          icon: LayoutGrid,
-          submenus: []
-        }
-      ]
-    },
-    {
-      groupLabel: "Trips",
-      menus: [
-        ...trips.map((e) => ({
-          href: `/trips/${e.title}`,
-          label: e.title,
-          active: pathname.includes(`/${e.title}`),
-          icon: MapPin,
-          submenus: []
-        })),
-        {
-          href: "/trips/new",
-          label: "New Trip",
-          active: pathname === "/trips/new",
-          icon: CirclePlus,
-          submenus: []
-        }
-      ]
-    }
-  ];
+export function getMenuList(pathname: string, trips: TripModel[]): Group[] {
+	return [
+		{
+			groupLabel: "",
+			menus: [
+				{
+					href: "/dashboard",
+					label: "Dashboard",
+					active: pathname.includes("/dashboard"),
+					icon: LayoutGrid,
+					submenus: []
+				}
+			]
+		},
+		{
+			groupLabel: "Trips",
+			menus: [
+				...trips.map((trip) => ({
+					href: `/trips/${trip.id}`,
+					label: trip.location.formattedAddress || "",
+					active: pathname.includes(`/${trip.id}`),
+					icon: MapPin,
+					submenus: []
+				})),
+				{
+					href: "/trips/new",
+					label: "New Trip",
+					active: pathname === "/trips/new",
+					icon: CirclePlus,
+					submenus: []
+				}
+			]
+		}
+	];
 }
 
 // TODO: Implement other features

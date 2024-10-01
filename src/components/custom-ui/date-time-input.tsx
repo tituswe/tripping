@@ -1,141 +1,78 @@
 "use client";
 
+import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
+import * as React from "react";
+import { DateRange } from "react-day-picker";
+
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { FormControl } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import { ItemFormSchema } from "@/lib/validation";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger
-} from "@radix-ui/react-popover";
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
-import React, { useState } from "react";
-import { ControllerRenderProps } from "react-hook-form";
+	Popover,
+	PopoverContent,
+	PopoverTrigger
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
-interface DateTimeInputProps {
-  field:
-    | ControllerRenderProps<ItemFormSchema, "from">
-    | ControllerRenderProps<ItemFormSchema, "to">;
+interface DateTimeInputProps extends React.HTMLAttributes<HTMLDivElement> {
+	dateRange: DateRange | undefined;
+	setDateRange: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
 }
 
-export function DateTimeInput({ field }: DateTimeInputProps) {
-  const [time, setTime] = useState(
-    field.value ? format(field.value, "HH:mm") : undefined
-  );
-
-  const handleTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newTime = event.target.value;
-    setTime(newTime);
-
-    const timeParts = newTime.split(":");
-    if (timeParts.length === 2) {
-      const [hours, minutes] = timeParts.map(Number);
-      if (
-        !isNaN(hours) &&
-        !isNaN(minutes) &&
-        hours >= 0 &&
-        hours < 24 &&
-        minutes >= 0 &&
-        minutes < 60
-      ) {
-        const updatedDate = field.value ? new Date(field.value) : new Date();
-        updatedDate.setHours(hours);
-        updatedDate.setMinutes(minutes);
-        field.onChange(updatedDate);
-      }
-    }
-  };
-
-  const handleTimeBlur = () => {
-    const timeParts = time?.split(":");
-    if (
-      timeParts?.length !== 2 ||
-      isNaN(Number(timeParts[0])) ||
-      isNaN(Number(timeParts[1]))
-    ) {
-      setTime(undefined);
-      const updatedDate = field.value ? new Date(field.value) : undefined;
-      updatedDate?.setHours(0);
-      updatedDate?.setMinutes(0);
-      field.onChange(updatedDate);
-    }
-  };
-
-  const handleDateChange = (date: Date | undefined) => {
-    field.onChange(date);
-    if (!date) {
-      setTime(undefined);
-    } else if (time) {
-      const timeParts = time.split(":");
-      if (timeParts.length === 2) {
-        const [hours, minutes] = timeParts.map(Number);
-        if (
-          !isNaN(hours) &&
-          !isNaN(minutes) &&
-          hours >= 0 &&
-          hours < 24 &&
-          minutes >= 0 &&
-          minutes < 60
-        ) {
-          date.setHours(hours);
-          date.setMinutes(minutes);
-        }
-      }
-    }
-  };
-
-  return (
-    <div className="flex space-x-6">
-      <Popover>
-        <PopoverTrigger asChild>
-          <FormControl>
-            <Button
-              variant={"outline"}
-              className={cn(
-                "w-[240px] pl-3 text-left font-normal",
-                !field.value && "text-muted-foreground"
-              )}
-            >
-              {field.value ? (
-                format(field.value, "MMM do, yyyy")
-              ) : (
-                <span>Pick a date</span>
-              )}
-              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-            </Button>
-          </FormControl>
-        </PopoverTrigger>
-        <PopoverContent
-          className="w-auto p-0 bg-background border rounded-md"
-          align="start"
-        >
-          <Calendar
-            mode="single"
-            selected={field.value}
-            onSelect={handleDateChange}
-            disabled={(date) =>
-              date >
-                new Date(
-                  new Date().setFullYear(new Date().getFullYear() + 1)
-                ) || date < new Date("1900-01-01")
-            }
-            initialFocus
-          />
-        </PopoverContent>
-      </Popover>
-      <FormControl>
-        <Input
-          type="time"
-          className="w-36"
-          value={time}
-          onChange={handleTimeChange}
-          onBlur={handleTimeBlur}
-        />
-      </FormControl>
-    </div>
-  );
+export function DateTimeInput({
+	className,
+	dateRange,
+	setDateRange
+}: DateTimeInputProps) {
+	return (
+		<div className={cn("grid gap-2", className)}>
+			<span className="text-sm text-muted-foreground font-semibold">
+				How long?
+			</span>
+			<Popover>
+				<PopoverTrigger asChild>
+					<Button
+						id="date"
+						variant={"outline"}
+						className={cn(
+							"w-full h-12 justify-start text-left font-normal",
+							!dateRange && "text-muted-foreground"
+						)}
+					>
+						<CalendarIcon className="mr-2 h-5 w-5 text-muted-foreground" />
+						{
+							<div className="w-full flex justify-evenly text-lg font-semibold text-muted-foreground">
+								<span
+									className={`flex-grow border-r mx-3 ${
+										dateRange?.from && "text-primary"
+									}`}
+								>
+									{dateRange?.from
+										? format(dateRange.from, "LLL dd, y")
+										: "From"}
+								</span>
+								<span
+									className={`flex-grow mx-3 ${
+										dateRange?.to && "text-primary"
+									}`}
+								>
+									{dateRange?.to ? format(dateRange.to, "LLL dd, y") : "To"}
+								</span>
+							</div>
+						}
+					</Button>
+				</PopoverTrigger>
+				<PopoverContent className="w-full p-0" align="start">
+					<Calendar
+						initialFocus
+						mode="range"
+						defaultMonth={dateRange?.from}
+						selected={dateRange}
+						onSelect={setDateRange}
+						numberOfMonths={2}
+					/>
+				</PopoverContent>
+			</Popover>
+		</div>
+	);
 }

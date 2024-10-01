@@ -13,32 +13,70 @@ datasource db {
   url      = env("POSTGRES_URL")
 }
 
-model Trip {
-  id          String     @id @default(cuid())
-  title       String     @unique
-  location    String
-  description String
-  from        DateTime
-  to          DateTime
-  tripItems   TripItem[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+model Location {
+  id               String     @id @default(cuid())
+  placeId          String     @unique
+  name             String?
+  formattedAddress String?
+  country          String?
+  city             String?
+  district         String?
+  lat              Float?
+  lng              Float?
+  locationType     String?
+  photos           String[]
+  createdAt        DateTime?   @default(now())
+  updatedAt        DateTime?   @updatedAt
+
+  trips            Trip[]
 }
 
-model TripItem {
-  id          String    @id @default(cuid())
-  name        String
-  address     String
-  activity    String
-  description String
-  price       Float
-  trip        Trip      @relation(fields: [tripId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  tripId      String
-  media       String[]
+model Trip {
+  id          String     @id @default(cuid())
+  location    Location   @relation(fields: [locationId], references: [id])
+  locationId  String
+  title       String?    
   from        DateTime?
   to          DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 
-  @@unique([name, tripId])
+  places      Place[]
+}
+
+model Place {
+  id               String     @id @default(cuid())
+  placeId          String     @unique
+  trip             Trip       @relation(fields: [tripId], references: [id])
+  tripId           String
+  name             String?
+  formattedAddress String?
+  country          String?
+  city             String?
+  district         String?
+  lat              Float?
+  lng              Float?
+  tags             String[]
+  photos           String[]
+  openingHours     String[]
+  rating           Float?
+  userRatingsTotal Int?
+  createdAt        DateTime?   @default(now())
+  updatedAt        DateTime?   @updatedAt
+
+  reviews          PlaceReview[]
+}
+
+model PlaceReview {
+  id                      String     @id @default(cuid())
+  place                   Place      @relation(fields: [placeId], references: [id])
+  placeId                 String
+  authorName              String?
+  authorUrl               String?
+  language                String?
+  profilePhotoUrl         String?
+  rating                  Float?
+  relativeTimeDescription String?
+  text                    String?
+  postedAt                DateTime?
 }

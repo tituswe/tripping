@@ -8,6 +8,7 @@ import { TripModel } from "@/lib/types";
 import { TabsContent } from "@radix-ui/react-tabs";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { GalleryThumbnails, Kanban } from "lucide-react";
+import { Playground } from "../playground";
 import { TripGallery } from "./trip-gallery";
 import { TripItinerary } from "./trip-itinerary";
 import { TripMap } from "./trip-map";
@@ -49,6 +50,11 @@ export function TripContent({ trip }: TripContentProps) {
 				<Card className="rounded-lg border-none min-w-[320px]">
 					<CardContent className="p-6 space-y-6">
 						<TripMap />
+					</CardContent>
+				</Card>
+				<Card className="rounded-lg border-none min-w-[320px]">
+					<CardContent className="p-6 space-y-6">
+						<Playground />
 					</CardContent>
 				</Card>
 			</div>

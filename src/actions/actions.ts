@@ -4,7 +4,7 @@ import { DateRange } from "react-day-picker";
 
 import prisma from "@/lib/db";
 import { LocationRequest, PlaceRequest } from "@/lib/types";
-import { Trip } from "@prisma/client";
+import { Place, Trip } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 export async function createTrip(
@@ -53,7 +53,7 @@ export async function getTrip(id: string) {
 			location: true,
 			places: {
 				include: { reviews: true },
-				orderBy: { createdAt: "desc" }
+				orderBy: { sortOrder: "desc" }
 			}
 		}
 	});
@@ -86,11 +86,23 @@ export async function updateTrip(id: string, updates: Partial<Trip>) {
 }
 
 export async function createPlace(tripId: string, place: PlaceRequest) {
+	const maxOrderPlace = await prisma.place.aggregate({
+		_max: {
+			sortOrder: true
+		},
+		where: {
+			tripId
+		}
+	});
+
+	const maxOrder = maxOrderPlace._max?.sortOrder || 0;
+
 	const newPlace = await prisma.place.create({
 		data: {
 			placeId: place.placeId,
 			tripId,
 			name: place.name,
+			sortOrder: maxOrder + 1,
 			formattedAddress: place.formattedAddress,
 			country: place.country,
 			city: place.city,
@@ -122,6 +134,17 @@ export async function createPlace(tripId: string, place: PlaceRequest) {
 	revalidatePath(`/trips/${tripId}`);
 
 	return newPlace;
+}
+
+export async function updatePlace(id: string, updates: Partial<Place>) {
+	const updatedPlace = await prisma.place.update({
+		where: { id },
+		data: updates
+	});
+
+	revalidatePath(`/trips/${updatedPlace.tripId}`);
+
+	return updatedPlace;
 }
 
 export async function deletePlace(id: string) {

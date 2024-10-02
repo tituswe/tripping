@@ -49,6 +49,7 @@ model Place {
   placeId          String     @unique
   trip             Trip       @relation(fields: [tripId], references: [id], onDelete: Cascade)
   tripId           String
+  sortOrder        Int
   name             String?
   formattedAddress String?
   country          String?

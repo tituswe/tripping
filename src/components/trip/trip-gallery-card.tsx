@@ -1,5 +1,9 @@
 "use client";
 
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { format } from "date-fns";
+import { Copy, Delete, GripVertical, Star } from "lucide-react";
 import Image from "next/image";
 
 import { deletePlace } from "@/actions/actions";
@@ -17,8 +21,6 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { PlaceModel } from "@/lib/types";
 import { shortNumber, snakeToNormalCase } from "@/lib/utils";
-import { format } from "date-fns";
-import { Copy, Delete, GripVertical, Star } from "lucide-react";
 
 interface TripGalleryCardProps {
 	place: PlaceModel;
@@ -27,6 +29,22 @@ interface TripGalleryCardProps {
 export function TripGalleryCard({ place }: TripGalleryCardProps) {
 	const { toast } = useToast();
 	const recentReview = place.reviews[0];
+
+	const {
+		attributes,
+		listeners,
+		setNodeRef,
+		transform,
+		transition,
+		isDragging
+	} = useSortable({
+		id: place.id
+	});
+
+	const style = {
+		transform: CSS.Transform.toString(transform),
+		transition
+	};
 
 	const handleCopy = () => {
 		if (!place.formattedAddress) return;
@@ -48,11 +66,20 @@ export function TripGalleryCard({ place }: TripGalleryCardProps) {
 	};
 
 	return (
-		<div className="flex flex-row space-x-1">
-			<Button variant="ghost" className="px-1 cursor-grab">
+		<div ref={setNodeRef} style={style} className="flex flex-row space-x-1">
+			<Button
+				variant="ghost"
+				className="px-1 cursor-grab"
+				{...attributes}
+				{...listeners}
+			>
 				<GripVertical className="w-4 h-4 text-muted-foreground" />
 			</Button>
-			<div className="flex flex-row w-full justify-between items-center p-3 rounded-md border">
+			<div
+				className={`flex flex-row w-full justify-between items-center p-3 rounded-md border ${
+					isDragging && "z-50 bg-primary-foreground ring-2 ring-primary"
+				}`}
+			>
 				<div className="flex flex-col w-full mr-2">
 					<div className="flex flex-row justify-between">
 						<h3 className="font-semibold text-lg">{place.name}</h3>
@@ -60,7 +87,7 @@ export function TripGalleryCard({ place }: TripGalleryCardProps) {
 							<div className="flex flex-row gap-1 items-center text-xs text-muted-foreground">
 								<Badge
 									variant="outline"
-									className="flex flex-row gap-1 items-center "
+									className="flex flex-row gap-1 items-center"
 								>
 									<Star className="h-3 w-3 text-primary" />
 									<span>{place.rating}</span>
@@ -86,26 +113,30 @@ export function TripGalleryCard({ place }: TripGalleryCardProps) {
 						</p>
 					</button>
 
-					<Dialog>
-						<DialogTrigger>
-							<p className="text-start text-xs italic text-muted-foreground gap-2 rounded mt-3 mb-6 h-[45px] overflow-y-hidden line-clamp-3 transition hover:bg-muted cursor-pointer">
-								{recentReview?.text}
-							</p>
-						</DialogTrigger>
-						<DialogContent>
-							<DialogHeader>
-								<DialogTitle>Review by {recentReview.authorName}</DialogTitle>
-								<DialogDescription className="pt-3 pb-1 italic">
-									{recentReview?.text}
-								</DialogDescription>
-								{recentReview.postedAt && (
-									<DialogFooter className="text-sm text-secondary-foreground">
-										~ {format(recentReview.postedAt, "PPP")}
-									</DialogFooter>
-								)}
-							</DialogHeader>
-						</DialogContent>
-					</Dialog>
+					{recentReview ? (
+						<Dialog>
+							<DialogTrigger>
+								<p className="text-start text-xs italic text-muted-foreground gap-2 rounded mt-3 mb-6 h-[45px] overflow-y-hidden line-clamp-3 transition hover:bg-muted cursor-pointer">
+									{recentReview.text}
+								</p>
+							</DialogTrigger>
+							<DialogContent>
+								<DialogHeader>
+									<DialogTitle>Review by {recentReview.authorName}</DialogTitle>
+									<DialogDescription className="pt-3 pb-1 italic">
+										{recentReview.text}
+									</DialogDescription>
+									{recentReview.postedAt && (
+										<DialogFooter className="text-sm text-secondary-foreground">
+											~ {format(recentReview.postedAt, "PPP")}
+										</DialogFooter>
+									)}
+								</DialogHeader>
+							</DialogContent>
+						</Dialog>
+					) : (
+						<div className="h-[45px] mt-3 mb-6" />
+					)}
 
 					<div className="flex-grow" />
 
@@ -129,8 +160,12 @@ export function TripGalleryCard({ place }: TripGalleryCardProps) {
 					</div>
 				)}
 			</div>
-			<Button variant="ghost" className="px-1" onClick={handleDelete}>
-				<Delete className="w-4 h-4 text-muted-foreground" />
+			<Button
+				variant="ghost"
+				className="px-1 text-muted-foreground transition hover:text-destructive"
+				onClick={handleDelete}
+			>
+				<Delete className="w-4 h-4" />
 			</Button>
 		</div>
 	);

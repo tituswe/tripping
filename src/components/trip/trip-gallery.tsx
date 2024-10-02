@@ -1,9 +1,26 @@
 "use client";
 
-import { createPlace } from "@/actions/actions";
-import { TripModel } from "@/lib/types";
+import {
+	closestCenter,
+	DndContext,
+	DragEndEvent,
+	KeyboardSensor,
+	PointerSensor,
+	useSensor,
+	useSensors
+} from "@dnd-kit/core";
+import {
+	arrayMove,
+	SortableContext,
+	sortableKeyboardCoordinates,
+	verticalListSortingStrategy
+} from "@dnd-kit/sortable";
+
+import { createPlace, updatePlace } from "@/actions/actions";
+import { PlaceInput } from "@/components/custom-ui/place-input";
+import { PlaceModel, TripModel } from "@/lib/types";
 import { PlaceReview } from "@prisma/client";
-import { PlaceInput } from "../custom-ui/place-input";
+import { useEffect, useMemo, useState } from "react";
 import { TripGalleryCard } from "./trip-gallery-card";
 
 interface TripGalleryProps {
@@ -11,7 +28,21 @@ interface TripGalleryProps {
 }
 
 export function TripGallery({ trip }: TripGalleryProps) {
-	const places = trip.places;
+	const [places, setPlaces] = useState<PlaceModel[]>([...trip.places]);
+
+	// Synchronize places state with trip.places prop
+	useEffect(() => {
+		setPlaces([...trip.places]);
+	}, [trip.places]);
+
+	const placeIds = useMemo(() => places.map((place) => place.id), [places]);
+
+	const sensors = useSensors(
+		useSensor(PointerSensor),
+		useSensor(KeyboardSensor, {
+			coordinateGetter: sortableKeyboardCoordinates
+		})
+	);
 
 	const onPlaceSelect = async (
 		place: google.maps.places.PlaceResult | null
@@ -70,15 +101,48 @@ export function TripGallery({ trip }: TripGalleryProps) {
 	};
 
 	return (
-		<div>
+		<>
 			<div className="mx-7">
 				<PlaceInput existingPlaces={places} onPlaceSelect={onPlaceSelect} />
 			</div>
-			<div className="flex flex-col gap-3 py-3">
-				{places.map((place, index) => (
-					<TripGalleryCard key={index} place={place} />
-				))}
-			</div>
-		</div>
+			<DndContext
+				sensors={sensors}
+				collisionDetection={closestCenter}
+				onDragEnd={handleDragEnd}
+			>
+				<div className="space-y-3 py-3">
+					<SortableContext
+						items={placeIds}
+						strategy={verticalListSortingStrategy}
+					>
+						{places.map((place) => (
+							<TripGalleryCard key={place.id} place={place} />
+						))}
+					</SortableContext>
+				</div>
+			</DndContext>
+		</>
 	);
+
+	function handleDragEnd(event: DragEndEvent) {
+		const { active, over } = event;
+
+		if (active.id !== over?.id) {
+			setPlaces((places) => {
+				const oldIndex = places.findIndex((p) => p.id === active.id);
+				const newIndex = places.findIndex((p) => p.id === over?.id);
+
+				const newPlaces = arrayMove(places, oldIndex, newIndex);
+
+				// To update the server with new sort order,
+				// there has to be a more efficient way to do this
+				newPlaces.forEach(async (np, index) => {
+					const newOrder = newPlaces.length - index;
+					await updatePlace(np.id, { sortOrder: newOrder });
+				});
+
+				return newPlaces;
+			});
+		}
+	}
 }

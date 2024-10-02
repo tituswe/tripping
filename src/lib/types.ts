@@ -2,7 +2,10 @@ import { Location, Place, PlaceReview, Prisma } from "@prisma/client";
 
 export type LocationRequest = Omit<Location, "id" | "createdAt" | "updatedAt">;
 
-export type PlaceRequest = Omit<Place, "id" | "createdAt" | "updatedAt"> & {
+export type PlaceRequest = Omit<
+	Place,
+	"id" | "createdAt" | "updatedAt" | "sortOrder"
+> & {
 	reviews: PlaceReview[];
 };
 

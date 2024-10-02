@@ -46,6 +46,34 @@ export async function createTrip(
 	return newTrip;
 }
 
+export async function getTrip(id: string) {
+	const trip = await prisma.trip.findFirstOrThrow({
+		where: { id },
+		include: {
+			location: true,
+			places: {
+				include: { reviews: true },
+				orderBy: { createdAt: "desc" }
+			}
+		}
+	});
+
+	return trip;
+}
+
+export async function getTrips() {
+	const trips = prisma.trip.findMany({
+		include: {
+			location: true,
+			places: {
+				include: { reviews: true }
+			}
+		}
+	});
+
+	return trips;
+}
+
 export async function updateTrip(id: string, updates: Partial<Trip>) {
 	const updatedTrip = await prisma.trip.update({
 		where: { id },
@@ -104,67 +132,4 @@ export async function deletePlace(id: string) {
 	revalidatePath(`/trips/${deletedPlace.tripId}`);
 
 	return deletedPlace;
-}
-
-export async function createTripItem(tripTitle: string, formData: any) {
-	// const trip = await prisma.trip.findUniqueOrThrow({
-	// 	where: { title: tripTitle }
-	// });
-	// await prisma.tripItem.create({
-	// 	data: {
-	// 		name: formData.name,
-	// 		address: formData.address,
-	// 		activity: formData.activity,
-	// 		description: formData.description,
-	// 		price: formData.price,
-	// 		tripId: trip.id,
-	// 		media: formData.media,
-	// 		from: formData.from,
-	// 		to: formData.to
-	// 	}
-	// });
-	// revalidatePath(`/trips/${tripTitle}`);
-}
-
-export async function updateTripItem(
-	tripTitle: string,
-	tripItemId: string | undefined,
-	formData: any
-) {
-	// if (!tripItemId) return;
-	// await prisma.tripItem.update({
-	// 	where: { id: tripItemId },
-	// 	data: {
-	// 		name: formData.name,
-	// 		address: formData.address,
-	// 		activity: formData.activity,
-	// 		description: formData.description,
-	// 		price: formData.price,
-	// 		media: formData.media,
-	// 		from: formData.from,
-	// 		to: formData.to
-	// 	}
-	// });
-	// revalidatePath(`/trips/${tripTitle}`);
-}
-
-export async function deleteTripItem(tripTitle: string, tripItemId: string) {
-	// await prisma.tripItem.delete({
-	// 	where: { id: tripItemId }
-	// });
-	// revalidatePath(`/trips/${tripTitle}`);
-}
-
-export async function deleteTripItems(
-	tripTitle: string,
-	tripItemIds: string[]
-) {
-	// await prisma.tripItem.deleteMany({
-	// 	where: {
-	// 		id: {
-	// 			in: tripItemIds
-	// 		}
-	// 	}
-	// });
-	// revalidatePath(`/trips/${tripTitle}`);
 }

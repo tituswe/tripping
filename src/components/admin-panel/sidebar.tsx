@@ -11,7 +11,11 @@ import { useStore } from "@/hooks/use-store";
 import { TripModel } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-export function Sidebar({ trips }: { trips: TripModel[] }) {
+interface SidebarProps {
+	trips: TripModel[];
+}
+
+export function Sidebar({ trips }: SidebarProps) {
 	const sidebar = useStore(useSidebarToggle, (state) => state);
 
 	if (!sidebar) return null;

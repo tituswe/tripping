@@ -4,11 +4,21 @@ import Image from "next/image";
 
 import { deletePlace } from "@/actions/actions";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger
+} from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { PlaceModel } from "@/lib/types";
 import { shortNumber, snakeToNormalCase } from "@/lib/utils";
+import { format } from "date-fns";
 import { Copy, Delete, GripVertical, Star } from "lucide-react";
-import { Button } from "../ui/button";
 
 interface TripGalleryCardProps {
 	place: PlaceModel;
@@ -76,19 +86,36 @@ export function TripGalleryCard({ place }: TripGalleryCardProps) {
 						</p>
 					</button>
 
-					<p className=" text-xs italic text-muted-foreground gap-2 rounded my-3 min-h-[60px]">
-						{recentReview?.text}
-					</p>
+					<Dialog>
+						<DialogTrigger>
+							<p className="text-start text-xs italic text-muted-foreground gap-2 rounded mt-3 mb-6 h-[45px] overflow-y-hidden line-clamp-3 transition hover:bg-muted cursor-pointer">
+								{recentReview?.text}
+							</p>
+						</DialogTrigger>
+						<DialogContent>
+							<DialogHeader>
+								<DialogTitle>Review by {recentReview.authorName}</DialogTitle>
+								<DialogDescription className="pt-3 pb-1 italic">
+									{recentReview?.text}
+								</DialogDescription>
+								{recentReview.postedAt && (
+									<DialogFooter className="text-sm text-secondary-foreground">
+										~ {format(recentReview.postedAt, "PPP")}
+									</DialogFooter>
+								)}
+							</DialogHeader>
+						</DialogContent>
+					</Dialog>
 
 					<div className="flex-grow" />
 
-					<div className="flex flex-row space-x-2 mt-3 overflow-x-hidden">
-						{place.tags.map((tag, index) => (
-							<Badge key={index} className="truncate max-h-6">
-								{snakeToNormalCase(tag)}
+					{place.tags.length > 0 && (
+						<div>
+							<Badge className="truncate max-h-6">
+								{snakeToNormalCase(place.tags[0])}
 							</Badge>
-						))}
-					</div>
+						</div>
+					)}
 				</div>
 				{place.photos[0] && (
 					<div className="hidden lg:block w-[320px]">

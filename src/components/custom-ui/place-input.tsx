@@ -144,7 +144,6 @@ export const PlaceInput = ({
 	};
 
 	const handleBlur = () => {
-		setIsFocused(false);
 		if (selectedPlace) {
 			setInputValue(selectedPlace);
 		}

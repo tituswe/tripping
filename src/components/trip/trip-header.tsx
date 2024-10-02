@@ -38,6 +38,7 @@ export function TripHeader({ trip }: TripHeaderProps) {
 				height={200}
 				width={1000}
 				alt={trip.location.name || "background-image"}
+				priority
 				className="w-full h-[200px] object-cover"
 			/>
 			<Alert className="rounded-t-none">

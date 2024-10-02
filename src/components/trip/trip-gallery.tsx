@@ -11,11 +11,7 @@ interface TripGalleryProps {
 }
 
 export function TripGallery({ trip }: TripGalleryProps) {
-	const places = trip.places.sort(
-		(a, b) =>
-			new Date(b.createdAt || "").getTime() -
-			new Date(a.createdAt || "").getTime()
-	);
+	const places = trip.places;
 
 	const onPlaceSelect = async (
 		place: google.maps.places.PlaceResult | null
@@ -75,7 +71,9 @@ export function TripGallery({ trip }: TripGalleryProps) {
 
 	return (
 		<div>
-			<PlaceInput existingPlaces={places} onPlaceSelect={onPlaceSelect} />
+			<div className="mx-7">
+				<PlaceInput existingPlaces={places} onPlaceSelect={onPlaceSelect} />
+			</div>
 			<div className="flex flex-col gap-3 py-3">
 				{places.map((place, index) => (
 					<TripGalleryCard key={index} place={place} />

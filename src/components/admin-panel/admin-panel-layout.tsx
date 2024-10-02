@@ -7,13 +7,15 @@ import { useStore } from "@/hooks/use-store";
 import { TripModel } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
+interface AdminPanelLayoutProps {
+	children: React.ReactNode;
+	trips: TripModel[];
+}
+
 export default function AdminPanelLayout({
 	children,
 	trips
-}: {
-	children: React.ReactNode;
-	trips: TripModel[];
-}) {
+}: AdminPanelLayoutProps) {
 	const sidebar = useStore(useSidebarToggle, (state) => state);
 
 	if (!sidebar) return null;

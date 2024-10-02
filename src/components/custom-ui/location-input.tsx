@@ -134,7 +134,6 @@ export const LocationInput = ({ selectedPlace, onPlaceSelect }: Props) => {
 	};
 
 	const handleBlur = () => {
-		setIsFocused(false);
 		if (selectedPlace) {
 			setInputValue(selectedPlace);
 		}

@@ -42,7 +42,7 @@ export function TripContent({ trip }: TripContentProps) {
 								<TripGallery trip={trip} />
 							</TabsContent>
 							<TabsContent value="map">
-								<TripItinerary />
+								<TripItinerary trip={trip} />
 							</TabsContent>
 						</Tabs>
 					</CardContent>

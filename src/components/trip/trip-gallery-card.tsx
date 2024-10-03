@@ -18,6 +18,7 @@ import {
 	DialogTitle,
 	DialogTrigger
 } from "@/components/ui/dialog";
+import { useHandleCopy } from "@/hooks/use-handle-copy";
 import { useToast } from "@/hooks/use-toast";
 import { PlaceModel } from "@/lib/types";
 import { shortNumber, snakeToNormalCase } from "@/lib/utils";
@@ -46,20 +47,10 @@ export function TripGalleryCard({ place }: TripGalleryCardProps) {
 		transition
 	};
 
-	const handleCopy = () => {
-		if (!place.formattedAddress) return;
-
-		navigator.clipboard
-			.writeText(place.formattedAddress)
-			.then(() => {
-				toast({
-					title: "Address copied!"
-				});
-			})
-			.catch((err) => {
-				console.error("Failed to copy address: ", err);
-			});
-	};
+	const { handleCopy } = useHandleCopy(
+		place.formattedAddress,
+		"Address copied!"
+	);
 
 	const handleDelete = async () => {
 		await deletePlace(place.id);

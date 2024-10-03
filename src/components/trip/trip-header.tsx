@@ -55,9 +55,19 @@ export function TripHeader({ trip }: TripHeaderProps) {
 							>
 								<CalendarDays className="mr-2 h-4 w-4" />
 								{trip.from && trip.to ? (
-									<span className="border-l pl-2">
-										Gone from <b>{format(trip.from, "PPP")}</b> to{" "}
-										<b>{format(trip.to, "PPP")}</b>
+									<span className="flex space-x-1 border-l pl-2">
+										<span className="hidden md:block">Gone from</span>
+										<b className="hidden md:block">
+											{format(trip.from, "PPP")}
+										</b>
+										<b className="md:hidden">
+											{format(trip.from, "MMM d, yyyy")}
+										</b>
+										<span>to</span>
+										<b className="hidden md:block">{format(trip.to, "PPP")}</b>
+										<b className="md:hidden">
+											{format(trip.to, "MMM d, yyyy")}
+										</b>
 									</span>
 								) : (
 									<span className="border-l pl-2 mr-[472px]">Add dates</span>

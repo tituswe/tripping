@@ -83,6 +83,8 @@ export function TripGallery({ trip }: TripGalleryProps) {
 			placeId: place.place_id,
 			tripId: trip.id,
 			name: place.name || null,
+			date: null,
+			dateSortOrder: null,
 			formattedAddress: place.formatted_address || null,
 			country,
 			city,

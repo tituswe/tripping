@@ -81,7 +81,7 @@ export function NewTrip() {
 	return (
 		<APIProvider apiKey={API_KEY}>
 			<div className="w-full h-screen flex justify-center items-center">
-				<div className="flex flex-col w-[600px] space-y-3 mb-24">
+				<div className="flex flex-col w-[600px] space-y-3 mb-24 mx-6">
 					<h2 className="font-semibold text-4xl">Plan a new trip</h2>
 					<LocationInput
 						selectedPlace={location?.formattedAddress}

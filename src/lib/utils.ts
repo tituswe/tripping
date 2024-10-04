@@ -45,3 +45,19 @@ export const snakeToNormalCase = (snakeCaseStr: string): string => {
 		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
 		.join(" ");
 };
+
+type Key = string | number | symbol;
+
+export function groupBy<T extends Record<Key, any>>(
+	array: T[],
+	key: Key
+): Record<Key, T[]> {
+	return array.reduce((acc, obj) => {
+		const groupKey = obj[key];
+		if (!acc[groupKey]) {
+			acc[groupKey] = [];
+		}
+		acc[groupKey].push(obj);
+		return acc;
+	}, {} as Record<Key, T[]>);
+}

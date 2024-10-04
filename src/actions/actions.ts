@@ -52,8 +52,7 @@ export async function getTrip(id: string) {
 		include: {
 			location: true,
 			places: {
-				include: { reviews: true },
-				orderBy: { sortOrder: "desc" }
+				include: { reviews: true }
 			}
 		}
 	});

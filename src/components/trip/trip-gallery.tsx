@@ -18,24 +18,30 @@ import {
 
 import { createPlace, updatePlace } from "@/actions/actions";
 import { PlaceInput } from "@/components/custom-ui/place-input";
-import { PlaceModel, TripModel } from "@/lib/types";
+import { TripModel } from "@/lib/types";
 import { PlaceReview } from "@prisma/client";
 import { useEffect, useMemo, useState } from "react";
 import { TripGalleryCard } from "./trip-gallery-card";
+import { DndCard } from "./types";
+import { getCards } from "./utils";
 
 interface TripGalleryProps {
 	trip: TripModel;
 }
 
 export function TripGallery({ trip }: TripGalleryProps) {
-	const [places, setPlaces] = useState<PlaceModel[]>([...trip.places]);
+	const initialCards = getCards(
+		trip.places.sort((a, b) => b.sortOrder - a.sortOrder)
+	);
+
+	const [cards, setCards] = useState<DndCard[]>(initialCards);
 
 	// Synchronize places state with trip.places prop
 	useEffect(() => {
-		setPlaces([...trip.places]);
+		setCards(getCards(trip.places, true));
 	}, [trip.places]);
 
-	const placeIds = useMemo(() => places.map((place) => place.id), [places]);
+	const placeIds = useMemo(() => cards.map((place) => place.id), [cards]);
 
 	const sensors = useSensors(
 		useSensor(PointerSensor),
@@ -105,7 +111,10 @@ export function TripGallery({ trip }: TripGalleryProps) {
 	return (
 		<>
 			<div className="mx-7">
-				<PlaceInput existingPlaces={places} onPlaceSelect={onPlaceSelect} />
+				<PlaceInput
+					existingPlaces={trip.places}
+					onPlaceSelect={onPlaceSelect}
+				/>
 			</div>
 			<DndContext
 				sensors={sensors}
@@ -117,8 +126,8 @@ export function TripGallery({ trip }: TripGalleryProps) {
 						items={placeIds}
 						strategy={verticalListSortingStrategy}
 					>
-						{places.map((place) => (
-							<TripGalleryCard key={place.id} place={place} />
+						{cards.map((place) => (
+							<TripGalleryCard key={place.id} card={place} />
 						))}
 					</SortableContext>
 				</div>
@@ -130,20 +139,20 @@ export function TripGallery({ trip }: TripGalleryProps) {
 		const { active, over } = event;
 
 		if (active.id !== over?.id) {
-			setPlaces((places) => {
-				const oldIndex = places.findIndex((p) => p.id === active.id);
-				const newIndex = places.findIndex((p) => p.id === over?.id);
+			setCards((cards) => {
+				const oldIndex = cards.findIndex((c) => c.id === active.id);
+				const newIndex = cards.findIndex((c) => c.id === over?.id);
 
-				const newPlaces = arrayMove(places, oldIndex, newIndex);
+				const newCards = arrayMove(cards, oldIndex, newIndex);
 
 				// To update the server with new sort order,
 				// there has to be a more efficient way to do this
-				newPlaces.forEach(async (np, index) => {
-					const newOrder = newPlaces.length - index;
-					await updatePlace(np.id, { sortOrder: newOrder });
+				newCards.forEach(async (nc, index) => {
+					const newOrder = newCards.length - index;
+					await updatePlace(nc.content.id, { sortOrder: newOrder });
 				});
 
-				return newPlaces;
+				return newCards;
 			});
 		}
 	}

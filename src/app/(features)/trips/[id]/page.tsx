@@ -11,7 +11,6 @@ export default async function TripPage({ params }: { params: { id: string } }) {
 		<ContentLayout title={`Trip to ${trip?.location.formattedAddress}`}>
 			<TripHeader trip={trip} />
 			<TripContent trip={trip} />
-			{/* <TripItems tripTitle={tripTitle} trip={trip} tripItems={tripItems} /> */}
 		</ContentLayout>
 	);
 }

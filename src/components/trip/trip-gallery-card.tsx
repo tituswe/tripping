@@ -19,16 +19,15 @@ import {
 	DialogTrigger
 } from "@/components/ui/dialog";
 import { useHandleCopy } from "@/hooks/use-handle-copy";
-import { useToast } from "@/hooks/use-toast";
-import { PlaceModel } from "@/lib/types";
 import { shortNumber, snakeToNormalCase } from "@/lib/utils";
+import { DndCard, DndCardDragData } from "./types";
 
 interface TripGalleryCardProps {
-	place: PlaceModel;
+	card: DndCard;
 }
 
-export function TripGalleryCard({ place }: TripGalleryCardProps) {
-	const { toast } = useToast();
+export function TripGalleryCard({ card }: TripGalleryCardProps) {
+	const place = card.content;
 	const recentReview = place.reviews[0];
 
 	const {
@@ -39,7 +38,14 @@ export function TripGalleryCard({ place }: TripGalleryCardProps) {
 		transition,
 		isDragging
 	} = useSortable({
-		id: place.id
+		id: card.id,
+		data: {
+			type: "Card",
+			task: card
+		} satisfies DndCardDragData,
+		attributes: {
+			roleDescription: "Card"
+		}
 	});
 
 	const style = {

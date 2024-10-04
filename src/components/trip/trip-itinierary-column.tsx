@@ -2,7 +2,6 @@
 
 import { useDndContext } from "@dnd-kit/core";
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import { cva } from "class-variance-authority";
 import { useMemo } from "react";
 
@@ -15,28 +14,25 @@ import { DndCard, DndColumn, DndColumnDragData } from "./types";
 interface TripItineraryColumnProps {
 	column: DndColumn;
 	cards: DndCard[];
-	isOverlay?: boolean;
+	activeCard: DndCard | null;
+	overCard: DndCard | null;
 	isSentinel?: boolean;
+	isOverColumn?: boolean;
 }
 
 export function TripItineraryColumn({
 	column,
 	cards,
-	isOverlay,
-	isSentinel
+	activeCard,
+	overCard,
+	isSentinel,
+	isOverColumn
 }: TripItineraryColumnProps) {
-	const tasksIds = useMemo(() => {
-		return cards.map((task) => task.id);
+	const cardIds = useMemo(() => {
+		return cards.map((card) => card.id);
 	}, [cards]);
 
-	const {
-		setNodeRef,
-		attributes,
-		listeners,
-		transform,
-		transition,
-		isDragging
-	} = useSortable({
+	const { setNodeRef } = useSortable({
 		id: column.id,
 		data: {
 			type: "Column",
@@ -47,38 +43,17 @@ export function TripItineraryColumn({
 		}
 	});
 
-	const style = {
-		transition,
-		transform: CSS.Translate.toString(transform)
-	};
-
-	const variants = cva(
-		`w-[240px] p-2 max-w-full shadow-none rounded-md flex flex-col flex-shrink-0 snap-center border-0 ${
-			isSentinel && "bg-muted"
-		}`,
-		{
-			variants: {
-				dragging: {
-					default: "border-2 border-transparent",
-					over: "ring-2 opacity-30",
-					overlay: "ring-2 ring-primary"
-				}
-			}
-		}
-	);
-
 	return (
 		<Card
 			ref={setNodeRef}
-			style={style}
-			className={variants({
-				dragging: isOverlay ? "overlay" : isDragging ? "over" : undefined
-			})}
+			className={`md:w-[240px] p-2 max-w-full shadow-none rounded-md flex flex-col flex-shrink-0 snap-center border-0 ${
+				isSentinel && "md:border-r-[1px]"
+			}`}
 		>
 			<CardHeader
-				className="px-0 py-1.5 font-semibold rounded-t border-b text-left flex flex-row space-between items-center cursor-grab transition hover:bg-muted"
-				{...attributes}
-				{...listeners}
+				className={`px-0 py-1.5 font-semibold rounded-t border-b text-left flex flex-row space-between items-center cursor-grab transition hover:bg-muted" ${
+					isOverColumn && "border-b-2 border-b-blue-500"
+				}`}
 			>
 				<Badge variant={isSentinel ? "default" : "secondary"}>
 					{column.title}
@@ -86,12 +61,16 @@ export function TripItineraryColumn({
 			</CardHeader>
 			<ScrollArea>
 				<CardContent className="flex flex-grow flex-col gap-2 pt-2 pb-0 px-0">
-					<SortableContext items={tasksIds}>
-						{cards.map((task) => (
+					<SortableContext items={cardIds}>
+						{cards.map((card) => (
 							<TripItineraryCard
-								key={task.id}
-								card={task}
+								key={card.id}
 								isSentinel={isSentinel}
+								isOverCard={
+									activeCard?.columnId !== overCard?.columnId &&
+									overCard?.id === card.id
+								}
+								card={card}
 							/>
 						))}
 					</SortableContext>
@@ -119,7 +98,7 @@ export function BoardContainer({ children }: { children: React.ReactNode }) {
 				dragging: dndContext.active ? "active" : "default"
 			})}
 		>
-			<div className="flex gap-1 flex-row">{children}</div>
+			<div className="flex gap-1 flex-col md:flex-row">{children}</div>
 			<ScrollBar orientation="horizontal" />
 		</ScrollArea>
 	);

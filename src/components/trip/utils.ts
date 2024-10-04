@@ -9,8 +9,9 @@ import {
 	Over
 } from "@dnd-kit/core";
 
+import { PlaceModel } from "@/lib/types";
 import { addDays, differenceInDays, format } from "date-fns";
-import { DndColumn, DndDraggableData } from "./types";
+import { DndCard, DndColumn, DndDraggableData } from "./types";
 
 const directions: string[] = [
 	KeyboardCode.Down,
@@ -150,4 +151,41 @@ export function getDefaultCols(
 	}
 
 	return cols;
+}
+
+export function getCards(places: PlaceModel[], isGallery?: boolean): DndCard[] {
+	const cards = places.map((place) => ({
+		id: place.id,
+		columnId: place.date ? format(place.date, "yyyy-MM-dd") : "",
+		content: place
+	}));
+
+	if (isGallery) {
+		return cards.sort((a, b) => b.content.sortOrder - a.content.sortOrder);
+	}
+
+	cards.sort((a, b) => {
+		const dateA = a.content.date ? new Date(a.content.date) : null;
+		const dateB = b.content.date ? new Date(b.content.date) : null;
+
+		if (dateA === null && dateB === null) {
+			// Both dates are null, sort by dateSortOrder in descending order
+			const dateSortOrderA = a.content.dateSortOrder ?? Number.MIN_SAFE_INTEGER;
+			const dateSortOrderB = b.content.dateSortOrder ?? Number.MIN_SAFE_INTEGER;
+			return dateSortOrderB - dateSortOrderA;
+		}
+
+		if (dateA === null) return 1; // Treat null dates as the latest
+		if (dateB === null) return -1; // Treat null dates as the latest
+
+		if (dateA < dateB) return -1;
+		if (dateA > dateB) return 1;
+
+		// If dates are equal, sort by dateSortOrder in descending order
+		const dateSortOrderA = a.content.dateSortOrder ?? Number.MIN_SAFE_INTEGER;
+		const dateSortOrderB = b.content.dateSortOrder ?? Number.MIN_SAFE_INTEGER;
+		return dateSortOrderB - dateSortOrderA;
+	});
+
+	return cards;
 }

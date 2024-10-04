@@ -9,12 +9,14 @@ import { DndCard, DndCardDragData } from "./types";
 
 interface TripItineraryCardProps {
 	card: DndCard;
+	isOverCard?: boolean;
 	isOverlay?: boolean;
 	isSentinel?: boolean;
 }
 
 export function TripItineraryCard({
 	card,
+	isOverCard,
 	isOverlay,
 	isSentinel
 }: TripItineraryCardProps) {
@@ -43,13 +45,16 @@ export function TripItineraryCard({
 
 	const variants = cva(
 		`w-full rounded-md cursor-grab shadow-none transition hover:bg-muted ${
-			isSentinel && "bg-muted"
-		}`,
+			isSentinel &&
+			isOverCard &&
+			"bg-muted border-t-none border-l-none border-r-none"
+		} ${isSentinel && !isOverCard && "bg-muted border-none"}`,
 		{
 			variants: {
 				dragging: {
-					over: "border opacity-30",
-					overlay: "ring-2 ring-primary"
+					drag: "border opacity-30",
+					over: "border-b-2 rounded-b-none border-b-blue-500",
+					overlay: "ring-2 ring-primary opacity-70"
 				}
 			}
 		}
@@ -60,7 +65,13 @@ export function TripItineraryCard({
 			ref={setNodeRef}
 			style={style}
 			className={variants({
-				dragging: isOverlay ? "overlay" : isDragging ? "over" : undefined
+				dragging: isOverlay
+					? "overlay"
+					: isDragging
+					? "drag"
+					: isOverCard
+					? "over"
+					: undefined
 			})}
 			{...attributes}
 			{...listeners}

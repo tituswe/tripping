@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useStore } from "@/hooks/use-store";
+import { useTabToggle } from "@/hooks/use-tab-toggle";
 import { TripModel } from "@/lib/types";
 import { TabsContent } from "@radix-ui/react-tabs";
 import { APIProvider } from "@vis.gl/react-google-maps";
@@ -20,14 +20,18 @@ interface TripContentProps {
 }
 
 export function TripContent({ trip }: TripContentProps) {
-	const [tab, setTab] = useState("gallery");
+	const tab = useStore(useTabToggle, (state) => state);
 
 	return (
 		<APIProvider apiKey={API_KEY}>
-			<div className="flex flex-col gap-3 m-3">
+			<div className="flex flex-col gap-3 md:m-3">
 				<Card className="rounded-lg border-none min-w-[320px]">
-					<CardContent className="pt-6">
-						<Tabs value={tab} onValueChange={setTab} className="space-y-6">
+					<CardContent className="p-3 pt-6 md:p-6">
+						<Tabs
+							value={tab?.tab}
+							onValueChange={tab?.setTab}
+							className="space-y-3 md:space-y-6"
+						>
 							<TabsList>
 								<TabsTrigger value="gallery">
 									<GalleryThumbnails className="h-4 w-4 mr-2" />

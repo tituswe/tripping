@@ -151,11 +151,11 @@ export const PlaceInput = ({
 
 	return (
 		<div className="autocomplete-container relative space-y-1">
-			<MapPin className="absolute top-3 left-3 w-5 h-5 text-muted-foreground" />
+			<MapPin className="absolute top-3 left-3 w-4 h-4 text-muted-foreground" />
 			<input
 				value={inputValue}
 				className={cn(
-					"flex h-12 w-full rounded-md border border-input bg-transparent pr-3 py-2 pl-9 text-md font-semibold shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+					"flex h-10 w-full rounded-md border border-input bg-transparent pr-3 py-2 pl-9 text-sm font-semibold shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
 				)}
 				onInput={(event: FormEvent<HTMLInputElement>) => onInputChange(event)}
 				onKeyDown={handleKeyDown}
@@ -166,7 +166,7 @@ export const PlaceInput = ({
 			/>
 
 			{isFocused && predictionResults.length > 0 && (
-				<ul className="absolute top-14 w-full z-10 border rounded bg-background">
+				<ul className="absolute top-10 w-full z-10 border rounded bg-background">
 					{predictionResults.map(
 						({ place_id, structured_formatting, types }, index) => {
 							const type = placeType(types);
@@ -182,10 +182,10 @@ export const PlaceInput = ({
 									onClick={() => handleSuggestionClick(place_id)}
 								>
 									<div className="flex flex-col">
-										<span className="font-semibold">
+										<span className="text-sm font-semibold">
 											{structured_formatting.main_text}
 										</span>
-										<span className="text-sm text-muted-foreground">
+										<span className="text-xs text-muted-foreground">
 											{structured_formatting.secondary_text}
 										</span>
 									</div>

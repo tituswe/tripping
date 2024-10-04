@@ -110,7 +110,7 @@ export function TripGallery({ trip }: TripGalleryProps) {
 
 	return (
 		<>
-			<div className="mx-7">
+			<div className="mx-2">
 				<PlaceInput
 					existingPlaces={trip.places}
 					onPlaceSelect={onPlaceSelect}
@@ -121,7 +121,7 @@ export function TripGallery({ trip }: TripGalleryProps) {
 				collisionDetection={closestCenter}
 				onDragEnd={handleDragEnd}
 			>
-				<div className="space-y-3 py-3">
+				<div className="h-[calc(100vh_-_240px)] space-y-3 mt-3 px-2 overflow-y-auto">
 					<SortableContext
 						items={placeIds}
 						strategy={verticalListSortingStrategy}

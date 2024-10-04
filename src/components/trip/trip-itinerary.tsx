@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
-import { updatePlace } from "@/actions/actions";
+import { createPlace, updatePlace } from "@/actions/actions";
+import { useScreenSize } from "@/hooks/use-screen-size";
 import { TripModel } from "@/lib/types";
 import {
 	DndContext,
@@ -19,9 +20,14 @@ import {
 	useSensors
 } from "@dnd-kit/core";
 import { arrayMove, SortableContext } from "@dnd-kit/sortable";
+import { PlaceReview } from "@prisma/client";
 import { CircleAlert } from "lucide-react";
+import { PlaceInput } from "../custom-ui/place-input";
 import { TripItineraryCard } from "./trip-itinerary-card";
-import { BoardContainer, TripItineraryColumn } from "./trip-itinierary-column";
+import {
+	TripItineraryColumn,
+	TripItineraryContainer
+} from "./trip-itinierary-column";
 import { DndCard, DndColumn } from "./types";
 import {
 	coordinateGetter,
@@ -77,48 +83,128 @@ export function TripItinerary({ trip }: TripItineraryProps) {
 		})
 	);
 
+	const screen = useScreenSize();
+
+	const onPlaceSelect = async (
+		place: google.maps.places.PlaceResult | null
+	) => {
+		if (!place) return;
+
+		if (!place.place_id) return;
+
+		const country =
+			place.address_components?.find((comp) => comp.types.includes("country"))
+				?.long_name || null;
+		const city =
+			place.address_components?.find((comp) =>
+				comp.types.includes("administrative_area_level_1")
+			)?.long_name || null;
+		const district =
+			place.address_components?.find((comp) => comp.types.includes("locality"))
+				?.long_name || null;
+
+		const photos = place.photos?.map((photo) => photo.getUrl()) || [];
+
+		const reviews =
+			place.reviews?.map(
+				(review) =>
+					({
+						authorName: review.author_name,
+						authorUrl: review.author_url,
+						language: review.language,
+						profilePhotoUrl: review.profile_photo_url,
+						rating: review.rating,
+						relativeTimeDescription: review.relative_time_description,
+						text: review.text,
+						postedAt: new Date(review.time)
+					} as PlaceReview)
+			) || [];
+
+		const newPlace = {
+			placeId: place.place_id,
+			tripId: trip.id,
+			name: place.name || null,
+			date: null,
+			dateSortOrder: null,
+			formattedAddress: place.formatted_address || null,
+			country,
+			city,
+			district,
+			lat: place.geometry?.location?.lat() || null,
+			lng: place.geometry?.location?.lng() || null,
+			tags: place.types || [],
+			photos,
+			openingHours: place.opening_hours?.weekday_text || [],
+			rating: place.rating || null,
+			userRatingsTotal: place.user_ratings_total || null,
+			reviews
+		};
+
+		await createPlace(trip.id, newPlace);
+	};
+
 	if (!trip.from || !trip.to) return <TripItineraryNull />;
 
 	return (
-		<DndContext
-			sensors={sensors}
-			onDragStart={onDragStart}
-			onDragEnd={onDragEnd}
-			onDragOver={onDragOver}
-		>
-			<SortableContext items={columnsId}>
-				<div className="flex flex-col md:flex-row">
-					<TripItineraryColumn
-						isSentinel
-						column={{ id: "", title: "Gallery" }}
-						cards={cards.filter((card) => card.columnId === "")}
-						activeCard={activeCard}
-						overCard={overCard}
-						isOverColumn={overColumn?.id === ""}
-					/>
-					<BoardContainer>
-						{columns.map((col) => (
+		<>
+			<div className="mx-2">
+				<PlaceInput
+					existingPlaces={trip.places}
+					onPlaceSelect={onPlaceSelect}
+				/>
+			</div>
+			<DndContext
+				sensors={sensors}
+				onDragStart={onDragStart}
+				onDragEnd={onDragEnd}
+				onDragOver={onDragOver}
+			>
+				<SortableContext items={columnsId}>
+					<div className="flex flex-col md:flex-row mt-3 h-[calc(100vh_-_240px)]">
+						{screen.screenSize !== "sm" && (
 							<TripItineraryColumn
-								key={col.id}
-								column={col}
-								cards={cards.filter((card) => card.columnId === col.id)}
+								isSentinel
+								column={{ id: "", title: "Gallery" }}
+								cards={cards.filter((card) => card.columnId === "")}
 								activeCard={activeCard}
 								overCard={overCard}
-								isOverColumn={overColumn?.id === col.id}
+								isOverColumn={overColumn?.id === ""}
 							/>
-						))}
-					</BoardContainer>
-				</div>
-			</SortableContext>
+						)}
+						<TripItineraryContainer>
+							{screen.screenSize === "sm" && (
+								<TripItineraryColumn
+									isSentinel
+									column={{ id: "", title: "Gallery" }}
+									cards={cards.filter((card) => card.columnId === "")}
+									activeCard={activeCard}
+									overCard={overCard}
+									isOverColumn={overColumn?.id === ""}
+								/>
+							)}
+							{columns.map((col) => (
+								<TripItineraryColumn
+									key={col.id}
+									column={col}
+									cards={cards.filter((card) => card.columnId === col.id)}
+									activeCard={activeCard}
+									overCard={overCard}
+									isOverColumn={overColumn?.id === col.id}
+								/>
+							))}
+						</TripItineraryContainer>
+					</div>
+				</SortableContext>
 
-			{"document" in window &&
-				createPortal(
-					<DragOverlay>
-						{activeCard && <TripItineraryCard card={activeCard} isOverlay />}
-					</DragOverlay>,
-					document.body
-				)}
-		</DndContext>
+				{"document" in window &&
+					createPortal(
+						<DragOverlay>
+							{activeCard && <TripItineraryCard card={activeCard} isOverlay />}
+						</DragOverlay>,
+						document.body
+					)}
+			</DndContext>
+		</>
 	);
 
 	function onDragStart(event: DragStartEvent) {
@@ -216,9 +302,11 @@ export function TripItinerary({ trip }: TripItineraryProps) {
 
 function TripItineraryNull() {
 	return (
-		<div className="p-3 rounded border text-sm text-muted-foreground flex items-center">
-			<CircleAlert className="w-4 h-4 mr-2 text-destructive" />
-			Add dates to your trip to use the Kanban Board
+		<div className="h-[calc(100vh_-_188px)]">
+			<div className="p-3 rounded border text-sm text-muted-foreground flex items-center">
+				<CircleAlert className="w-4 h-4 mr-2 text-destructive" />
+				Add dates to your trip to use the Kanban Board
+			</div>
 		</div>
 	);
 }

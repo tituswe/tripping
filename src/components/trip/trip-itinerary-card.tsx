@@ -76,11 +76,11 @@ export function TripItineraryCard({
 			{...attributes}
 			{...listeners}
 		>
-			<CardHeader className="px-3 pt-2 pb-1 text-sm font-semibold">
+			<CardHeader className="px-3 pt-2 pb-1 text-xs font-semibold">
 				{card.content.name}
 			</CardHeader>
-			<CardContent className="px-3 pt-0 pb-2 text-left whitespace-pre-wrap text-xs text-muted-foreground">
-				<p className="text-xs text-muted-foreground text-ellipsis overflow-hidden line-clamp-1">
+			<CardContent className="px-3 pt-0 pb-2 text-left whitespace-pre-wrap">
+				<p className="text-xs text-muted-foreground text-ellipsis overflow-hidden line-clamp-1 font-light">
 					{card.content.formattedAddress}
 				</p>
 			</CardContent>

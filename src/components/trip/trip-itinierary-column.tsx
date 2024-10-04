@@ -46,7 +46,7 @@ export function TripItineraryColumn({
 	return (
 		<Card
 			ref={setNodeRef}
-			className={`md:w-[240px] p-2 max-w-full shadow-none rounded-md flex flex-col flex-shrink-0 snap-center border-0 ${
+			className={`md:w-[188px] 2xl:w-[240px] p-2 max-w-full shadow-none rounded-md flex flex-col flex-shrink-0 snap-center border-0 ${
 				isSentinel && "md:border-r-[1px]"
 			}`}
 		>
@@ -80,7 +80,11 @@ export function TripItineraryColumn({
 	);
 }
 
-export function BoardContainer({ children }: { children: React.ReactNode }) {
+export function TripItineraryContainer({
+	children
+}: {
+	children: React.ReactNode;
+}) {
 	const dndContext = useDndContext();
 
 	const variations = cva("px-2 md:px-0 flex lg:justify-center pb-4", {

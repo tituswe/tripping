@@ -41,7 +41,7 @@ export function TripHeader({ trip }: TripHeaderProps) {
 				priority
 				className="w-full h-[200px] object-cover"
 			/>
-			<Alert className="rounded-t-none">
+			<Alert className="rounded-none border-t-0 border-l-0 border-r-0">
 				<Plane className="h-6 w-6 mt-1" />
 				<AlertTitle className="ml-2 font-semibold text-2xl mt-1">
 					Your trip to {trip.location.name}

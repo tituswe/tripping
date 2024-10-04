@@ -1,14 +1,18 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useScreenResize, useScreenSize } from "@/hooks/use-screen-size";
 import { useStore } from "@/hooks/use-store";
 import { useTabToggle } from "@/hooks/use-tab-toggle";
 import { TripModel } from "@/lib/types";
 import { TabsContent } from "@radix-ui/react-tabs";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { GalleryThumbnails, Kanban } from "lucide-react";
-import { Playground } from "../playground";
+import {
+	ResizableHandle,
+	ResizablePanel,
+	ResizablePanelGroup
+} from "../ui/resizable";
 import { TripGallery } from "./trip-gallery";
 import { TripItinerary } from "./trip-itinerary";
 import { TripMap } from "./trip-map";
@@ -22,22 +26,54 @@ interface TripContentProps {
 export function TripContent({ trip }: TripContentProps) {
 	const tab = useStore(useTabToggle, (state) => state);
 
+	const screen = useScreenSize();
+	console.log(screen.screenSize);
+
+	useScreenResize();
+
 	return (
 		<APIProvider apiKey={API_KEY}>
-			<div className="flex flex-col gap-3 md:m-3">
-				<Card className="rounded-lg border-none min-w-[320px]">
-					<CardContent className="p-3 pt-6 md:p-6">
+			{screen.screenSize === "sm" && (
+				<div className="space-y-3">
+					<Tabs
+						value={tab?.tab}
+						onValueChange={tab?.setTab}
+						className="space-y-3 bg-background p-0"
+					>
+						<TabsList className="m-2 mb-0">
+							<TabsTrigger value="gallery">
+								<GalleryThumbnails className="h-4 w-4 mr-2" />
+								<span className="mr-2">Gallery Grid</span>
+							</TabsTrigger>
+							<TabsTrigger value="kanban">
+								<Kanban className="h-4 w-4 mr-2" />
+								<span className="mr-2">Kanban Board</span>
+							</TabsTrigger>
+						</TabsList>
+						<TabsContent value="gallery">
+							<TripGallery trip={trip} />
+						</TabsContent>
+						<TabsContent value="kanban">
+							<TripItinerary trip={trip} />
+						</TabsContent>
+						<TripMap />
+					</Tabs>
+				</div>
+			)}
+			{screen.screenSize !== "sm" && (
+				<ResizablePanelGroup direction="horizontal">
+					<ResizablePanel defaultSize={59} minSize={50}>
 						<Tabs
 							value={tab?.tab}
 							onValueChange={tab?.setTab}
-							className="space-y-3 md:space-y-6"
+							className="space-y-3 bg-background p-3"
 						>
-							<TabsList>
+							<TabsList className="m-2 mb-0">
 								<TabsTrigger value="gallery">
 									<GalleryThumbnails className="h-4 w-4 mr-2" />
-									<span className="mr-2">Gallery View</span>
+									<span className="mr-2">Gallery Grid</span>
 								</TabsTrigger>
-								<TabsTrigger value="map">
+								<TabsTrigger value="kanban">
 									<Kanban className="h-4 w-4 mr-2" />
 									<span className="mr-2">Kanban Board</span>
 								</TabsTrigger>
@@ -45,23 +81,17 @@ export function TripContent({ trip }: TripContentProps) {
 							<TabsContent value="gallery">
 								<TripGallery trip={trip} />
 							</TabsContent>
-							<TabsContent value="map">
+							<TabsContent value="kanban">
 								<TripItinerary trip={trip} />
 							</TabsContent>
 						</Tabs>
-					</CardContent>
-				</Card>
-				<Card className="rounded-lg border-none min-w-[320px]">
-					<CardContent className="p-6 space-y-6">
+					</ResizablePanel>
+					<ResizableHandle withHandle />
+					<ResizablePanel>
 						<TripMap />
-					</CardContent>
-				</Card>
-				<Card className="rounded-lg border-none min-w-[320px]">
-					<CardContent className="p-6 space-y-6">
-						<Playground />
-					</CardContent>
-				</Card>
-			</div>
+					</ResizablePanel>
+				</ResizablePanelGroup>
+			)}
 		</APIProvider>
 	);
 }

@@ -38,9 +38,15 @@ import {
 
 interface TripItineraryProps {
 	trip: TripModel;
+	hoverId: string | null;
+	setHoverId: (id: string | null) => void;
 }
 
-export function TripItinerary({ trip }: TripItineraryProps) {
+export function TripItinerary({
+	trip,
+	hoverId,
+	setHoverId
+}: TripItineraryProps) {
 	const initialCards = getCards(trip.places);
 
 	const columns = getDefaultCols(trip.from, trip.to);
@@ -74,6 +80,7 @@ export function TripItinerary({ trip }: TripItineraryProps) {
 	const [activeCard, setActiveCard] = useState<DndCard | null>(null);
 	const [overCard, setOverCard] = useState<DndCard | null>(null);
 	const [overColumn, setOverColumn] = useState<DndColumn | null>(null);
+	const hoverCard = cards.find((c) => c.id === hoverId) || null;
 
 	const sensors = useSensors(
 		useSensor(MouseSensor),
@@ -168,7 +175,9 @@ export function TripItinerary({ trip }: TripItineraryProps) {
 								cards={cards.filter((card) => card.columnId === "")}
 								activeCard={activeCard}
 								overCard={overCard}
+								hoverCard={hoverCard}
 								isOverColumn={overColumn?.id === ""}
+								setHoverId={setHoverId}
 							/>
 						)}
 						<TripItineraryContainer>
@@ -179,7 +188,9 @@ export function TripItinerary({ trip }: TripItineraryProps) {
 									cards={cards.filter((card) => card.columnId === "")}
 									activeCard={activeCard}
 									overCard={overCard}
+									hoverCard={hoverCard}
 									isOverColumn={overColumn?.id === ""}
+									setHoverId={setHoverId}
 								/>
 							)}
 							{columns.map((col) => (
@@ -189,7 +200,9 @@ export function TripItinerary({ trip }: TripItineraryProps) {
 									cards={cards.filter((card) => card.columnId === col.id)}
 									activeCard={activeCard}
 									overCard={overCard}
+									hoverCard={hoverCard}
 									isOverColumn={overColumn?.id === col.id}
+									setHoverId={setHoverId}
 								/>
 							))}
 						</TripItineraryContainer>
@@ -199,7 +212,13 @@ export function TripItinerary({ trip }: TripItineraryProps) {
 				{"document" in window &&
 					createPortal(
 						<DragOverlay>
-							{activeCard && <TripItineraryCard card={activeCard} isOverlay />}
+							{activeCard && (
+								<TripItineraryCard
+									card={activeCard}
+									isOverlay
+									setHoverId={setHoverId}
+								/>
+							)}
 						</DragOverlay>,
 						document.body
 					)}

@@ -8,6 +8,7 @@ import { TripModel } from "@/lib/types";
 import { TabsContent } from "@radix-ui/react-tabs";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { GalleryThumbnails, Kanban } from "lucide-react";
+import { useState } from "react";
 import {
 	ResizableHandle,
 	ResizablePanel,
@@ -19,20 +20,22 @@ import { TripMap } from "./trip-map";
 
 const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
 
+const libraries = ["marker"];
+
 interface TripContentProps {
 	trip: TripModel;
 }
 
 export function TripContent({ trip }: TripContentProps) {
 	const tab = useStore(useTabToggle, (state) => state);
+	const [hoverId, setHoverId] = useState<string | null>(null);
 
 	const screen = useScreenSize();
-	console.log(screen.screenSize);
 
 	useScreenResize();
 
 	return (
-		<APIProvider apiKey={API_KEY}>
+		<APIProvider apiKey={API_KEY} libraries={libraries}>
 			{screen.screenSize === "sm" && (
 				<div className="space-y-3">
 					<Tabs
@@ -51,12 +54,20 @@ export function TripContent({ trip }: TripContentProps) {
 							</TabsTrigger>
 						</TabsList>
 						<TabsContent value="gallery">
-							<TripGallery trip={trip} />
+							<TripGallery
+								trip={trip}
+								hoverId={hoverId}
+								setHoverId={setHoverId}
+							/>
 						</TabsContent>
 						<TabsContent value="kanban">
-							<TripItinerary trip={trip} />
+							<TripItinerary
+								trip={trip}
+								hoverId={hoverId}
+								setHoverId={setHoverId}
+							/>
 						</TabsContent>
-						<TripMap />
+						<TripMap trip={trip} hoverId={hoverId} setHoverId={setHoverId} />
 					</Tabs>
 				</div>
 			)}
@@ -79,16 +90,24 @@ export function TripContent({ trip }: TripContentProps) {
 								</TabsTrigger>
 							</TabsList>
 							<TabsContent value="gallery">
-								<TripGallery trip={trip} />
+								<TripGallery
+									trip={trip}
+									hoverId={hoverId}
+									setHoverId={setHoverId}
+								/>
 							</TabsContent>
 							<TabsContent value="kanban">
-								<TripItinerary trip={trip} />
+								<TripItinerary
+									trip={trip}
+									hoverId={hoverId}
+									setHoverId={setHoverId}
+								/>
 							</TabsContent>
 						</Tabs>
 					</ResizablePanel>
 					<ResizableHandle withHandle />
 					<ResizablePanel>
-						<TripMap />
+						<TripMap trip={trip} hoverId={hoverId} setHoverId={setHoverId} />
 					</ResizablePanel>
 				</ResizablePanelGroup>
 			)}

@@ -27,9 +27,11 @@ import { getCards } from "./utils";
 
 interface TripGalleryProps {
 	trip: TripModel;
+	hoverId: string | null;
+	setHoverId: (id: string | null) => void;
 }
 
-export function TripGallery({ trip }: TripGalleryProps) {
+export function TripGallery({ trip, hoverId, setHoverId }: TripGalleryProps) {
 	const initialCards = getCards(
 		trip.places.sort((a, b) => b.sortOrder - a.sortOrder)
 	);
@@ -127,7 +129,12 @@ export function TripGallery({ trip }: TripGalleryProps) {
 						strategy={verticalListSortingStrategy}
 					>
 						{cards.map((place) => (
-							<TripGalleryCard key={place.id} card={place} />
+							<TripGalleryCard
+								key={place.id}
+								card={place}
+								isHoverCard={hoverId === place.id}
+								setHoverId={setHoverId}
+							/>
 						))}
 					</SortableContext>
 				</div>

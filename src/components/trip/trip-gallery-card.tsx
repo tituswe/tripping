@@ -24,9 +24,15 @@ import { DndCard, DndCardDragData } from "./types";
 
 interface TripGalleryCardProps {
 	card: DndCard;
+	setHoverId: (id: string | null) => void;
+	isHoverCard?: boolean;
 }
 
-export function TripGalleryCard({ card }: TripGalleryCardProps) {
+export function TripGalleryCard({
+	card,
+	isHoverCard,
+	setHoverId
+}: TripGalleryCardProps) {
 	const place = card.content;
 	const recentReview = place.reviews[0];
 
@@ -84,9 +90,11 @@ export function TripGalleryCard({ card }: TripGalleryCardProps) {
 				</Button>
 			</div>
 			<div
-				className={`flex flex-row w-full justify-between items-center p-3 rounded-md bg-muted border-0 ${
-					isDragging && "z-50 bg-primary-foreground ring-2 ring-primary"
-				}`}
+				className={`flex flex-row w-full justify-between items-center p-2 rounded-md bg-muted border-[3px] border-muted transition hover:border-muted-foreground 
+					${isHoverCard && "border-muted-foreground"} 
+					${isDragging && "z-50 bg-primary-foreground ring-2 ring-primary"}`}
+				onMouseEnter={() => setHoverId(card.id as string)}
+				onMouseLeave={() => setHoverId(null)}
 			>
 				<div className="flex flex-col w-full mr-2">
 					<div className="flex flex-row justify-between">
@@ -115,7 +123,7 @@ export function TripGalleryCard({ card }: TripGalleryCardProps) {
 					</div>
 
 					<button
-						className="text-start flex items-center transition hover:bg-muted"
+						className="text-start flex items-center transition hover:bg-secondary-foreground rounded px-1"
 						onClick={handleCopy}
 					>
 						<div className="w-3 h-3 mr-2">
@@ -129,7 +137,7 @@ export function TripGalleryCard({ card }: TripGalleryCardProps) {
 					{recentReview ? (
 						<Dialog>
 							<DialogTrigger>
-								<p className="text-start text-xs italic text-muted-foreground gap-2 rounded mt-3 mb-6 h-[45px] overflow-y-hidden line-clamp-3 transition hover:bg-muted cursor-pointer">
+								<p className="text-start text-xs italic text-muted-foreground gap-2 rounded mt-3 mb-6 h-[48px] px-1 overflow-y-hidden line-clamp-3 transition hover:bg-secondary-foreground cursor-pointer">
 									{recentReview.text}
 								</p>
 							</DialogTrigger>

@@ -16,6 +16,8 @@ interface TripItineraryColumnProps {
 	cards: DndCard[];
 	activeCard: DndCard | null;
 	overCard: DndCard | null;
+	hoverCard: DndCard | null;
+	setHoverId: (id: string | null) => void;
 	isSentinel?: boolean;
 	isOverColumn?: boolean;
 }
@@ -25,6 +27,8 @@ export function TripItineraryColumn({
 	cards,
 	activeCard,
 	overCard,
+	hoverCard,
+	setHoverId,
 	isSentinel,
 	isOverColumn
 }: TripItineraryColumnProps) {
@@ -70,7 +74,9 @@ export function TripItineraryColumn({
 									activeCard?.columnId !== overCard?.columnId &&
 									overCard?.id === card.id
 								}
+								isHoverCard={hoverCard?.id === card.id}
 								card={card}
+								setHoverId={setHoverId}
 							/>
 						))}
 					</SortableContext>

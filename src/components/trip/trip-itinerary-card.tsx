@@ -9,14 +9,18 @@ import { DndCard, DndCardDragData } from "./types";
 
 interface TripItineraryCardProps {
 	card: DndCard;
+	setHoverId: (id: string | null) => void;
 	isOverCard?: boolean;
+	isHoverCard?: boolean;
 	isOverlay?: boolean;
 	isSentinel?: boolean;
 }
 
 export function TripItineraryCard({
 	card,
+	setHoverId,
 	isOverCard,
+	isHoverCard,
 	isOverlay,
 	isSentinel
 }: TripItineraryCardProps) {
@@ -48,7 +52,9 @@ export function TripItineraryCard({
 			isSentinel &&
 			isOverCard &&
 			"bg-muted border-t-none border-l-none border-r-none"
-		} ${isSentinel && !isOverCard && "bg-muted border-none"}`,
+		} ${isSentinel && !isOverCard && "bg-muted border-none"} ${
+			isHoverCard && "bg-muted"
+		}`,
 		{
 			variants: {
 				dragging: {
@@ -75,6 +81,8 @@ export function TripItineraryCard({
 			})}
 			{...attributes}
 			{...listeners}
+			onMouseEnter={() => setHoverId(card.id as string)}
+			onMouseLeave={() => setHoverId(null)}
 		>
 			<CardHeader className="px-3 pt-2 pb-1 text-xs font-semibold">
 				{card.content.name}

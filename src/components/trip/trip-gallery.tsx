@@ -124,19 +124,26 @@ export function TripGallery({ trip, hoverId, setHoverId }: TripGalleryProps) {
 				onDragEnd={handleDragEnd}
 			>
 				<div className="h-[calc(100vh_-_240px)] space-y-3 mt-3 px-2 overflow-y-auto">
-					<SortableContext
-						items={placeIds}
-						strategy={verticalListSortingStrategy}
-					>
-						{cards.map((place) => (
-							<TripGalleryCard
-								key={place.id}
-								card={place}
-								isHoverCard={hoverId === place.id}
-								setHoverId={setHoverId}
-							/>
-						))}
-					</SortableContext>
+					{cards.length === 0 && (
+						<p className="m-6 text-sm text-muted-foreground text-center">
+							No places added yet.
+						</p>
+					)}
+					{cards.length > 0 && (
+						<SortableContext
+							items={placeIds}
+							strategy={verticalListSortingStrategy}
+						>
+							{cards.map((place) => (
+								<TripGalleryCard
+									key={place.id}
+									card={place}
+									isHoverCard={hoverId === place.id}
+									setHoverId={setHoverId}
+								/>
+							))}
+						</SortableContext>
+					)}
 				</div>
 			</DndContext>
 		</>

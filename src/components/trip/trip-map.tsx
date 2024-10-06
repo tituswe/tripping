@@ -11,15 +11,9 @@ import {
 	useAdvancedMarkerRef
 } from "@vis.gl/react-google-maps";
 
-import { PlaceModel, TripModel } from "@/lib/types";
+import { useMapMarkers } from "@/hooks/use-map-markers";
+import { TripModel } from "@/lib/types";
 import "./trip-map.css";
-
-type MarkerData = Array<{
-	id: string;
-	position: google.maps.LatLngLiteral;
-	zIndex: number;
-	content: PlaceModel;
-}>;
 
 interface TripMapProps {
 	trip: TripModel;
@@ -28,9 +22,9 @@ interface TripMapProps {
 }
 
 export function TripMap({ trip, hoverId, setHoverId }: TripMapProps) {
-	const { data, hoverZIdx, selectedZIdx, center } = getMarkers(trip);
+	const getMapMarkers = useMapMarkers(trip);
 
-	const [markers] = useState(data);
+	const { markers, hoverZIdx, selectedZIdx, center } = getMapMarkers();
 
 	const [selectedId, setSelectedId] = useState<string | null>(null);
 
@@ -142,43 +136,6 @@ export function TripMap({ trip, hoverId, setHoverId }: TripMapProps) {
 			)}
 		</Map>
 	);
-
-	function getMarkers(trip: TripModel) {
-		const data: MarkerData = [];
-
-		trip.places
-			.sort((a, b) => (b.lat ?? 0) - (a.lat ?? 0))
-			.forEach((place, index) => {
-				if (!place.lat || !place.lng) return;
-
-				data.push({
-					id: place.id,
-					position: { lat: place.lat, lng: place.lng },
-					zIndex: index,
-					content: place
-				});
-			});
-
-		const selectedZIdx = data.length;
-		const hoverZIdx = data.length + 1;
-
-		const totalPoints = data.length;
-		const center = totalPoints
-			? {
-					lat:
-						data.reduce((sum, marker) => sum + marker.position.lat, 0) /
-						totalPoints,
-					lng:
-						data.reduce((sum, marker) => sum + marker.position.lng, 0) /
-						totalPoints
-			  }
-			: ({
-					lat: trip.location.lat,
-					lng: trip.location.lng
-			  } as google.maps.LatLngLiteral);
-
-		return { data, selectedZIdx, hoverZIdx, center };
-	}
 }
 
 export const AdvancedMarkerWithRef = (

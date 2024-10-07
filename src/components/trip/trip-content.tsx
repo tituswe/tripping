@@ -4,11 +4,11 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useScreenResize, useScreenSize } from "@/hooks/use-screen-size";
 import { useStore } from "@/hooks/use-store";
 import { useTabToggle } from "@/hooks/use-tab-toggle";
-import { TripModel } from "@/lib/types";
+import { PlaceModel, TripModel } from "@/lib/types";
 import { TabsContent } from "@radix-ui/react-tabs";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { GalleryThumbnails, Kanban } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
 	ResizableHandle,
 	ResizablePanel,
@@ -28,7 +28,16 @@ interface TripContentProps {
 
 export function TripContent({ trip }: TripContentProps) {
 	const tab = useStore(useTabToggle, (state) => state);
+
 	const [hoverId, setHoverId] = useState<string | null>(null);
+
+	const [selectedPlace, setSelectedPlace] = useState<PlaceModel | null>(null);
+
+	useEffect(() => {
+		setSelectedPlace(
+			trip.places.find((place) => place.id === selectedPlace?.id) || null
+		);
+	}, [trip.places]);
 
 	const screen = useScreenSize();
 
@@ -58,6 +67,8 @@ export function TripContent({ trip }: TripContentProps) {
 								trip={trip}
 								hoverId={hoverId}
 								setHoverId={setHoverId}
+								selectedPlace={selectedPlace}
+								setSelectedPlace={setSelectedPlace}
 							/>
 						</TabsContent>
 						<TabsContent value="kanban">
@@ -65,9 +76,17 @@ export function TripContent({ trip }: TripContentProps) {
 								trip={trip}
 								hoverId={hoverId}
 								setHoverId={setHoverId}
+								selectedPlace={selectedPlace}
+								setSelectedPlace={setSelectedPlace}
 							/>
 						</TabsContent>
-						<TripMap trip={trip} hoverId={hoverId} setHoverId={setHoverId} />
+						<TripMap
+							trip={trip}
+							hoverId={hoverId}
+							setHoverId={setHoverId}
+							selectedPlace={selectedPlace}
+							setSelectedPlace={setSelectedPlace}
+						/>
 					</Tabs>
 				</div>
 			)}
@@ -94,6 +113,8 @@ export function TripContent({ trip }: TripContentProps) {
 									trip={trip}
 									hoverId={hoverId}
 									setHoverId={setHoverId}
+									selectedPlace={selectedPlace}
+									setSelectedPlace={setSelectedPlace}
 								/>
 							</TabsContent>
 							<TabsContent value="kanban">
@@ -101,13 +122,21 @@ export function TripContent({ trip }: TripContentProps) {
 									trip={trip}
 									hoverId={hoverId}
 									setHoverId={setHoverId}
+									selectedPlace={selectedPlace}
+									setSelectedPlace={setSelectedPlace}
 								/>
 							</TabsContent>
 						</Tabs>
 					</ResizablePanel>
 					<ResizableHandle withHandle />
-					<ResizablePanel>
-						<TripMap trip={trip} hoverId={hoverId} setHoverId={setHoverId} />
+					<ResizablePanel className="relative">
+						<TripMap
+							trip={trip}
+							hoverId={hoverId}
+							setHoverId={setHoverId}
+							selectedPlace={selectedPlace}
+							setSelectedPlace={setSelectedPlace}
+						/>
 					</ResizablePanel>
 				</ResizablePanelGroup>
 			)}

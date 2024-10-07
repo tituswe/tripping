@@ -153,6 +153,16 @@ export function getDefaultCols(
 	return cols;
 }
 
+export function getDateString(from: Date | null, date: Date | null): string {
+	if (!from || !date) {
+		return "";
+	}
+
+	const daysCount = Math.abs(differenceInDays(date, from));
+
+	return `Day ${daysCount + 1}`;
+}
+
 export function getCards(places: PlaceModel[], isGallery?: boolean): DndCard[] {
 	const cards = places.map((place) => ({
 		id: place.id,

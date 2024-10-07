@@ -18,7 +18,7 @@ import {
 
 import { createPlace, updatePlace } from "@/actions/actions";
 import { PlaceInput } from "@/components/custom-ui/place-input";
-import { TripModel } from "@/lib/types";
+import { PlaceModel, TripModel } from "@/lib/types";
 import { PlaceReview } from "@prisma/client";
 import { useEffect, useMemo, useState } from "react";
 import { TripGalleryCard } from "./trip-gallery-card";
@@ -29,9 +29,17 @@ interface TripGalleryProps {
 	trip: TripModel;
 	hoverId: string | null;
 	setHoverId: (id: string | null) => void;
+	selectedPlace: PlaceModel | null;
+	setSelectedPlace: (place: PlaceModel | null) => void;
 }
 
-export function TripGallery({ trip, hoverId, setHoverId }: TripGalleryProps) {
+export function TripGallery({
+	trip,
+	hoverId,
+	setHoverId,
+	selectedPlace,
+	setSelectedPlace
+}: TripGalleryProps) {
 	const initialCards = getCards(
 		trip.places.sort((a, b) => b.sortOrder - a.sortOrder)
 	);
@@ -137,9 +145,12 @@ export function TripGallery({ trip, hoverId, setHoverId }: TripGalleryProps) {
 							{cards.map((place) => (
 								<TripGalleryCard
 									key={place.id}
+									trip={trip}
 									card={place}
 									isHoverCard={hoverId === place.id}
 									setHoverId={setHoverId}
+									isSelectedCard={selectedPlace?.id === place.id}
+									setSelectedPlace={setSelectedPlace}
 								/>
 							))}
 						</SortableContext>

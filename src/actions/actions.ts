@@ -146,6 +146,33 @@ export async function updatePlace(id: string, updates: Partial<Place>) {
 	return updatedPlace;
 }
 
+export async function updatePlaceDate(id: string, date: Date) {
+	const maxDateSortOrderPlace = await prisma.place.aggregate({
+		_max: {
+			dateSortOrder: true
+		},
+		where: {
+			placeId: id,
+			date
+		}
+	});
+
+	const maxDateSortOrder = maxDateSortOrderPlace._max?.dateSortOrder || 0;
+
+	const updatedPlace = await prisma.place.update({
+		where: { id },
+		data: {
+			date,
+			dateSortOrder: maxDateSortOrder + 1
+		},
+		include: { reviews: true }
+	});
+
+	revalidatePath(`/trips/${updatedPlace.tripId}`);
+
+	return updatedPlace;
+}
+
 export async function deletePlace(id: string) {
 	const deletedPlace = await prisma.place.delete({
 		where: { id }

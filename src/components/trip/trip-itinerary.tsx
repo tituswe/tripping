@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 
 import { createPlace, updatePlace } from "@/actions/actions";
 import { useScreenSize } from "@/hooks/use-screen-size";
-import { TripModel } from "@/lib/types";
+import { PlaceModel, TripModel } from "@/lib/types";
 import {
 	DndContext,
 	type DragEndEvent,
@@ -40,47 +40,60 @@ interface TripItineraryProps {
 	trip: TripModel;
 	hoverId: string | null;
 	setHoverId: (id: string | null) => void;
+	selectedPlace: PlaceModel | null;
+	setSelectedPlace: (place: PlaceModel | null) => void;
 }
 
 export function TripItinerary({
 	trip,
 	hoverId,
-	setHoverId
+	setHoverId,
+	selectedPlace,
+	setSelectedPlace
 }: TripItineraryProps) {
-	const initialCards = getCards(trip.places);
+	const [cards, setCards] = useState<DndCard[]>([]);
+
+	useEffect(() => {
+		setCards(getCards(trip.places));
+	}, [trip.places]);
 
 	const columns = getDefaultCols(trip.from, trip.to);
 
 	const columnsId = columns.map((col) => col.id);
 
-	const [cards, setCards] = useState<DndCard[]>(initialCards);
+	const updateCards = (newCards: DndCard[]) => {
+		const galleryCards = newCards.filter((c) => c.columnId === "");
+		const columnsCopy = [...columns];
 
-	useEffect(() => {
-		const galleryCards = cards.filter((c) => c.columnId === "");
-		galleryCards.forEach(async (nc, index) => {
-			const newOrder = galleryCards.length - index;
-			await updatePlace(nc.content.id, {
-				date: new Date(nc.columnId),
-				dateSortOrder: newOrder
-			});
-		});
-
-		columns.forEach((col) => {
-			const colCards = cards.filter((c) => c.columnId === col.id);
-			colCards.forEach(async (nc, index) => {
-				const newOrder = colCards.length - index;
+		setTimeout(() => {
+			galleryCards.forEach(async (nc, index) => {
+				const newOrder = galleryCards.length - index;
 				await updatePlace(nc.content.id, {
 					date: new Date(nc.columnId),
 					dateSortOrder: newOrder
 				});
 			});
-		});
-	}, [cards]);
+
+			columnsCopy.forEach((col) => {
+				const colCards = newCards.filter((c) => c.columnId === col.id);
+				colCards.forEach(async (nc, index) => {
+					const newOrder = colCards.length - index;
+					await updatePlace(nc.content.id, {
+						date: new Date(nc.columnId),
+						dateSortOrder: newOrder
+					});
+				});
+			});
+		}, 0);
+
+		return newCards;
+	};
 
 	const [activeCard, setActiveCard] = useState<DndCard | null>(null);
 	const [overCard, setOverCard] = useState<DndCard | null>(null);
 	const [overColumn, setOverColumn] = useState<DndColumn | null>(null);
 	const hoverCard = cards.find((c) => c.id === hoverId) || null;
+	const selectedCard = cards.find((c) => c.id === selectedPlace?.id) || null;
 
 	const sensors = useSensors(
 		useSensor(MouseSensor),
@@ -176,8 +189,10 @@ export function TripItinerary({
 								activeCard={activeCard}
 								overCard={overCard}
 								hoverCard={hoverCard}
+								selectedCard={selectedCard}
 								isOverColumn={overColumn?.id === ""}
 								setHoverId={setHoverId}
+								setSelectedPlace={setSelectedPlace}
 							/>
 						)}
 						<TripItineraryContainer>
@@ -189,8 +204,10 @@ export function TripItinerary({
 									activeCard={activeCard}
 									overCard={overCard}
 									hoverCard={hoverCard}
+									selectedCard={selectedCard}
 									isOverColumn={overColumn?.id === ""}
 									setHoverId={setHoverId}
+									setSelectedPlace={setSelectedPlace}
 								/>
 							)}
 							{columns.map((col) => (
@@ -201,8 +218,10 @@ export function TripItinerary({
 									activeCard={activeCard}
 									overCard={overCard}
 									hoverCard={hoverCard}
+									selectedCard={selectedCard}
 									isOverColumn={overColumn?.id === col.id}
 									setHoverId={setHoverId}
+									setSelectedPlace={setSelectedPlace}
 								/>
 							))}
 						</TripItineraryContainer>
@@ -271,9 +290,13 @@ export function TripItinerary({
 					activeCard.columnId !== overCard.columnId
 				) {
 					activeCard.columnId = overCard.columnId;
-					return arrayMove(cards, activeIndex, overIndex - 1);
+					const newCards = arrayMove(cards, activeIndex, overIndex - 1);
+					updateCards(newCards);
+					return newCards;
 				}
-				return arrayMove(cards, activeIndex, overIndex);
+				const newCards = arrayMove(cards, activeIndex, overIndex);
+				updateCards(newCards);
+				return newCards;
 			});
 		}
 
@@ -285,7 +308,9 @@ export function TripItinerary({
 				const activeCard = cards[activeIndex];
 				if (activeCard) {
 					activeCard.columnId = overId as UniqueIdentifier;
-					return arrayMove(cards, activeIndex, activeIndex);
+					const newCards = arrayMove(cards, activeIndex, activeIndex);
+					updateCards(newCards);
+					return newCards;
 				}
 
 				return cards;

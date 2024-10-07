@@ -7,6 +7,7 @@ import { useMemo } from "react";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { PlaceModel } from "@/lib/types";
 import { Badge } from "../ui/badge";
 import { TripItineraryCard } from "./trip-itinerary-card";
 import { DndCard, DndColumn, DndColumnDragData } from "./types";
@@ -17,7 +18,9 @@ interface TripItineraryColumnProps {
 	activeCard: DndCard | null;
 	overCard: DndCard | null;
 	hoverCard: DndCard | null;
+	selectedCard: DndCard | null;
 	setHoverId: (id: string | null) => void;
+	setSelectedPlace?: (place: PlaceModel | null) => void;
 	isSentinel?: boolean;
 	isOverColumn?: boolean;
 }
@@ -28,7 +31,9 @@ export function TripItineraryColumn({
 	activeCard,
 	overCard,
 	hoverCard,
+	selectedCard,
 	setHoverId,
+	setSelectedPlace,
 	isSentinel,
 	isOverColumn
 }: TripItineraryColumnProps) {
@@ -75,8 +80,10 @@ export function TripItineraryColumn({
 									overCard?.id === card.id
 								}
 								isHoverCard={hoverCard?.id === card.id}
+								isSelectedCard={selectedCard?.id === card.id}
 								card={card}
 								setHoverId={setHoverId}
+								setSelectedPlace={setSelectedPlace}
 							/>
 						))}
 					</SortableContext>

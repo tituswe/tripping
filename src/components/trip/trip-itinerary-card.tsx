@@ -4,14 +4,17 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { PlaceModel } from "@/lib/types";
 import { cva } from "class-variance-authority";
 import { DndCard, DndCardDragData } from "./types";
 
 interface TripItineraryCardProps {
 	card: DndCard;
 	setHoverId: (id: string | null) => void;
+	setSelectedPlace?: (place: PlaceModel | null) => void;
 	isOverCard?: boolean;
 	isHoverCard?: boolean;
+	isSelectedCard?: boolean;
 	isOverlay?: boolean;
 	isSentinel?: boolean;
 }
@@ -19,8 +22,10 @@ interface TripItineraryCardProps {
 export function TripItineraryCard({
 	card,
 	setHoverId,
+	setSelectedPlace,
 	isOverCard,
 	isHoverCard,
+	isSelectedCard,
 	isOverlay,
 	isSentinel
 }: TripItineraryCardProps) {
@@ -53,7 +58,7 @@ export function TripItineraryCard({
 			isOverCard &&
 			"bg-muted border-t-none border-l-none border-r-none"
 		} ${isSentinel && !isOverCard && "bg-muted border-none"} ${
-			isHoverCard && "bg-muted"
+			(isHoverCard || isSelectedCard) && "bg-muted"
 		}`,
 		{
 			variants: {
@@ -83,6 +88,9 @@ export function TripItineraryCard({
 			{...listeners}
 			onMouseEnter={() => setHoverId(card.id as string)}
 			onMouseLeave={() => setHoverId(null)}
+			onMouseDownCapture={() =>
+				setSelectedPlace && setSelectedPlace(card.content)
+			}
 		>
 			<CardHeader className="px-3 pt-2 pb-1 text-xs font-semibold">
 				{card.content.name}

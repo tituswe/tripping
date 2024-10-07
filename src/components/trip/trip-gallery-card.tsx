@@ -19,19 +19,27 @@ import {
 	DialogTrigger
 } from "@/components/ui/dialog";
 import { useHandleCopy } from "@/hooks/use-handle-copy";
+import { PlaceModel, TripModel } from "@/lib/types";
 import { shortNumber, snakeToNormalCase } from "@/lib/utils";
 import { DndCard, DndCardDragData } from "./types";
+import { getDateString } from "./utils";
 
 interface TripGalleryCardProps {
+	trip: TripModel;
 	card: DndCard;
 	setHoverId: (id: string | null) => void;
 	isHoverCard?: boolean;
+	isSelectedCard: boolean;
+	setSelectedPlace: (place: PlaceModel | null) => void;
 }
 
 export function TripGalleryCard({
+	trip,
 	card,
 	isHoverCard,
-	setHoverId
+	setHoverId,
+	isSelectedCard,
+	setSelectedPlace
 }: TripGalleryCardProps) {
 	const place = card.content;
 	const recentReview = place.reviews[0];
@@ -69,7 +77,12 @@ export function TripGalleryCard({
 	};
 
 	return (
-		<div ref={setNodeRef} style={style} className="flex flex-row space-x-1">
+		<div
+			ref={setNodeRef}
+			style={style}
+			className="flex flex-row space-x-1"
+			onMouseDown={() => setSelectedPlace(place)}
+		>
 			<div className="flex flex-col">
 				<Button
 					variant="ghost"
@@ -91,7 +104,7 @@ export function TripGalleryCard({
 			</div>
 			<div
 				className={`flex flex-row w-full justify-between items-center p-2 rounded-md bg-muted border-[3px] border-muted transition hover:border-muted-foreground 
-					${isHoverCard && "border-muted-foreground"} 
+					${(isHoverCard || isSelectedCard) && "border-muted-foreground"} 
 					${isDragging && "z-50 bg-primary-foreground ring-2 ring-primary"}`}
 				onMouseEnter={() => setHoverId(card.id as string)}
 				onMouseLeave={() => setHoverId(null)}
@@ -162,10 +175,16 @@ export function TripGalleryCard({
 					<div className="flex-grow" />
 
 					{place.tags.length > 0 && (
-						<div>
+						<div className="flex justify-between">
 							<Badge className="truncate max-h-6">
 								{snakeToNormalCase(place.tags[0])}
 							</Badge>
+
+							{place.date && trip.from && (
+								<Badge variant="outline" className="truncate max-h-6">
+									{getDateString(place.date, trip.from)}
+								</Badge>
+							)}
 						</div>
 					)}
 				</div>

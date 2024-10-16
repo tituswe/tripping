@@ -90,8 +90,7 @@ export const LocationInput = ({ selectedPlace, onPlaceSelect }: Props) => {
 					"formatted_address",
 					"place_id",
 					"types",
-					"address_components",
-					"photos"
+					"address_components"
 				],
 				sessionToken
 			};

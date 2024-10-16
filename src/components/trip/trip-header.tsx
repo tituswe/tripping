@@ -1,7 +1,6 @@
 "use client";
 
 import { CalendarDays, Plane } from "lucide-react";
-import Image from "next/image";
 import { useState } from "react";
 import { DateRange } from "react-day-picker";
 
@@ -33,12 +32,11 @@ export function TripHeader({ trip }: TripHeaderProps) {
 
 	return (
 		<>
-			<Image
+			<img
 				src={trip.location.photos[0]}
 				height={200}
 				width={1000}
 				alt={trip.location.name || "background-image"}
-				priority
 				className="w-full h-[200px] object-cover"
 			/>
 			<Alert className="rounded-none border-t-0 border-l-0 border-r-0">

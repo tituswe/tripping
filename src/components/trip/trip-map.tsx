@@ -38,7 +38,8 @@ export function TripMap({
 	const onMouseLeave = useCallback(() => setHoverId(null), []);
 	const onMarkerClick = useCallback(
 		(id: string | null) => {
-			const place = trip.places.find((place) => place.id === id) || null;
+			const place =
+				(trip.places.find((place) => place.id === id) as PlaceModel) || null;
 
 			setSelectedPlace(place);
 		},
@@ -88,11 +89,15 @@ export function TripMap({
 								onMouseEnter={() => onMouseEnter(id)}
 								onMouseLeave={onMouseLeave}
 							>
-								<img
-									src={content.photos[0]}
-									alt={content.name || id}
-									className="marker-image"
-								/>
+								{content.photos[0] ? (
+									<img
+										src={content.photos[0]}
+										alt={content.name || id}
+										className="marker-image"
+									/>
+								) : (
+									<div />
+								)}
 							</AdvancedMarkerWithRef>
 
 							{/* anchor point visualization marker */}

@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { useHandleCopy } from "@/hooks/use-handle-copy";
 import { PlaceModel, TripModel } from "@/lib/types";
 import { snakeToNormalCase } from "@/lib/utils";
 import { StarFilledIcon } from "@radix-ui/react-icons";
@@ -20,6 +21,11 @@ interface TripMapWidgetProps {
 
 export function TripMapWidget({ trip, selectedPlace }: TripMapWidgetProps) {
 	const [isShowingTimes, setIsShowingTimes] = useState(false);
+
+	const { handleCopy } = useHandleCopy(
+		selectedPlace?.formattedAddress,
+		"Address copied!"
+	);
 
 	if (!selectedPlace) return null;
 
@@ -59,13 +65,16 @@ export function TripMapWidget({ trip, selectedPlace }: TripMapWidgetProps) {
 								</span>
 							</p>
 						</div>
-						<div className="flex items-center transition hover:bg-muted cursor-pointer">
+						<button
+							className="flex items-center transition hover:bg-muted cursor-pointer"
+							onClick={handleCopy}
+						>
 							<MapPin className="h-4 w-4 mr-1 flex-shrink-0 cursor-pointer" />
 							<p className="line-clamp-1 text-ellipsis overflow-x-hidden cursor-pointer">
 								{selectedPlace?.formattedAddress}
 							</p>
 							<Copy className="h-4 w-4 ml-auto flex-shrink-0 cursor-pointer" />
-						</div>
+						</button>
 						<div className="flex items-start pb-1">
 							<Clock className="h-4 w-4 mr-1 mt-0.5 flex-shrink-0" />
 							<p className="flex flex-col">

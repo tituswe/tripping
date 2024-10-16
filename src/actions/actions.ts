@@ -3,14 +3,19 @@
 import { DateRange } from "react-day-picker";
 
 import prisma from "@/lib/db";
-import { LocationRequest, PlaceRequest } from "@/lib/types";
+import {
+	LocationRequest,
+	PlaceModel,
+	PlaceRequest,
+	TripModel
+} from "@/lib/types";
 import { Place, Trip } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 export async function createTrip(
 	location: LocationRequest,
 	dateRange?: DateRange
-) {
+): Promise<TripModel> {
 	let existingLocation = await prisma.location.findFirst({
 		where: { placeId: location.placeId }
 	});
@@ -26,8 +31,7 @@ export async function createTrip(
 				district: location.district,
 				lat: location.lat,
 				lng: location.lng,
-				locationType: location.locationType,
-				photos: location.photos
+				locationType: location.locationType
 			}
 		});
 	}
@@ -38,15 +42,26 @@ export async function createTrip(
 			from: dateRange?.from,
 			to: dateRange?.to
 		},
-		include: { location: true }
+		include: {
+			location: true,
+			places: {
+				include: { reviews: true }
+			}
+		}
 	});
+
+	const newTripModel = {
+		...newTrip,
+		location: { ...newTrip.location, photos: [] },
+		places: newTrip.places.map((place) => ({ ...place, photos: [] }))
+	};
 
 	revalidatePath(`/trips`);
 
-	return newTrip;
+	return newTripModel;
 }
 
-export async function getTrip(id: string) {
+export async function getTrip(id: string): Promise<TripModel> {
 	const trip = await prisma.trip.findFirstOrThrow({
 		where: { id },
 		include: {
@@ -57,11 +72,17 @@ export async function getTrip(id: string) {
 		}
 	});
 
-	return trip;
+	const tripModel = {
+		...trip,
+		location: { ...trip.location, photos: [] },
+		places: trip.places.map((place) => ({ ...place, photos: [] }))
+	};
+
+	return tripModel;
 }
 
-export async function getTrips() {
-	const trips = prisma.trip.findMany({
+export async function getTrips(): Promise<TripModel[]> {
+	const trips = await prisma.trip.findMany({
 		include: {
 			location: true,
 			places: {
@@ -70,21 +91,45 @@ export async function getTrips() {
 		}
 	});
 
-	return trips;
+	const tripModels = trips.map((trip) => ({
+		...trip,
+		location: { ...trip.location, photos: [] },
+		places: trip.places.map((place) => ({ ...place, photos: [] }))
+	}));
+
+	return tripModels;
 }
 
-export async function updateTrip(id: string, updates: Partial<Trip>) {
+export async function updateTrip(
+	id: string,
+	updates: Partial<Trip>
+): Promise<TripModel> {
 	const updatedTrip = await prisma.trip.update({
 		where: { id },
-		data: updates
+		data: updates,
+		include: {
+			location: true,
+			places: {
+				include: { reviews: true }
+			}
+		}
 	});
+
+	const updatedTripModel = {
+		...updatedTrip,
+		location: { ...updatedTrip.location, photos: [] },
+		places: updatedTrip.places.map((place) => ({ ...place, photos: [] }))
+	};
 
 	revalidatePath(`/trips`);
 
-	return updatedTrip;
+	return updatedTripModel;
 }
 
-export async function createPlace(tripId: string, place: PlaceRequest) {
+export async function createPlace(
+	tripId: string,
+	place: PlaceRequest
+): Promise<Place> {
 	const maxOrderPlace = await prisma.place.aggregate({
 		_max: {
 			sortOrder: true
@@ -109,7 +154,6 @@ export async function createPlace(tripId: string, place: PlaceRequest) {
 			lat: place.lat,
 			lng: place.lng,
 			tags: place.tags,
-			photos: place.photos,
 			openingHours: place.openingHours,
 			rating: place.rating,
 			userRatingsTotal: place.userRatingsTotal,
@@ -135,18 +179,27 @@ export async function createPlace(tripId: string, place: PlaceRequest) {
 	return newPlace;
 }
 
-export async function updatePlace(id: string, updates: Partial<Place>) {
+export async function updatePlace(
+	id: string,
+	updates: Partial<Place>
+): Promise<PlaceModel> {
 	const updatedPlace = await prisma.place.update({
 		where: { id },
-		data: updates
+		data: updates,
+		include: { reviews: true }
 	});
+
+	const updatedPlaceModel = { ...updatedPlace, photos: [] };
 
 	revalidatePath(`/trips/${updatedPlace.tripId}`);
 
-	return updatedPlace;
+	return updatedPlaceModel;
 }
 
-export async function updatePlaceDate(id: string, date: Date) {
+export async function updatePlaceDate(
+	id: string,
+	date: Date
+): Promise<PlaceModel> {
 	const maxDateSortOrderPlace = await prisma.place.aggregate({
 		_max: {
 			dateSortOrder: true
@@ -168,17 +221,17 @@ export async function updatePlaceDate(id: string, date: Date) {
 		include: { reviews: true }
 	});
 
+	const updatedPlaceModel = { ...updatedPlace, photos: [] };
+
 	revalidatePath(`/trips/${updatedPlace.tripId}`);
 
-	return updatedPlace;
+	return updatedPlaceModel;
 }
 
-export async function deletePlace(id: string) {
+export async function deletePlace(id: string): Promise<void> {
 	const deletedPlace = await prisma.place.delete({
 		where: { id }
 	});
 
 	revalidatePath(`/trips/${deletedPlace.tripId}`);
-
-	return deletedPlace;
 }

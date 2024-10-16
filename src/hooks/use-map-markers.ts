@@ -21,7 +21,7 @@ export const useMapMarkers = (trip: TripModel) => {
 					id: place.id,
 					position: { lat: place.lat, lng: place.lng },
 					zIndex: index,
-					content: place
+					content: place as PlaceModel
 				});
 			});
 

@@ -24,7 +24,6 @@ model Location {
   lat              Float?
   lng              Float?
   locationType     String?
-  photos           String[]
   createdAt        DateTime?   @default(now())
   updatedAt        DateTime?   @updatedAt
 
@@ -60,7 +59,6 @@ model Place {
   lat              Float?
   lng              Float?
   tags             String[]
-  photos           String[]
   openingHours     String[]
   rating           Float?
   userRatingsTotal Int?

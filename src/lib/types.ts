@@ -9,15 +9,18 @@ export type PlaceRequest = Omit<
 	reviews: PlaceReview[];
 };
 
+export type PlaceModel = Prisma.PlaceGetPayload<{
+	include: { reviews: true };
+}> & { photos: string[] };
+
 export type TripModel = Prisma.TripGetPayload<{
 	include: {
 		location: true;
-		places: {
-			include: { reviews: true };
-		};
+		places: true; // Include places
 	};
-}>;
-
-export type PlaceModel = Prisma.PlaceGetPayload<{
-	include: { reviews: true };
-}>;
+}> & {
+	location: {
+		photos: string[]; // Move photos under location
+	};
+	places: PlaceModel[]; // Specify the type for places
+};

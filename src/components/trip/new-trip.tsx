@@ -41,8 +41,6 @@ export function NewTrip() {
 			place.address_components?.find((comp) => comp.types.includes("locality"))
 				?.long_name || null;
 
-		const photos = place.photos?.map((photo) => photo.getUrl()) || [];
-
 		setLocation({
 			placeId: place.place_id,
 			name: place.name || null,
@@ -52,8 +50,7 @@ export function NewTrip() {
 			district,
 			lat: place.geometry?.location?.lat() || null,
 			lng: place.geometry?.location?.lng() || null,
-			locationType: placeType(place.types),
-			photos
+			locationType: placeType(place.types)
 		});
 	};
 

@@ -4,6 +4,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useScreenResize, useScreenSize } from "@/hooks/use-screen-size";
 import { useStore } from "@/hooks/use-store";
 import { useTabToggle } from "@/hooks/use-tab-toggle";
+import { useTripPhotos } from "@/hooks/use-trip-photos";
 import { PlaceModel, TripModel } from "@/lib/types";
 import { TabsContent } from "@radix-ui/react-tabs";
 import { APIProvider } from "@vis.gl/react-google-maps";
@@ -15,6 +16,7 @@ import {
 	ResizablePanelGroup
 } from "../ui/resizable";
 import { TripGallery } from "./trip-gallery";
+import { TripHeader } from "./trip-header";
 import { TripItinerary } from "./trip-itinerary";
 import { TripMap } from "./trip-map";
 
@@ -26,7 +28,9 @@ interface TripContentProps {
 	trip: TripModel;
 }
 
-export function TripContent({ trip }: TripContentProps) {
+function TripContent({ trip: tripWithoutPhotos }: TripContentProps) {
+	const trip = useTripPhotos(tripWithoutPhotos);
+
 	const tab = useStore(useTabToggle, (state) => state);
 
 	const [hoverId, setHoverId] = useState<string | null>(null);
@@ -35,7 +39,9 @@ export function TripContent({ trip }: TripContentProps) {
 
 	useEffect(() => {
 		setSelectedPlace(
-			trip.places.find((place) => place.id === selectedPlace?.id) || null
+			(trip.places.find(
+				(place) => place.id === selectedPlace?.id
+			) as PlaceModel) || null
 		);
 	}, [trip.places]);
 
@@ -44,7 +50,8 @@ export function TripContent({ trip }: TripContentProps) {
 	useScreenResize();
 
 	return (
-		<APIProvider apiKey={API_KEY} libraries={libraries}>
+		<>
+			<TripHeader trip={trip} />
 			{screen.screenSize === "sm" && (
 				<div className="space-y-3">
 					<Tabs
@@ -140,6 +147,14 @@ export function TripContent({ trip }: TripContentProps) {
 					</ResizablePanel>
 				</ResizablePanelGroup>
 			)}
+		</>
+	);
+}
+
+export function TripContentWithAPIProvider({ trip }: TripContentProps) {
+	return (
+		<APIProvider apiKey={API_KEY} libraries={libraries}>
+			<TripContent trip={trip} />
 		</APIProvider>
 	);
 }

@@ -4,7 +4,6 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { format } from "date-fns";
 import { Copy, GripVertical, Star, Trash2 } from "lucide-react";
-import Image from "next/image";
 
 import { deletePlace } from "@/actions/actions";
 import { Badge } from "@/components/ui/badge";
@@ -190,7 +189,7 @@ export function TripGalleryCard({
 				</div>
 				{place.photos[0] && (
 					<div className="hidden lg:block w-[320px]">
-						<Image
+						<img
 							src={place.photos[0]}
 							alt={place.name || "place-image"}
 							width={320}

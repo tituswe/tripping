@@ -1,7 +1,6 @@
 import { getTrip } from "@/actions/actions";
 import { ContentLayout } from "@/components/admin-panel/content-layout";
-import { TripContent } from "@/components/trip/trip-content";
-import { TripHeader } from "@/components/trip/trip-header";
+import { TripContentWithAPIProvider } from "@/components/trip/trip-content";
 import { TripModel } from "@/lib/types";
 
 export default async function TripPage({ params }: { params: { id: string } }) {
@@ -9,8 +8,7 @@ export default async function TripPage({ params }: { params: { id: string } }) {
 
 	return (
 		<ContentLayout title={`Trip to ${trip?.location.formattedAddress}`}>
-			<TripHeader trip={trip} />
-			<TripContent trip={trip} />
+			<TripContentWithAPIProvider trip={trip} />
 		</ContentLayout>
 	);
 }

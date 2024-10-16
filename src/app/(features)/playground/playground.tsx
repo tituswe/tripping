@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import React, { useCallback, useState } from "react";
@@ -169,7 +170,7 @@ const Playground = ({ trip }: PlaygroundProps) => {
 					id: place.id,
 					position: { lat: place.lat, lng: place.lng },
 					zIndex: index,
-					content: place
+					content: place as PlaceModel
 				});
 			});
 

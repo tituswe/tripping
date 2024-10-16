@@ -1,13 +1,14 @@
 "use client";
 
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 
 import {
 	AdvancedMarker,
 	AdvancedMarkerAnchorPoint,
 	AdvancedMarkerProps,
 	Map,
-	useAdvancedMarkerRef
+	useAdvancedMarkerRef,
+	useMap
 } from "@vis.gl/react-google-maps";
 
 import { useMapMarkers } from "@/hooks/use-map-markers";
@@ -30,6 +31,7 @@ export function TripMap({
 	selectedPlace,
 	setSelectedPlace
 }: TripMapProps) {
+	const map = useMap();
 	const getMapMarkers = useMapMarkers(trip);
 
 	const { markers, hoverZIdx, selectedZIdx, center } = getMapMarkers();
@@ -49,6 +51,13 @@ export function TripMap({
 	const onMapClick = useCallback(() => {
 		setSelectedPlace(null);
 	}, []);
+
+	useEffect(() => {
+		if (!map || !selectedPlace || !selectedPlace.lat || !selectedPlace.lng)
+			return;
+
+		map.panTo({ lat: selectedPlace.lat, lng: selectedPlace.lng });
+	}, [selectedPlace]);
 
 	return (
 		<>

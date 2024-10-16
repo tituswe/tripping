@@ -126,6 +126,14 @@ export async function updateTrip(
 	return updatedTripModel;
 }
 
+export async function deleteTrip(id: string): Promise<void> {
+	await prisma.trip.delete({
+		where: { id }
+	});
+
+	revalidatePath(`/trips`);
+}
+
 export async function createPlace(
 	tripId: string,
 	place: PlaceRequest

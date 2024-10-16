@@ -1,32 +1,57 @@
 "use client";
 
-import { CalendarDays, Plane } from "lucide-react";
+import { CalendarDays, Cog, Plane, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { DateRange } from "react-day-picker";
 
-import { updateTrip } from "@/actions/actions";
+import { deleteTrip, updateTrip } from "@/actions/actions";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger
 } from "@/components/ui/popover";
+import { useToast } from "@/hooks/use-toast";
 import { TripModel } from "@/lib/types";
 import { format } from "date-fns";
-import { Button } from "../ui/button";
-import { Calendar } from "../ui/calendar";
 
 interface TripHeaderProps {
 	trip: TripModel;
 }
 
 export function TripHeader({ trip }: TripHeaderProps) {
+	const router = useRouter();
+	const { toast } = useToast();
+
 	const [dateRange, setDateRange] = useState<DateRange | undefined>({
 		from: undefined,
 		to: undefined
 	});
 	const [isEditingTitle, setIsEditingTitle] = useState(false);
 	const [title, setTitle] = useState(trip.location.name);
+	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
 	const onCloseAutoFocus = async () => {
 		await updateTrip(trip.id, { from: dateRange?.from, to: dateRange?.to });
@@ -45,6 +70,26 @@ export function TripHeader({ trip }: TripHeaderProps) {
 		await updateTrip(trip.id, { title });
 	};
 
+	const handleDeleteClick = () => {
+		setIsDropdownOpen(false);
+		setTimeout(() => {
+			setIsDeleteDialogOpen(true);
+		}, 0);
+	};
+
+	const handleConfirmDelete = async () => {
+		try {
+			const response = await deleteTrip(trip.id);
+			router.push(`/dashboard`);
+		} catch (error: any) {
+			toast({
+				title: "Error",
+				description: error.message || "There was an error deleting your trip.",
+				variant: "destructive"
+			});
+		}
+	};
+
 	return (
 		<>
 			<img
@@ -56,7 +101,7 @@ export function TripHeader({ trip }: TripHeaderProps) {
 			/>
 			<Alert className="rounded-none border-t-0 border-l-0 border-r-0">
 				<Plane className="h-6 w-6 mt-1" />
-				<AlertTitle className="ml-2 font-semibold text-2xl mt-1">
+				<AlertTitle className="ml-2 font-semibold text-2xl mt-1 flex justify-between">
 					{isEditingTitle ? (
 						<input
 							type="text"
@@ -79,6 +124,24 @@ export function TripHeader({ trip }: TripHeaderProps) {
 							{trip.title || `Your trip to ${trip.location.name}`}
 						</span>
 					)}
+					<DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
+						<DropdownMenuTrigger asChild>
+							<Button variant={"ghost"}>
+								<Cog className="h-6 w-6" />
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end">
+							<DropdownMenuLabel>Settings</DropdownMenuLabel>
+							<DropdownMenuSeparator />
+							<DropdownMenuItem
+								className="text-destructive cursor-pointer"
+								onSelect={handleDeleteClick}
+							>
+								<Trash2 className="mr-2 h-4 w-4" />
+								Delete
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
 				</AlertTitle>
 				<AlertDescription className="ml-2 space-x-2">
 					<Popover>
@@ -125,6 +188,27 @@ export function TripHeader({ trip }: TripHeaderProps) {
 					</Popover>
 				</AlertDescription>
 			</Alert>
+
+			<AlertDialog
+				open={isDeleteDialogOpen}
+				onOpenChange={setIsDeleteDialogOpen}
+			>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+						<AlertDialogDescription>
+							This action cannot be undone. This will permanently delete your
+							trip from our databases.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel>Cancel</AlertDialogCancel>
+						<AlertDialogAction onClick={handleConfirmDelete}>
+							Continue
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
 		</>
 	);
 }

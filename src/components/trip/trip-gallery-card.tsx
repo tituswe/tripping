@@ -149,7 +149,7 @@ export function TripGalleryCard({
 					{recentReview ? (
 						<Dialog>
 							<DialogTrigger>
-								<p className="text-start text-xs italic text-muted-foreground gap-2 rounded mt-3 mb-6 h-[48px] px-1 overflow-y-hidden line-clamp-3 transition hover:bg-secondary-foreground cursor-pointer">
+								<p className="text-start text-xs italic text-muted-foreground gap-2 rounded mt-3 mb-3 h-[48px] px-1 overflow-y-hidden line-clamp-3 transition hover:bg-secondary-foreground cursor-pointer">
 									{recentReview.text}
 								</p>
 							</DialogTrigger>
@@ -168,10 +168,10 @@ export function TripGalleryCard({
 							</DialogContent>
 						</Dialog>
 					) : (
-						<div className="h-[45px] mt-3 mb-6" />
+						<div className="h-[45px] mt-3 mb-3" />
 					)}
 
-					<div className="flex-grow" />
+					<div className="flex-grow mt-3" />
 
 					{place.tags.length > 0 && (
 						<div className="flex justify-between">

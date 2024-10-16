@@ -25,9 +25,24 @@ export function TripHeader({ trip }: TripHeaderProps) {
 		from: undefined,
 		to: undefined
 	});
+	const [isEditingTitle, setIsEditingTitle] = useState(false);
+	const [title, setTitle] = useState(trip.location.name);
 
 	const onCloseAutoFocus = async () => {
 		await updateTrip(trip.id, { from: dateRange?.from, to: dateRange?.to });
+	};
+
+	const handleTitleClick = () => {
+		setIsEditingTitle(true);
+	};
+
+	const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setTitle(e.target.value);
+	};
+
+	const handleTitleBlur = async () => {
+		setIsEditingTitle(false);
+		await updateTrip(trip.id, { title });
 	};
 
 	return (
@@ -42,7 +57,28 @@ export function TripHeader({ trip }: TripHeaderProps) {
 			<Alert className="rounded-none border-t-0 border-l-0 border-r-0">
 				<Plane className="h-6 w-6 mt-1" />
 				<AlertTitle className="ml-2 font-semibold text-2xl mt-1">
-					Your trip to {trip.location.name}
+					{isEditingTitle ? (
+						<input
+							type="text"
+							value={title || ""}
+							onChange={handleTitleChange}
+							onBlur={handleTitleBlur}
+							onKeyDown={(e) => {
+								if (e.key === "Enter") {
+									e.currentTarget.blur();
+								}
+							}}
+							className="px-1 font-semibold text-2xl mt-1 focus:outline-muted"
+							autoFocus
+						/>
+					) : (
+						<span
+							className="px-1 rounded cursor-pointer transition hover:bg-muted"
+							onClick={handleTitleClick}
+						>
+							{trip.title || `Your trip to ${trip.location.name}`}
+						</span>
+					)}
 				</AlertTitle>
 				<AlertDescription className="ml-2 space-x-2">
 					<Popover>

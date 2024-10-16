@@ -45,7 +45,7 @@ export function getMenuList(pathname: string, trips: TripModel[]): Group[] {
 			menus: [
 				...trips.map((trip) => ({
 					href: `/trips/${trip.id}`,
-					label: trip.location.formattedAddress || "",
+					label: trip.title || trip.location.formattedAddress || "",
 					active: pathname.includes(`/${trip.id}`),
 					icon: MapPin,
 					submenus: []

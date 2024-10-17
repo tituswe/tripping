@@ -20,7 +20,7 @@ export const useTripPhotos = (tripWithoutPhotos: TripModel) => {
 	useEffect(() => {
 		if (!placesService) return;
 
-		const fetchPlaceDetails = async () => {
+		const fetchDetails = async () => {
 			let locationPhotos: string[] = [];
 
 			const detailRequestOptions = {
@@ -77,7 +77,7 @@ export const useTripPhotos = (tripWithoutPhotos: TripModel) => {
 			});
 		};
 
-		fetchPlaceDetails();
+		fetchDetails();
 	}, [placesService, tripWithoutPhotos]);
 
 	return trip;

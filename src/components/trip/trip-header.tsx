@@ -100,8 +100,8 @@ export function TripHeader({ trip }: TripHeaderProps) {
 				className="w-full h-[200px] object-cover"
 			/>
 			<Alert className="rounded-none border-t-0 border-l-0 border-r-0">
-				<Plane className="h-6 w-6 mt-1" />
-				<AlertTitle className="ml-2 font-semibold text-2xl mt-1 flex justify-between">
+				<Plane className="h-6 w-6 mt-1.5" />
+				<AlertTitle className="ml-2 font-semibold text-2xl mt-1 flex items-center justify-between">
 					{isEditingTitle ? (
 						<input
 							type="text"
@@ -127,7 +127,7 @@ export function TripHeader({ trip }: TripHeaderProps) {
 					<DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
 						<DropdownMenuTrigger asChild>
 							<Button variant={"ghost"}>
-								<Cog className="h-6 w-6" />
+								<Cog className="h-5 w-5" />
 							</Button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end">

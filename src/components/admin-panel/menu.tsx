@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 
 import { CollapseMenuButton } from "@/components/admin-panel/collapse-menu-button";
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
 	Tooltip,
 	TooltipContent,
@@ -26,8 +27,8 @@ export function Menu({ isOpen, trips }: MenuProps) {
 	const menuList = getMenuList(pathname, trips);
 
 	return (
-		<div className="[&>div>div[style]]:!block">
-			<nav className="mt-8 h-full w-full">
+		<ScrollArea className="[&>div>div[style]]:!block">
+			<nav className="mt-8 mb-4 h-full w-full">
 				<ul className="flex flex-col min-h-[calc(100vh-48px-36px-16px-32px)] lg:min-h-[calc(100vh-32px-40px-32px)] items-start space-y-1 px-2">
 					{menuList.map(({ groupLabel, menus }, index) => (
 						<li className={cn("w-full", groupLabel ? "pt-5" : "")} key={index}>
@@ -134,6 +135,6 @@ export function Menu({ isOpen, trips }: MenuProps) {
 					</li>
 				</ul>
 			</nav>
-		</div>
+		</ScrollArea>
 	);
 }

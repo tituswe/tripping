@@ -79,7 +79,7 @@ export function TripHeader({ trip }: TripHeaderProps) {
 
 	const handleConfirmDelete = async () => {
 		try {
-			const response = await deleteTrip(trip.id);
+			await deleteTrip(trip.id);
 			router.push(`/dashboard`);
 		} catch (error: any) {
 			toast({

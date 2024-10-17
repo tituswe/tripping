@@ -25,6 +25,11 @@ export function DashboardExplore({ trips }: DashboardExploreProps) {
 					<DashboardTripCard key={index} trip={trip} />
 				))}
 			</div>
+			{trips.length === 0 && (
+				<p className="text-sm font-light text-muted-foreground">
+					We&apos;re working on curating trip plans for you...
+				</p>
+			)}
 		</div>
 	);
 }

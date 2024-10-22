@@ -3,12 +3,12 @@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useScreenResize, useScreenSize } from "@/hooks/use-screen-size";
 import { useStore } from "@/hooks/use-store";
-import { useTabToggle } from "@/hooks/use-tab-toggle";
+import { useTabToggle, useTabToggleStore } from "@/hooks/use-tab-toggle";
 import { useTripPhotos } from "@/hooks/use-trip-photos";
 import { PlaceModel, TripModel } from "@/lib/types";
 import { TabsContent } from "@radix-ui/react-tabs";
 import { APIProvider } from "@vis.gl/react-google-maps";
-import { GalleryThumbnails, Kanban } from "lucide-react";
+import { Kanban, List } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
 	ResizableHandle,
@@ -26,12 +26,11 @@ const libraries = ["marker"];
 
 interface TripContentProps {
 	trip: TripModel;
+	tab: useTabToggleStore;
 }
 
-function TripContent({ trip: tripWithoutPhotos }: TripContentProps) {
+function TripContent({ trip: tripWithoutPhotos, tab }: TripContentProps) {
 	const trip = useTripPhotos(tripWithoutPhotos);
-
-	const tab = useStore(useTabToggle, (state) => state);
 
 	const [hoverId, setHoverId] = useState<string | null>(null);
 
@@ -61,8 +60,8 @@ function TripContent({ trip: tripWithoutPhotos }: TripContentProps) {
 					>
 						<TabsList className="m-2 mb-0">
 							<TabsTrigger value="gallery">
-								<GalleryThumbnails className="h-4 w-4 mr-2" />
-								<span className="mr-2">Gallery Grid</span>
+								<List className="h-4 w-4 mr-2" />
+								<span className="mr-2">List View</span>
 							</TabsTrigger>
 							<TabsTrigger value="kanban">
 								<Kanban className="h-4 w-4 mr-2" />
@@ -107,8 +106,8 @@ function TripContent({ trip: tripWithoutPhotos }: TripContentProps) {
 						>
 							<TabsList className="m-2 mb-0">
 								<TabsTrigger value="gallery">
-									<GalleryThumbnails className="h-4 w-4 mr-2" />
-									<span className="mr-2">Gallery Grid</span>
+									<List className="h-4 w-4 mr-2" />
+									<span className="mr-2">List View</span>
 								</TabsTrigger>
 								<TabsTrigger value="kanban">
 									<Kanban className="h-4 w-4 mr-2" />
@@ -151,10 +150,20 @@ function TripContent({ trip: tripWithoutPhotos }: TripContentProps) {
 	);
 }
 
-export function TripContentWithAPIProvider({ trip }: TripContentProps) {
+interface TripContentWithAPIProviderProps {
+	trip: TripModel;
+}
+
+export function TripContentWithAPIProvider({
+	trip
+}: TripContentWithAPIProviderProps) {
+	const tab = useStore(useTabToggle, (state) => state);
+
+	if (!tab) return null;
+
 	return (
 		<APIProvider apiKey={API_KEY} libraries={libraries}>
-			<TripContent trip={trip} />
+			<TripContent trip={trip} tab={tab} />
 		</APIProvider>
 	);
 }

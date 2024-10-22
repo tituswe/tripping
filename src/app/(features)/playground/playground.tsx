@@ -37,7 +37,6 @@ const Playground = ({ trip }: PlaygroundProps) => {
 	const { data, hoverZIdx, selectedZIdx, center } = getMarkers(trip);
 
 	const [markers] = useState(data);
-	console.log(markers);
 
 	const [hoverId, setHoverId] = useState<string | null>(null);
 	const [selectedId, setSelectedId] = useState<string | null>(null);

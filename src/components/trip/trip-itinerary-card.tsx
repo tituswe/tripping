@@ -12,7 +12,6 @@ interface TripItineraryCardProps {
 	card: DndCard;
 	setHoverId: (id: string | null) => void;
 	setSelectedPlace?: (place: PlaceModel | null) => void;
-	isOverCard?: boolean;
 	isHoverCard?: boolean;
 	isSelectedCard?: boolean;
 	isOverlay?: boolean;
@@ -23,7 +22,6 @@ export function TripItineraryCard({
 	card,
 	setHoverId,
 	setSelectedPlace,
-	isOverCard,
 	isHoverCard,
 	isSelectedCard,
 	isOverlay,
@@ -54,17 +52,14 @@ export function TripItineraryCard({
 
 	const variants = cva(
 		`w-full rounded-md cursor-grab shadow-none transition hover:bg-muted ${
-			isSentinel &&
-			isOverCard &&
-			"bg-muted border-t-none border-l-none border-r-none"
-		} ${isSentinel && !isOverCard && "bg-muted border-none"} ${
+			isSentinel && "bg-muted border-t-none border-l-none border-r-none"
+		} ${isSentinel && "bg-muted border-none"} ${
 			(isHoverCard || isSelectedCard) && "bg-muted"
 		}`,
 		{
 			variants: {
 				dragging: {
 					drag: "border opacity-30",
-					over: "border-b-2 rounded-b-none border-b-blue-500",
 					overlay: "ring-2 ring-primary opacity-70"
 				}
 			}
@@ -76,13 +71,7 @@ export function TripItineraryCard({
 			ref={setNodeRef}
 			style={style}
 			className={variants({
-				dragging: isOverlay
-					? "overlay"
-					: isDragging
-					? "drag"
-					: isOverCard
-					? "over"
-					: undefined
+				dragging: isOverlay ? "overlay" : isDragging ? "drag" : undefined
 			})}
 			{...attributes}
 			{...listeners}
@@ -96,7 +85,7 @@ export function TripItineraryCard({
 				{card.content.name}
 			</CardHeader>
 			<CardContent className="px-3 pt-0 pb-2 text-left whitespace-pre-wrap">
-				<p className="text-xs text-muted-foreground text-ellipsis overflow-hidden line-clamp-1 font-light">
+				<p className="text-xs text-muted-foreground text-ellipsis overflow-hidden line-clamp-3 font-light">
 					{card.content.formattedAddress}
 				</p>
 			</CardContent>

@@ -45,8 +45,8 @@ export function TripHeader({ trip }: TripHeaderProps) {
 	const { toast } = useToast();
 
 	const [dateRange, setDateRange] = useState<DateRange | undefined>({
-		from: undefined,
-		to: undefined
+		from: trip.from || undefined,
+		to: trip.to || undefined
 	});
 	const [isEditingTitle, setIsEditingTitle] = useState(false);
 	const [title, setTitle] = useState(trip.location.name);
@@ -54,7 +54,12 @@ export function TripHeader({ trip }: TripHeaderProps) {
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
 	const onCloseAutoFocus = async () => {
-		await updateTrip(trip.id, { from: dateRange?.from, to: dateRange?.to });
+		await updateTrip(trip.id, {
+			from: dateRange?.from,
+			to: dateRange?.to
+		}).then(() => {
+			window.location.reload();
+		});
 	};
 
 	const handleTitleClick = () => {

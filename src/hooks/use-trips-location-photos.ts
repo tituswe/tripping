@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 export const useTripsLocationPhotos = (tripsWithoutPhotos: TripModel[]) => {
 	const [trips, setTrips] = useState(tripsWithoutPhotos);
+	const [photoCache] = useState(new Map<string, string[]>());
 
 	const map = useMap();
 	const places = useMapsLibrary("places");
@@ -25,18 +26,27 @@ export const useTripsLocationPhotos = (tripsWithoutPhotos: TripModel[]) => {
 
 			const promises = tripsWithoutPhotos.map((trip, index) => {
 				return new Promise<void>((resolve) => {
-					const detailRequestOptions = {
-						placeId: trip.location.placeId,
-						fields: ["photos"]
-					};
-
-					placesService.getDetails(detailRequestOptions, (placeDetails) => {
-						const photos = placeDetails?.photos?.map((photo) => photo.getUrl());
-						if (photos) {
-							tripsPhotos[index] = photos;
-						}
+					const cachedPhotos = photoCache.get(trip.location.placeId);
+					if (cachedPhotos) {
+						tripsPhotos[index] = cachedPhotos;
 						resolve();
-					});
+					} else {
+						const detailRequestOptions = {
+							placeId: trip.location.placeId,
+							fields: ["photos"]
+						};
+
+						placesService.getDetails(detailRequestOptions, (placeDetails) => {
+							const photos = placeDetails?.photos?.map((photo) =>
+								photo.getUrl()
+							);
+							if (photos) {
+								tripsPhotos[index] = photos;
+								photoCache.set(trip.location.placeId, photos);
+							}
+							resolve();
+						});
+					}
 				});
 			});
 
@@ -57,7 +67,7 @@ export const useTripsLocationPhotos = (tripsWithoutPhotos: TripModel[]) => {
 		};
 
 		fetchDetails();
-	}, [placesService, tripsWithoutPhotos]);
+	}, [placesService, tripsWithoutPhotos, photoCache]);
 
 	return trips;
 };

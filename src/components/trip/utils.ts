@@ -163,12 +163,32 @@ export function getDateString(from: Date | null, date: Date | null): string {
 	return `Day ${daysCount + 1}`;
 }
 
-export function getCards(places: PlaceModel[], isGallery?: boolean): DndCard[] {
-	const cards = places.map((place) => ({
-		id: place.id,
-		columnId: place.date ? format(place.date, "yyyy-MM-dd") : "",
-		content: place
-	}));
+export function getCards(
+	places: PlaceModel[],
+	isGallery?: boolean,
+	from?: Date | null,
+	to?: Date | null
+): DndCard[] {
+	const cards = places.map((place) => {
+		if (place.date && from && to) {
+			const columnId =
+				place.date >= from && place.date <= to
+					? format(place.date, "yyyy-MM-dd")
+					: "";
+
+			return {
+				id: place.id,
+				columnId,
+				content: place
+			};
+		} else {
+			return {
+				id: place.id,
+				columnId: "",
+				content: place
+			};
+		}
+	});
 
 	if (isGallery) {
 		return cards.sort((a, b) => b.content.sortOrder - a.content.sortOrder);

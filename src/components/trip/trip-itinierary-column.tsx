@@ -16,26 +16,22 @@ interface TripItineraryColumnProps {
 	column: DndColumn;
 	cards: DndCard[];
 	activeCard: DndCard | null;
-	overCard: DndCard | null;
 	hoverCard: DndCard | null;
 	selectedCard: DndCard | null;
 	setHoverId: (id: string | null) => void;
 	setSelectedPlace?: (place: PlaceModel | null) => void;
 	isSentinel?: boolean;
-	isOverColumn?: boolean;
 }
 
 export function TripItineraryColumn({
 	column,
 	cards,
 	activeCard,
-	overCard,
 	hoverCard,
 	selectedCard,
 	setHoverId,
 	setSelectedPlace,
-	isSentinel,
-	isOverColumn
+	isSentinel
 }: TripItineraryColumnProps) {
 	const cardIds = useMemo(() => {
 		return cards.map((card) => card.id);
@@ -55,14 +51,12 @@ export function TripItineraryColumn({
 	return (
 		<Card
 			ref={setNodeRef}
-			className={`md:w-[188px] 2xl:w-[240px] p-2 max-w-full shadow-none rounded-md flex flex-col flex-shrink-0 snap-center border-0 ${
+			className={`md:w-[188px] 3xl:w-[240px] p-2 max-w-full shadow-none rounded-md flex flex-col flex-shrink-0 snap-center border-0 ${
 				isSentinel && "md:border-r-[1px]"
 			}`}
 		>
 			<CardHeader
-				className={`px-0 py-1.5 font-semibold rounded-t border-b text-left flex flex-row space-between items-center cursor-grab transition hover:bg-muted" ${
-					isOverColumn && "border-b-2 border-b-blue-500"
-				}`}
+				className={`px-0 py-1.5 font-semibold rounded-t border-b text-left flex flex-row space-between items-center cursor-grab transition hover:bg-muted"`}
 			>
 				<Badge variant={isSentinel ? "default" : "secondary"}>
 					{column.title}
@@ -75,10 +69,6 @@ export function TripItineraryColumn({
 							<TripItineraryCard
 								key={card.id}
 								isSentinel={isSentinel}
-								isOverCard={
-									activeCard?.columnId !== overCard?.columnId &&
-									overCard?.id === card.id
-								}
 								isHoverCard={hoverCard?.id === card.id}
 								isSelectedCard={selectedCard?.id === card.id}
 								card={card}

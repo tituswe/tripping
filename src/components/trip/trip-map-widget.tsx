@@ -1,6 +1,5 @@
 "use client";
 
-import { updatePlaceDate } from "@/actions/actions";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -11,8 +10,6 @@ import { snakeToNormalCase } from "@/lib/utils";
 import { StarFilledIcon } from "@radix-ui/react-icons";
 import { Clock, Copy, MapPin } from "lucide-react";
 import { useState } from "react";
-import { Button } from "../ui/button";
-import { getDateString, getDefaultCols } from "./utils";
 
 interface TripMapWidgetProps {
 	trip: TripModel;
@@ -29,12 +26,8 @@ export function TripMapWidget({ trip, selectedPlace }: TripMapWidgetProps) {
 
 	if (!selectedPlace) return null;
 
-	const addToDay = async (dayId: string) => {
-		await updatePlaceDate(selectedPlace.id, new Date(dayId));
-	};
-
 	return (
-		<div className="absolute z-50 bottom-0 w-full flex justify-center p-4">
+		<div className="hidden md:block absolute z-50 bottom-0 w-full flex justify-center p-4">
 			<Card className="w-full">
 				<CardContent className="p-4">
 					<div className="flex flex-col text-sm font-light text-muted-foreground space-y-1">
@@ -93,32 +86,6 @@ export function TripMapWidget({ trip, selectedPlace }: TripMapWidgetProps) {
 										.map((time, index) => <span key={index}>{time}</span>)}
 							</p>
 						</div>
-						<Separator />
-						<div className="font-medium text-secondary-foreground py-1">
-							{selectedPlace?.date
-								? `Visiting on ${getDateString(trip.from, selectedPlace?.date)}`
-								: "Add to Itinerary"}
-						</div>
-						<ScrollArea className="w-full whitespace-nowrap">
-							<div className="flex w-max space-x-3 pb-3">
-								{getDefaultCols(trip.from, trip.to).map((col, index) => (
-									<Button
-										key={index}
-										variant="secondary"
-										size="sm"
-										className={`font-medium transition hover:bg-muted-foreground hover:text-muted ${
-											getDateString(trip.from, selectedPlace?.date) ===
-												col.title &&
-											"bg-primary text-primary-foreground shadow hover:bg-primary/90"
-										}`}
-										onClick={() => addToDay(col.id as string)}
-									>
-										{col.title}
-									</Button>
-								))}
-							</div>
-							<ScrollBar orientation="horizontal" />
-						</ScrollArea>
 					</div>
 				</CardContent>
 			</Card>

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-interface useTabToggleStore {
+export interface useTabToggleStore {
 	tab: string;
 	setTab: (tab: string) => void;
 }

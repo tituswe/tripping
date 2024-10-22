@@ -28,7 +28,7 @@ import {
 	TripItineraryColumn,
 	TripItineraryContainer
 } from "./trip-itinierary-column";
-import { DndCard, DndColumn } from "./types";
+import { DndCard } from "./types";
 import {
 	coordinateGetter,
 	getCards,
@@ -51,47 +51,16 @@ export function TripItinerary({
 	selectedPlace,
 	setSelectedPlace
 }: TripItineraryProps) {
-	const [cards, setCards] = useState<DndCard[]>([]);
-
-	useEffect(() => {
-		setCards(getCards(trip.places));
-	}, [trip.places]);
+	const [cards, setCards] = useState<DndCard[]>(
+		getCards(trip.places, false, trip.from, trip.to)
+	);
 
 	const columns = getDefaultCols(trip.from, trip.to);
 
 	const columnsId = columns.map((col) => col.id);
 
-	const updateCards = (newCards: DndCard[]) => {
-		const galleryCards = newCards.filter((c) => c.columnId === "");
-		const columnsCopy = [...columns];
-
-		setTimeout(() => {
-			galleryCards.forEach(async (nc, index) => {
-				const newOrder = galleryCards.length - index;
-				await updatePlace(nc.content.id, {
-					date: new Date(nc.columnId),
-					dateSortOrder: newOrder
-				});
-			});
-
-			columnsCopy.forEach((col) => {
-				const colCards = newCards.filter((c) => c.columnId === col.id);
-				colCards.forEach(async (nc, index) => {
-					const newOrder = colCards.length - index;
-					await updatePlace(nc.content.id, {
-						date: new Date(nc.columnId),
-						dateSortOrder: newOrder
-					});
-				});
-			});
-		}, 0);
-
-		return newCards;
-	};
-
 	const [activeCard, setActiveCard] = useState<DndCard | null>(null);
-	const [overCard, setOverCard] = useState<DndCard | null>(null);
-	const [overColumn, setOverColumn] = useState<DndColumn | null>(null);
+
 	const hoverCard = cards.find((c) => c.id === hoverId) || null;
 	const selectedCard = cards.find((c) => c.id === selectedPlace?.id) || null;
 
@@ -104,6 +73,34 @@ export function TripItinerary({
 	);
 
 	const screen = useScreenSize();
+
+	useEffect(() => {
+		const galleryCards = cards.filter((c) => c.columnId === "");
+		const columnsCopy = [...columns];
+
+		const timeoutId = setTimeout(() => {
+			galleryCards.forEach(async (nc, index) => {
+				const newOrder = galleryCards.length - index;
+				await updatePlace(nc.content.id, {
+					date: new Date(nc.columnId),
+					dateSortOrder: newOrder
+				});
+			});
+
+			columnsCopy.forEach((col) => {
+				const colCards = cards.filter((c) => c.columnId === col.id);
+				colCards.forEach(async (nc, index) => {
+					const newOrder = colCards.length - index;
+					await updatePlace(nc.content.id, {
+						date: new Date(nc.columnId),
+						dateSortOrder: newOrder
+					});
+				});
+			});
+		}, 500); // Delay timeout to prevent multiple updates
+
+		return () => clearTimeout(timeoutId);
+	}, [cards]);
 
 	const onPlaceSelect = async (
 		place: google.maps.places.PlaceResult | null
@@ -187,10 +184,8 @@ export function TripItinerary({
 								column={{ id: "", title: "Gallery" }}
 								cards={cards.filter((card) => card.columnId === "")}
 								activeCard={activeCard}
-								overCard={overCard}
 								hoverCard={hoverCard}
 								selectedCard={selectedCard}
-								isOverColumn={overColumn?.id === ""}
 								setHoverId={setHoverId}
 								setSelectedPlace={setSelectedPlace}
 							/>
@@ -202,10 +197,8 @@ export function TripItinerary({
 									column={{ id: "", title: "Gallery" }}
 									cards={cards.filter((card) => card.columnId === "")}
 									activeCard={activeCard}
-									overCard={overCard}
 									hoverCard={hoverCard}
 									selectedCard={selectedCard}
-									isOverColumn={overColumn?.id === ""}
 									setHoverId={setHoverId}
 									setSelectedPlace={setSelectedPlace}
 								/>
@@ -216,10 +209,8 @@ export function TripItinerary({
 									column={col}
 									cards={cards.filter((card) => card.columnId === col.id)}
 									activeCard={activeCard}
-									overCard={overCard}
 									hoverCard={hoverCard}
 									selectedCard={selectedCard}
-									isOverColumn={overColumn?.id === col.id}
 									setHoverId={setHoverId}
 									setSelectedPlace={setSelectedPlace}
 								/>
@@ -255,11 +246,9 @@ export function TripItinerary({
 		}
 	}
 
-	function onDragEnd(event: DragEndEvent) {
-		setActiveCard(null);
-		setOverCard(null);
-		setOverColumn(null);
+	function onDragEnd(event: DragEndEvent) {}
 
+	function onDragOver(event: DragOverEvent) {
 		const { active, over } = event;
 		if (!over) return;
 
@@ -290,13 +279,10 @@ export function TripItinerary({
 					activeCard.columnId !== overCard.columnId
 				) {
 					activeCard.columnId = overCard.columnId;
-					const newCards = arrayMove(cards, activeIndex, overIndex - 1);
-					updateCards(newCards);
-					return newCards;
+					return arrayMove(cards, activeIndex, overIndex - 1);
 				}
-				const newCards = arrayMove(cards, activeIndex, overIndex);
-				updateCards(newCards);
-				return newCards;
+
+				return arrayMove(cards, activeIndex, overIndex);
 			});
 		}
 
@@ -308,38 +294,11 @@ export function TripItinerary({
 				const activeCard = cards[activeIndex];
 				if (activeCard) {
 					activeCard.columnId = overId as UniqueIdentifier;
-					const newCards = arrayMove(cards, activeIndex, activeIndex);
-					updateCards(newCards);
-					return newCards;
+					return arrayMove(cards, activeIndex, activeIndex);
 				}
 
 				return cards;
 			});
-		}
-	}
-
-	function onDragOver(event: DragOverEvent) {
-		const { over } = event;
-		if (!over) return;
-
-		const overId = over.id;
-
-		if (!hasDraggableData(over)) return;
-
-		const overData = over.data.current;
-
-		const isOverACard = overData?.type === "Card";
-		if (isOverACard) {
-			const overIndex = cards.findIndex((c) => c.id === overId);
-			const overCard = cards[overIndex];
-			setOverColumn(null);
-			setOverCard(overCard);
-		}
-
-		const isOverAColumn = overData?.type === "Column";
-		if (isOverAColumn) {
-			setOverCard(null);
-			setOverColumn(overData.column);
 		}
 	}
 }

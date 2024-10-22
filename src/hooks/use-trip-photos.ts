@@ -2,6 +2,8 @@ import { PlaceModel, TripModel } from "@/lib/types";
 import { useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
 import { useEffect, useState } from "react";
 
+const photoCache = new Map<string, string[]>();
+
 export const useTripPhotos = (tripWithoutPhotos: TripModel) => {
 	const [trip, setTrip] = useState(tripWithoutPhotos);
 
@@ -23,18 +25,27 @@ export const useTripPhotos = (tripWithoutPhotos: TripModel) => {
 		const fetchDetails = async () => {
 			let locationPhotos: string[] = [];
 
-			const detailRequestOptions = {
-				placeId: tripWithoutPhotos.location.placeId,
-				fields: ["photos"]
+			const fetchPhotos = async (placeId: string) => {
+				if (photoCache.has(placeId)) {
+					return photoCache.get(placeId) || [];
+				}
+
+				const detailRequestOptions = {
+					placeId,
+					fields: ["photos"]
+				};
+
+				return new Promise<string[]>((resolve) => {
+					placesService.getDetails(detailRequestOptions, (placeDetails) => {
+						const photos =
+							placeDetails?.photos?.map((photo) => photo.getUrl()) || [];
+						photoCache.set(placeId, photos);
+						resolve(photos);
+					});
+				});
 			};
 
-			await new Promise<void>((resolve) => {
-				placesService.getDetails(detailRequestOptions, (placeDetails) => {
-					locationPhotos =
-						placeDetails?.photos?.map((photo) => photo.getUrl()) || [];
-					resolve();
-				});
-			});
+			locationPhotos = await fetchPhotos(tripWithoutPhotos.location.placeId);
 
 			const updatedLocation = {
 				...tripWithoutPhotos.location,
@@ -44,19 +55,8 @@ export const useTripPhotos = (tripWithoutPhotos: TripModel) => {
 			let tripPhotos: string[][] = [];
 
 			const promises = tripWithoutPhotos.places.map((place, index) => {
-				return new Promise<void>((resolve) => {
-					const detailRequestOptions = {
-						placeId: place.placeId,
-						fields: ["photos"]
-					};
-
-					placesService.getDetails(detailRequestOptions, (placeDetails) => {
-						const photos = placeDetails?.photos?.map((photo) => photo.getUrl());
-						if (photos) {
-							tripPhotos[index] = photos;
-						}
-						resolve();
-					});
+				return fetchPhotos(place.placeId).then((photos) => {
+					tripPhotos[index] = photos;
 				});
 			});
 

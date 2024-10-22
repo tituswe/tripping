@@ -22,7 +22,6 @@ import {
 import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import { PlaceReview } from "@prisma/client";
 import { CircleAlert } from "lucide-react";
-import { PlaceInput } from "../custom-ui/place-input";
 import { TripItineraryCard } from "./trip-itinerary-card";
 import {
 	TripItineraryColumn,
@@ -164,12 +163,6 @@ export function TripItinerary({
 
 	return (
 		<>
-			<div className="mx-2">
-				<PlaceInput
-					existingPlaces={trip.places}
-					onPlaceSelect={onPlaceSelect}
-				/>
-			</div>
 			<DndContext
 				sensors={sensors}
 				onDragStart={onDragStart}

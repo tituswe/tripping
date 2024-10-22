@@ -1,10 +1,4 @@
-import {
-	BugPlay,
-	CirclePlus,
-	LayoutGrid,
-	LucideIcon,
-	MapPin
-} from "lucide-react";
+import { CirclePlus, LayoutGrid, LucideIcon, MapPin } from "lucide-react";
 import { TripModel } from "./types";
 
 type Submenu = {
@@ -55,18 +49,6 @@ export function getMenuList(pathname: string, trips: TripModel[]): Group[] {
 					label: "New Trip",
 					active: pathname === "/trips/new",
 					icon: CirclePlus,
-					submenus: []
-				}
-			]
-		},
-		{
-			groupLabel: "",
-			menus: [
-				{
-					href: "/playground",
-					label: "Playground",
-					active: pathname.includes("/playground"),
-					icon: BugPlay,
 					submenus: []
 				}
 			]

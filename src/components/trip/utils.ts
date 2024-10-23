@@ -171,8 +171,9 @@ export function getCards(
 ): DndCard[] {
 	const cards = places.map((place) => {
 		if (place.date && from && to) {
+			const adjustedTo = addDays(to, 1);
 			const columnId =
-				place.date >= from && place.date <= to
+				place.date >= from && place.date <= adjustedTo
 					? format(place.date, "yyyy-MM-dd")
 					: "";
 

@@ -56,13 +56,6 @@ export function TripHeader({ users, trip }: TripHeaderProps) {
 	const [isSettingsDropdownOpen, setIsSettingsDropdownOpen] = useState(false);
 
 	const onCloseAutoFocus = async () => {
-		if (
-			trip.from ||
-			(undefined === dateRange?.from && trip.to) ||
-			undefined === dateRange?.to
-		)
-			return;
-
 		await updateTrip(trip.id, {
 			from: dateRange?.from,
 			to: dateRange?.to

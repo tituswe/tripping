@@ -96,7 +96,7 @@ export function TripItinerary({
 					});
 				});
 			});
-		}, 500); // Delay timeout to prevent multiple updates
+		}, 1000); // Delay timeout to prevent multiple updates
 
 		return () => clearTimeout(timeoutId);
 	}, [cards]);

@@ -53,9 +53,13 @@ export function TripMapWidget({ trip, selectedPlace }: TripMapWidgetProps) {
 							<StarFilledIcon className="h-4 w-4 mr-1 text-yellow-500" />
 							<p className="font-semibold">
 								{selectedPlace?.rating}{" "}
-								<span className="font-light">
-									({selectedPlace?.userRatingsTotal})
-								</span>
+								{selectedPlace?.userRatingsTotal ? (
+									<span className="font-light">
+										({selectedPlace?.userRatingsTotal})
+									</span>
+								) : (
+									<span className="font-light">No ratings</span>
+								)}
 							</p>
 						</div>
 						<button
@@ -70,21 +74,25 @@ export function TripMapWidget({ trip, selectedPlace }: TripMapWidgetProps) {
 						</button>
 						<div className="flex items-start pb-1">
 							<Clock className="h-4 w-4 mr-1 mt-0.5 flex-shrink-0" />
-							<p className="flex flex-col">
-								<span className="flex">
-									<span>{selectedPlace?.openingHours[0]}</span>
-									<button
-										className="ml-1 font-normal text-blue-500"
-										onClick={() => setIsShowingTimes(!isShowingTimes)}
-									>
-										Show times...
-									</button>
-								</span>
-								{isShowingTimes &&
-									selectedPlace?.openingHours
-										.slice(1)
-										.map((time, index) => <span key={index}>{time}</span>)}
-							</p>
+							{selectedPlace?.openingHours.length > 0 ? (
+								<p className="flex flex-col">
+									<span className="flex">
+										<span>{selectedPlace?.openingHours[0]}</span>
+										<button
+											className="ml-1 font-normal text-blue-500"
+											onClick={() => setIsShowingTimes(!isShowingTimes)}
+										>
+											Show times...
+										</button>
+									</span>
+									{isShowingTimes &&
+										selectedPlace?.openingHours
+											.slice(1)
+											.map((time, index) => <span key={index}>{time}</span>)}
+								</p>
+							) : (
+								<p>No timings</p>
+							)}
 						</div>
 					</div>
 				</CardContent>

@@ -51,11 +51,12 @@ export function TripItineraryCard({
 	};
 
 	const variants = cva(
-		`w-full rounded-md cursor-grab shadow-none transition hover:bg-muted ${
-			isSentinel && "bg-muted border-t-none border-l-none border-r-none"
-		} ${isSentinel && "bg-muted border-none"} ${
-			(isHoverCard || isSelectedCard) && "bg-muted"
-		}`,
+		`w-full rounded-md cursor-grab shadow-none transition duration-300 hover:bg-muted ${
+			isSentinel &&
+			"bg-muted border-transparent border-t-none border-l-none border-r-none"
+		}
+		${isHoverCard && "bg-muted text-primary"}
+		${isSelectedCard && "border-2 border-primary"}`,
 		{
 			variants: {
 				dragging: {
@@ -85,7 +86,10 @@ export function TripItineraryCard({
 				{card.content.name}
 			</CardHeader>
 			<CardContent className="px-3 pt-0 pb-2 text-left whitespace-pre-wrap">
-				<p className="text-xs text-muted-foreground text-ellipsis overflow-hidden line-clamp-3 font-light">
+				<p
+					className={`text-xs text-muted-foreground
+					 text-ellipsis overflow-hidden line-clamp-3 font-light`}
+				>
 					{card.content.formattedAddress}
 				</p>
 			</CardContent>

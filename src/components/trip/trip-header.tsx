@@ -131,7 +131,7 @@ export function TripHeader({ users, trip }: TripHeaderProps) {
 							{trip.title || `Your trip to ${trip.location.name}`}
 						</span>
 					)}
-					<div className="flex flex-row space-x-1 items-center">
+					<div className="flex flex-row space-x-0 items-center">
 						<TripHeaderParty
 							tripId={trip.id}
 							creator={trip.creator}

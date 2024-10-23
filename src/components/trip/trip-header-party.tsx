@@ -77,7 +77,7 @@ export function TripHeaderParty({
 		<Popover open={open} onOpenChange={setOpen}>
 			<PopoverTrigger asChild>
 				<Button variant="ghost" className="flex flex-row -space-x-0.5">
-					<Avatar className="h-7 w-7 outline outline-1 outline-primary">
+					<Avatar className="h-8 w-8 outline outline-1 outline-primary">
 						<AvatarImage src={creator.image || ""} alt="Avatar" />
 						<AvatarFallback className="bg-muted">
 							{creator.name?.charAt(0)}
@@ -86,7 +86,7 @@ export function TripHeaderParty({
 					{invited.map((user) => (
 						<Avatar
 							key={user.id}
-							className="h-7 w-7 outline outline-1 outline-primary"
+							className="h-8 w-8 outline outline-1 outline-primary"
 						>
 							<AvatarImage src={user.image || ""} alt="Avatar" />
 							<AvatarFallback className="bg-muted">
@@ -136,7 +136,7 @@ export function TripHeaderParty({
 												: "cursor-pointer"
 										}`}
 									>
-										<Avatar className="h-6 w-6 outline outline-primary mr-3">
+										<Avatar className="h-6 w-6 outline outline-1 outline-primary mr-3">
 											<AvatarImage src={user.image || ""} alt="Avatar" />
 											<AvatarFallback className="bg-transparent">
 												{user.name?.charAt(0)}

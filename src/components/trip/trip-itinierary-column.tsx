@@ -15,7 +15,6 @@ import { DndCard, DndColumn, DndColumnDragData } from "./types";
 interface TripItineraryColumnProps {
 	column: DndColumn;
 	cards: DndCard[];
-	activeCard: DndCard | null;
 	hoverCard: DndCard | null;
 	selectedCard: DndCard | null;
 	setHoverId: (id: string | null) => void;
@@ -26,7 +25,6 @@ interface TripItineraryColumnProps {
 export function TripItineraryColumn({
 	column,
 	cards,
-	activeCard,
 	hoverCard,
 	selectedCard,
 	setHoverId,
@@ -61,6 +59,13 @@ export function TripItineraryColumn({
 				<Badge variant={isSentinel ? "default" : "secondary"}>
 					{column.title}
 				</Badge>
+				{!isSentinel && (
+					<p className="ml-auto text-xs text-muted-foreground font-medium">
+						{new Date(column.id).toLocaleDateString("en-US", {
+							weekday: "long"
+						})}
+					</p>
+				)}
 			</CardHeader>
 			<ScrollArea>
 				<CardContent className="flex flex-grow flex-col gap-2 pt-2 pb-0 px-0">

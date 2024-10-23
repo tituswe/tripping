@@ -64,11 +64,7 @@ export function NewTrip() {
 		if (!location) return;
 
 		try {
-			const response = await createTrip(
-				session?.user?.email!,
-				location,
-				dateRange
-			);
+			const response = await createTrip(location, dateRange);
 			toast({
 				title: "You're set!",
 				description: `Trip to ${response.location.formattedAddress}${

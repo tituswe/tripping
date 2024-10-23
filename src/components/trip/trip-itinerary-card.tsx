@@ -5,6 +5,7 @@ import { CSS } from "@dnd-kit/utilities";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { PlaceModel } from "@/lib/types";
+import { snakeToNormalCase } from "@/lib/utils";
 import { cva } from "class-variance-authority";
 import { DndCard, DndCardDragData } from "./types";
 
@@ -85,7 +86,10 @@ export function TripItineraryCard({
 			<CardHeader className="px-3 pt-2 pb-1 text-xs font-semibold">
 				{card.content.name}
 			</CardHeader>
-			<CardContent className="px-3 pt-0 pb-2 text-left whitespace-pre-wrap">
+			<CardContent className="px-3 pt-0 pb-2 text-left whitespace-pre-wrap space-y-1.5">
+				<p className="text-xs font-normal text-muted-foreground">
+					{snakeToNormalCase(card.content.tags[0])}
+				</p>
 				<p
 					className={`text-xs text-muted-foreground
 					 text-ellipsis overflow-hidden line-clamp-3 font-light`}

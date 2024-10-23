@@ -2,6 +2,7 @@
 
 import { DateRange } from "react-day-picker";
 
+import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import {
 	LocationRequest,
@@ -82,10 +83,17 @@ export async function removeUserFromTrip(
 }
 
 export async function createTrip(
-	userEmail: string,
 	location: LocationRequest,
 	dateRange?: DateRange
 ): Promise<TripModel> {
+	const session = await auth();
+
+	if (!session || !session.user?.email) {
+		throw new Error("Unauthorized");
+	}
+
+	const userEmail = session.user?.email;
+
 	let existingLocation = await prisma.location.findFirst({
 		where: { placeId: location.placeId }
 	});
@@ -164,9 +172,15 @@ export async function getTrip(id: string): Promise<TripModel> {
 	return tripModel;
 }
 
-export async function getTrips(
-	userEmail?: string | null
-): Promise<TripModel[]> {
+export async function getTrips(): Promise<TripModel[]> {
+	const session = await auth();
+
+	if (!session || !session.user?.email) {
+		return [];
+	}
+
+	const userEmail = session.user?.email;
+
 	if (!userEmail) {
 		return [];
 	}
@@ -227,6 +241,25 @@ export async function updateTrip(
 }
 
 export async function deleteTrip(id: string): Promise<void> {
+	const session = await auth();
+
+	if (!session || !session.user?.email) {
+		throw new Error("Unauthorized");
+	}
+
+	const userEmail = session.user?.email;
+
+	const tripModelToDelete = await prisma.trip.findFirst({
+		where: { id },
+		include: { creator: true }
+	});
+
+	if (userEmail !== tripModelToDelete?.creator.email) {
+		throw new Error(
+			`You are not the creator of this trip. Contact ${tripModelToDelete?.creator.name} to delete this trip.`
+		);
+	}
+
 	await prisma.trip.delete({
 		where: { id }
 	});

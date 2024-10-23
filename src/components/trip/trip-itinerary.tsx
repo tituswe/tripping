@@ -176,7 +176,6 @@ export function TripItinerary({
 								isSentinel
 								column={{ id: "", title: "Gallery" }}
 								cards={cards.filter((card) => card.columnId === "")}
-								activeCard={activeCard}
 								hoverCard={hoverCard}
 								selectedCard={selectedCard}
 								setHoverId={setHoverId}
@@ -189,7 +188,6 @@ export function TripItinerary({
 									isSentinel
 									column={{ id: "", title: "Gallery" }}
 									cards={cards.filter((card) => card.columnId === "")}
-									activeCard={activeCard}
 									hoverCard={hoverCard}
 									selectedCard={selectedCard}
 									setHoverId={setHoverId}
@@ -201,7 +199,6 @@ export function TripItinerary({
 									key={col.id}
 									column={col}
 									cards={cards.filter((card) => card.columnId === col.id)}
-									activeCard={activeCard}
 									hoverCard={hoverCard}
 									selectedCard={selectedCard}
 									setHoverId={setHoverId}
@@ -313,62 +310,6 @@ export function TripItinerary({
 			});
 		}
 	}
-
-	// function onDragEnd(event: DragEndEvent) {}
-
-	// function onDragOver(event: DragOverEvent) {
-	// 	const { active, over } = event;
-	// 	if (!over) return;
-
-	// 	const activeId = active.id;
-	// 	const overId = over.id;
-
-	// 	if (activeId === overId) return;
-
-	// 	if (!hasDraggableData(active) || !hasDraggableData(over)) return;
-
-	// 	const activeData = active.data.current;
-	// 	const overData = over.data.current;
-
-	// 	const isActiveACard = activeData?.type === "Card";
-	// 	const isOverACard = overData?.type === "Card";
-
-	// 	if (!isActiveACard) return;
-
-	// 	if (isActiveACard && isOverACard) {
-	// 		setCards((cards) => {
-	// 			const activeIndex = cards.findIndex((c) => c.id === activeId);
-	// 			const overIndex = cards.findIndex((c) => c.id === overId);
-	// 			const activeCard = cards[activeIndex];
-	// 			const overCard = cards[overIndex];
-	// 			if (
-	// 				activeCard &&
-	// 				overCard &&
-	// 				activeCard.columnId !== overCard.columnId
-	// 			) {
-	// 				activeCard.columnId = overCard.columnId;
-	// 				return arrayMove(cards, activeIndex, overIndex - 1);
-	// 			}
-
-	// 			return arrayMove(cards, activeIndex, overIndex);
-	// 		});
-	// 	}
-
-	// 	const isOverAColumn = overData?.type === "Column";
-
-	// 	if (isActiveACard && isOverAColumn) {
-	// 		setCards((cards) => {
-	// 			const activeIndex = cards.findIndex((t) => t.id === activeId);
-	// 			const activeCard = cards[activeIndex];
-	// 			if (activeCard) {
-	// 				activeCard.columnId = overId as UniqueIdentifier;
-	// 				return arrayMove(cards, activeIndex, activeIndex);
-	// 			}
-
-	// 			return cards;
-	// 		});
-	// 	}
-	// }
 }
 
 function TripItineraryNull() {

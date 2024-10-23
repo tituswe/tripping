@@ -16,5 +16,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 			const callbackUrl = new URL(url).searchParams.get("callbackUrl");
 			return callbackUrl ? callbackUrl : baseUrl;
 		}
-	}
+	},
+	useSecureCookies: process.env.NODE_ENV === "production",
+	debug: true
 });

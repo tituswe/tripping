@@ -7,10 +7,79 @@ import {
 	LocationRequest,
 	PlaceModel,
 	PlaceRequest,
-	TripModel
+	TripModel,
+	UserModel
 } from "@/lib/types";
 import { Place, Trip } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+
+export async function getUsers(): Promise<UserModel[]> {
+	const users = await prisma.user.findMany();
+	return users;
+}
+export async function addUserToTrip(
+	tripId: string,
+	userId: string
+): Promise<TripModel> {
+	const updatedTrip = await prisma.trip.update({
+		where: { id: tripId },
+		data: {
+			invited: {
+				connect: { id: userId }
+			}
+		},
+		include: {
+			location: true,
+			places: {
+				include: { reviews: true }
+			},
+			creator: true,
+			invited: true
+		}
+	});
+
+	const updatedTripModel = {
+		...updatedTrip,
+		location: { ...updatedTrip.location, photos: [] },
+		places: updatedTrip.places.map((place) => ({ ...place, photos: [] }))
+	};
+
+	revalidatePath(`/trips/${tripId}`);
+
+	return updatedTripModel;
+}
+
+export async function removeUserFromTrip(
+	tripId: string,
+	userId: string
+): Promise<TripModel> {
+	const updatedTrip = await prisma.trip.update({
+		where: { id: tripId },
+		data: {
+			invited: {
+				disconnect: { id: userId }
+			}
+		},
+		include: {
+			location: true,
+			places: {
+				include: { reviews: true }
+			},
+			creator: true,
+			invited: true
+		}
+	});
+
+	const updatedTripModel = {
+		...updatedTrip,
+		location: { ...updatedTrip.location, photos: [] },
+		places: updatedTrip.places.map((place) => ({ ...place, photos: [] }))
+	};
+
+	revalidatePath(`/trips/${tripId}`);
+
+	return updatedTripModel;
+}
 
 export async function createTrip(
 	userEmail: string,
@@ -56,7 +125,9 @@ export async function createTrip(
 			location: true,
 			places: {
 				include: { reviews: true }
-			}
+			},
+			creator: true,
+			invited: true
 		}
 	});
 
@@ -78,7 +149,9 @@ export async function getTrip(id: string): Promise<TripModel> {
 			location: true,
 			places: {
 				include: { reviews: true }
-			}
+			},
+			creator: true,
+			invited: true
 		}
 	});
 
@@ -103,12 +176,16 @@ export async function getTrips(
 	});
 
 	const trips = await prisma.trip.findMany({
-		where: { creatorId: user?.id },
+		where: {
+			OR: [{ creatorId: user?.id }, { invited: { some: { id: user?.id } } }]
+		},
 		include: {
 			location: true,
 			places: {
 				include: { reviews: true }
-			}
+			},
+			creator: true,
+			invited: true
 		}
 	});
 
@@ -132,7 +209,9 @@ export async function updateTrip(
 			location: true,
 			places: {
 				include: { reviews: true }
-			}
+			},
+			creator: true,
+			invited: true
 		}
 	});
 

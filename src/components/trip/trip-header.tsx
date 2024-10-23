@@ -33,14 +33,16 @@ import {
 	PopoverTrigger
 } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
-import { TripModel } from "@/lib/types";
+import { TripModel, UserModel } from "@/lib/types";
 import { format } from "date-fns";
+import { TripHeaderParty } from "./trip-header-party";
 
 interface TripHeaderProps {
+	users: UserModel[];
 	trip: TripModel;
 }
 
-export function TripHeader({ trip }: TripHeaderProps) {
+export function TripHeader({ users, trip }: TripHeaderProps) {
 	const router = useRouter();
 	const { toast } = useToast();
 
@@ -51,9 +53,16 @@ export function TripHeader({ trip }: TripHeaderProps) {
 	const [isEditingTitle, setIsEditingTitle] = useState(false);
 	const [title, setTitle] = useState(trip.location.name);
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+	const [isSettingsDropdownOpen, setIsSettingsDropdownOpen] = useState(false);
 
 	const onCloseAutoFocus = async () => {
+		if (
+			trip.from ||
+			(undefined === dateRange?.from && trip.to) ||
+			undefined === dateRange?.to
+		)
+			return;
+
 		await updateTrip(trip.id, {
 			from: dateRange?.from,
 			to: dateRange?.to
@@ -76,7 +85,7 @@ export function TripHeader({ trip }: TripHeaderProps) {
 	};
 
 	const handleDeleteClick = () => {
-		setIsDropdownOpen(false);
+		setIsSettingsDropdownOpen(false);
 		setTimeout(() => {
 			setIsDeleteDialogOpen(true);
 		}, 0);
@@ -129,24 +138,35 @@ export function TripHeader({ trip }: TripHeaderProps) {
 							{trip.title || `Your trip to ${trip.location.name}`}
 						</span>
 					)}
-					<DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
-						<DropdownMenuTrigger asChild>
-							<Button variant={"ghost"}>
-								<Cog className="h-5 w-5" />
-							</Button>
-						</DropdownMenuTrigger>
-						<DropdownMenuContent align="end">
-							<DropdownMenuLabel>Settings</DropdownMenuLabel>
-							<DropdownMenuSeparator />
-							<DropdownMenuItem
-								className="text-destructive cursor-pointer"
-								onSelect={handleDeleteClick}
-							>
-								<Trash2 className="mr-2 h-4 w-4" />
-								Delete
-							</DropdownMenuItem>
-						</DropdownMenuContent>
-					</DropdownMenu>
+					<div className="flex flex-row space-x-1 items-center">
+						<TripHeaderParty
+							tripId={trip.id}
+							creator={trip.creator}
+							invited={trip.invited}
+							users={users}
+						/>
+						<DropdownMenu
+							open={isSettingsDropdownOpen}
+							onOpenChange={setIsSettingsDropdownOpen}
+						>
+							<DropdownMenuTrigger asChild>
+								<Button variant={"ghost"}>
+									<Cog className="h-5 w-5" />
+								</Button>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent align="end">
+								<DropdownMenuLabel>Settings</DropdownMenuLabel>
+								<DropdownMenuSeparator />
+								<DropdownMenuItem
+									className="text-destructive cursor-pointer"
+									onSelect={handleDeleteClick}
+								>
+									<Trash2 className="mr-2 h-4 w-4" />
+									Delete
+								</DropdownMenuItem>
+							</DropdownMenuContent>
+						</DropdownMenu>
+					</div>
 				</AlertTitle>
 				<AlertDescription className="ml-2 space-x-2">
 					<Popover>

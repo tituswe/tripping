@@ -2,7 +2,7 @@
 
 import { TripModel } from "@/lib/types";
 import { format } from "date-fns";
-import { Dot, Ellipsis, Trash2 } from "lucide-react";
+import { Dot, Ellipsis, MapPin, Trash2, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -17,6 +17,7 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle
 } from "@/components/ui/alert-dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -74,16 +75,38 @@ export function DashboardTripCard({ trip }: DashboardTripCardProps) {
 					<div className="bg-muted w-full h-full rounded-lg shadow-sm" />
 				)}
 			</div>
-			<div className="mt-2">
-				<span className="text-sm font-medium line-clamp-1 text-ellipsis">
-					{trip.title || `Trip to ${trip.location.name}`}
-				</span>
-				<div className="flex items-center text-xs font-light text-muted-foreground truncate line-clamp-1 text-ellipsis">
-					{trip.from && <p>{format(trip.from, "MMM dd, yyyy")}</p>}
-					{trip.from && <Dot className="h-4 w-4 flex-shrink-0" />}
-					{trip.places.length > 0 && <p>{trip.places.length} Places</p>}
-					{trip.places.length <= 0 && <p>No places added</p>}
+			<div className="flex flex-row items-center">
+				<div className="mt-2">
+					<span className="text-sm font-medium line-clamp-1 text-ellipsis">
+						{trip.title || `Trip to ${trip.location.name}`}
+					</span>
+					<div className="flex items-center text-xs font-light text-muted-foreground truncate line-clamp-1 text-ellipsis">
+						{trip.from && <p>{format(trip.from, "MMM dd, yyyy")}</p>}
+						{trip.from && <Dot className="h-4 w-4 flex-shrink-0" />}
+						{trip.places.length > 0 && (
+							<div className="flex items-center">
+								<MapPin className="mr-0.5 h-3 w-3 flex-shrink-0" />
+								<p>{trip.places.length}</p>
+							</div>
+						)}
+						{trip.places.length <= 0 && <p>No places added</p>}
+						{trip.invited.length > 0 && (
+							<Dot className="h-4 w-4 flex-shrink-0" />
+						)}
+						{trip.invited.length > 0 && (
+							<div className="flex items-center">
+								<User className="mr-0.5 h-3 w-3 flex-shrink-0" />
+								<p>{trip.invited.length}</p>
+							</div>
+						)}
+					</div>
 				</div>
+				<Avatar className="translate-y-1 ml-auto h-6 w-6 outline outline-1 outline-muted-foreground">
+					<AvatarImage src={trip.creator.image || ""} alt="Avatar" />
+					<AvatarFallback className="bg-muted text-xs">
+						{trip.creator.name?.charAt(0)}
+					</AvatarFallback>
+				</Avatar>
 			</div>
 
 			<DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>

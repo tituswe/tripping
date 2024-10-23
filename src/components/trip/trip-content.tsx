@@ -5,7 +5,7 @@ import { useScreenResize, useScreenSize } from "@/hooks/use-screen-size";
 import { useStore } from "@/hooks/use-store";
 import { useTabToggle, useTabToggleStore } from "@/hooks/use-tab-toggle";
 import { useTripPhotos } from "@/hooks/use-trip-photos";
-import { PlaceModel, TripModel } from "@/lib/types";
+import { PlaceModel, TripModel, UserModel } from "@/lib/types";
 import { TabsContent } from "@radix-ui/react-tabs";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { Kanban, List } from "lucide-react";
@@ -25,11 +25,16 @@ const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
 const libraries = ["marker"];
 
 interface TripContentProps {
+	users: UserModel[];
 	trip: TripModel;
 	tab: useTabToggleStore;
 }
 
-function TripContent({ trip: tripWithoutPhotos, tab }: TripContentProps) {
+function TripContent({
+	users,
+	trip: tripWithoutPhotos,
+	tab
+}: TripContentProps) {
 	const trip = useTripPhotos(tripWithoutPhotos);
 
 	const [hoverId, setHoverId] = useState<string | null>(null);
@@ -50,7 +55,7 @@ function TripContent({ trip: tripWithoutPhotos, tab }: TripContentProps) {
 
 	return (
 		<>
-			<TripHeader trip={trip} />
+			<TripHeader users={users} trip={trip} />
 			{screen.screenSize === "sm" && (
 				<div className="space-y-3">
 					<Tabs
@@ -151,10 +156,12 @@ function TripContent({ trip: tripWithoutPhotos, tab }: TripContentProps) {
 }
 
 interface TripContentWithAPIProviderProps {
+	users: UserModel[];
 	trip: TripModel;
 }
 
 export function TripContentWithAPIProvider({
+	users,
 	trip
 }: TripContentWithAPIProviderProps) {
 	const tab = useStore(useTabToggle, (state) => state);
@@ -163,7 +170,7 @@ export function TripContentWithAPIProvider({
 
 	return (
 		<APIProvider apiKey={API_KEY} libraries={libraries}>
-			<TripContent trip={trip} tab={tab} />
+			<TripContent users={users} trip={trip} tab={tab} />
 		</APIProvider>
 	);
 }

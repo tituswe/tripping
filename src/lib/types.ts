@@ -17,6 +17,8 @@ export type TripModel = Prisma.TripGetPayload<{
 	include: {
 		location: true;
 		places: true; // Include places
+		creator: true;
+		invited: true;
 	};
 }> & {
 	location: {
@@ -24,3 +26,5 @@ export type TripModel = Prisma.TripGetPayload<{
 	};
 	places: PlaceModel[]; // Specify the type for places
 };
+
+export type UserModel = Prisma.UserGetPayload<{}>;

@@ -25,7 +25,8 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  trips         Trip[]
+  createdTrips  Trip[] @relation("CreatedTrips")
+  invitedTrips  Trip[] @relation("InvitedTrips")
 }
  
 model Account {
@@ -88,8 +89,9 @@ model Trip {
   id          String     @id @default(cuid())
   location    Location   @relation(fields: [locationId], references: [id], onDelete: Cascade)
   locationId  String
-  creator     User       @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  creator     User       @relation("CreatedTrips", fields: [creatorId], references: [id], onDelete: Cascade)
   creatorId   String
+  invited     User[]     @relation("InvitedTrips")
   title       String?    
   from        DateTime?
   to          DateTime?

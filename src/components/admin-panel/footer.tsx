@@ -16,6 +16,18 @@ export function Footer() {
 					</Link>
 					.
 				</p>
+				<p className="ml-1 text-xs md:text-sm leading-loose text-muted-foreground text-left">
+					Join the Telegram community{" "}
+					<Link
+						href="https://t.me/trippingaround"
+						target="_blank"
+						rel="noopener noreferrer"
+						className="font-medium underline underline-offset-4"
+					>
+						here
+					</Link>
+					!
+				</p>
 			</div>
 		</div>
 	);

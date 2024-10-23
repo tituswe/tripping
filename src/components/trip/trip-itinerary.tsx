@@ -239,9 +239,7 @@ export function TripItinerary({
 		}
 	}
 
-	function onDragEnd(event: DragEndEvent) {}
-
-	function onDragOver(event: DragOverEvent) {
+	function onDragEnd(event: DragEndEvent) {
 		const { active, over } = event;
 		if (!over) return;
 
@@ -261,6 +259,7 @@ export function TripItinerary({
 		if (!isActiveACard) return;
 
 		if (isActiveACard && isOverACard) {
+			console.log("DRAG END");
 			setCards((cards) => {
 				const activeIndex = cards.findIndex((c) => c.id === activeId);
 				const overIndex = cards.findIndex((c) => c.id === overId);
@@ -278,10 +277,30 @@ export function TripItinerary({
 				return arrayMove(cards, activeIndex, overIndex);
 			});
 		}
+	}
+
+	function onDragOver(event: DragOverEvent) {
+		const { active, over } = event;
+		if (!over) return;
+
+		const activeId = active.id;
+		const overId = over.id;
+
+		if (activeId === overId) return;
+
+		if (!hasDraggableData(active) || !hasDraggableData(over)) return;
+
+		const activeData = active.data.current;
+		const overData = over.data.current;
+
+		const isActiveACard = activeData?.type === "Card";
+
+		if (!isActiveACard) return;
 
 		const isOverAColumn = overData?.type === "Column";
 
 		if (isActiveACard && isOverAColumn) {
+			console.log("DRAG OVER");
 			setCards((cards) => {
 				const activeIndex = cards.findIndex((t) => t.id === activeId);
 				const activeCard = cards[activeIndex];
@@ -294,6 +313,62 @@ export function TripItinerary({
 			});
 		}
 	}
+
+	// function onDragEnd(event: DragEndEvent) {}
+
+	// function onDragOver(event: DragOverEvent) {
+	// 	const { active, over } = event;
+	// 	if (!over) return;
+
+	// 	const activeId = active.id;
+	// 	const overId = over.id;
+
+	// 	if (activeId === overId) return;
+
+	// 	if (!hasDraggableData(active) || !hasDraggableData(over)) return;
+
+	// 	const activeData = active.data.current;
+	// 	const overData = over.data.current;
+
+	// 	const isActiveACard = activeData?.type === "Card";
+	// 	const isOverACard = overData?.type === "Card";
+
+	// 	if (!isActiveACard) return;
+
+	// 	if (isActiveACard && isOverACard) {
+	// 		setCards((cards) => {
+	// 			const activeIndex = cards.findIndex((c) => c.id === activeId);
+	// 			const overIndex = cards.findIndex((c) => c.id === overId);
+	// 			const activeCard = cards[activeIndex];
+	// 			const overCard = cards[overIndex];
+	// 			if (
+	// 				activeCard &&
+	// 				overCard &&
+	// 				activeCard.columnId !== overCard.columnId
+	// 			) {
+	// 				activeCard.columnId = overCard.columnId;
+	// 				return arrayMove(cards, activeIndex, overIndex - 1);
+	// 			}
+
+	// 			return arrayMove(cards, activeIndex, overIndex);
+	// 		});
+	// 	}
+
+	// 	const isOverAColumn = overData?.type === "Column";
+
+	// 	if (isActiveACard && isOverAColumn) {
+	// 		setCards((cards) => {
+	// 			const activeIndex = cards.findIndex((t) => t.id === activeId);
+	// 			const activeCard = cards[activeIndex];
+	// 			if (activeCard) {
+	// 				activeCard.columnId = overId as UniqueIdentifier;
+	// 				return arrayMove(cards, activeIndex, activeIndex);
+	// 			}
+
+	// 			return cards;
+	// 		});
+	// 	}
+	// }
 }
 
 function TripItineraryNull() {

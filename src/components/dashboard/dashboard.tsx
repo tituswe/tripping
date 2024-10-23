@@ -5,6 +5,7 @@ import { TripModel } from "@/lib/types";
 import { APIProvider } from "@vis.gl/react-google-maps";
 
 import { useTripsLocationPhotos } from "@/hooks/use-trips-location-photos";
+import { useSession } from "next-auth/react";
 import { DashboardExplore } from "./dashboard-explore";
 import { DashboardHistory } from "./dashboard-history";
 import { DashboardMap } from "./dashboard-map";
@@ -19,6 +20,7 @@ export interface DashboardProps {
 }
 
 function Dashboard({ trips: tripsWithoutPhotos }: DashboardProps) {
+	const { data: session } = useSession();
 	const trips = useTripsLocationPhotos(tripsWithoutPhotos);
 
 	const today = new Date();
@@ -30,11 +32,21 @@ function Dashboard({ trips: tripsWithoutPhotos }: DashboardProps) {
 	);
 	const exploreTrips = [] as TripModel[];
 
+	console.log(
+		session?.user
+			? `User is signed in\n${session.user.email}`
+			: "No user signed in"
+	);
+
 	return (
 		<div className="h-full w-full flex flex-col justify-center p-6">
 			<DashboardMap trips={trips} />
-			<DashboardUpcomingTrips trips={upcomingTrips} />
-			<DashboardHistory trips={pastTrips} />
+			{session?.user && (
+				<>
+					<DashboardUpcomingTrips trips={upcomingTrips} />
+					<DashboardHistory trips={pastTrips} />
+				</>
+			)}
 			<DashboardExplore trips={exploreTrips} />
 		</div>
 	);

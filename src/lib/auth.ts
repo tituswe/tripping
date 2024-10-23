@@ -10,5 +10,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 			clientId: process.env.GOOGLE_CLIENT_ID as string,
 			clientSecret: process.env.GOOGLE_CLIENT_SECRET as string
 		})
-	]
+	],
+	callbacks: {
+		async redirect({ url, baseUrl }) {
+			const callbackUrl = new URL(url).searchParams.get("callbackUrl");
+			return callbackUrl ? callbackUrl : baseUrl;
+		}
+	}
 });

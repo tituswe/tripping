@@ -91,8 +91,19 @@ export async function getTrip(id: string): Promise<TripModel> {
 	return tripModel;
 }
 
-export async function getTrips(): Promise<TripModel[]> {
+export async function getTrips(
+	userEmail?: string | null
+): Promise<TripModel[]> {
+	if (!userEmail) {
+		return [];
+	}
+
+	const user = await prisma.user.findFirst({
+		where: { email: userEmail }
+	});
+
 	const trips = await prisma.trip.findMany({
+		where: { creatorId: user?.id },
 		include: {
 			location: true,
 			places: {

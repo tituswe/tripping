@@ -1,7 +1,7 @@
 "use client";
 
 import { APIProvider, Map } from "@vis.gl/react-google-maps";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { createTrip } from "@/actions/actions";
@@ -57,7 +57,7 @@ export function NewTrip() {
 	};
 
 	if (!session?.user) {
-		router.push("/sign-in");
+		redirect("/sign-in");
 	}
 
 	const onSubmit = async () => {

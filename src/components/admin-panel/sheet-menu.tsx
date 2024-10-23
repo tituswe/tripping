@@ -11,9 +11,11 @@ import {
 	SheetTitle,
 	SheetTrigger
 } from "@/components/ui/sheet";
+import { auth } from "@/lib/auth";
 
 export async function SheetMenu() {
-	const trips = await getTrips();
+	const session = await auth();
+	const trips = await getTrips(session?.user?.email);
 
 	return (
 		<Sheet>

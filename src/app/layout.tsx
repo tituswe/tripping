@@ -6,6 +6,7 @@ import "./globals.css";
 
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/providers/theme-provider";
+import { Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
@@ -35,14 +36,16 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-	children
+	children,
+	params: { session }
 }: Readonly<{
 	children: React.ReactNode;
+	params: { session: Session | null | undefined };
 }>) {
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<body className={GeistSans.className}>
-				<SessionProvider session={null} refetchInterval={5 * 60}>
+				<SessionProvider session={session} refetchInterval={5 * 60}>
 					<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
 						{children}
 						<Toaster />

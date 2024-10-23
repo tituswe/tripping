@@ -6,6 +6,7 @@ import "./globals.css";
 
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/providers/theme-provider";
+import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
 	metadataBase: new URL(
@@ -41,10 +42,12 @@ export default function RootLayout({
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<body className={GeistSans.className}>
-				<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-					{children}
-					<Toaster />
-				</ThemeProvider>
+				<SessionProvider session={null} refetchInterval={5 * 60}>
+					<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+						{children}
+						<Toaster />
+					</ThemeProvider>
+				</SessionProvider>
 				<Analytics />
 			</body>
 		</html>

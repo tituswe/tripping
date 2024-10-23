@@ -25,6 +25,11 @@ export function DashboardHistory({ trips }: DashboardHistoryProps) {
 					<DashboardTripCard key={index} trip={trip} />
 				))}
 			</div>
+			{trips.length === 0 && (
+				<p className="text-sm font-light text-muted-foreground">
+					You haven&apos;t been on any trips yet.
+				</p>
+			)}
 		</div>
 	);
 }

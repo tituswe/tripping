@@ -12,11 +12,13 @@ import { useToast } from "@/hooks/use-toast";
 import { LocationRequest } from "@/lib/types";
 import { placeType } from "@/lib/utils";
 import { Plane } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { DateRange } from "react-day-picker";
 
 const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
 
 export function NewTrip() {
+	const { data: session } = useSession();
 	const router = useRouter();
 	const { toast } = useToast();
 	const [location, setLocation] = useState<LocationRequest | undefined>();
@@ -54,11 +56,19 @@ export function NewTrip() {
 		});
 	};
 
+	if (!session?.user) {
+		router.push("/sign-in");
+	}
+
 	const onSubmit = async () => {
 		if (!location) return;
 
 		try {
-			const response = await createTrip(location, dateRange);
+			const response = await createTrip(
+				session?.user?.email!,
+				location,
+				dateRange
+			);
 			toast({
 				title: "You're set!",
 				description: `Trip to ${response.location.formattedAddress}${

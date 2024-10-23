@@ -36,6 +36,11 @@ export function DashboardUpcomingTrips({ trips }: DashboardUpcomingTripsProps) {
 					<DashboardTripCard key={index} trip={trip} />
 				))}
 			</div>
+			{trips.length === 0 && (
+				<p className="text-sm font-light text-muted-foreground">
+					Get started by planning your next trip!
+				</p>
+			)}
 		</div>
 	);
 }

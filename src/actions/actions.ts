@@ -13,6 +13,7 @@ import { Place, Trip } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 export async function createTrip(
+	userEmail: string,
 	location: LocationRequest,
 	dateRange?: DateRange
 ): Promise<TripModel> {
@@ -36,8 +37,17 @@ export async function createTrip(
 		});
 	}
 
+	const user = await prisma.user.findFirst({
+		where: { email: userEmail }
+	});
+
+	if (!user) {
+		throw new Error("User not found");
+	}
+
 	const newTrip = await prisma.trip.create({
 		data: {
+			creatorId: user.id,
 			locationId: existingLocation.id,
 			from: dateRange?.from,
 			to: dateRange?.to

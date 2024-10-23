@@ -1,5 +1,9 @@
 "use client";
 
+import { StarFilledIcon } from "@radix-ui/react-icons";
+import { Clock, Copy, MapPin } from "lucide-react";
+import { useState } from "react";
+
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -7,9 +11,6 @@ import { Separator } from "@/components/ui/separator";
 import { useHandleCopy } from "@/hooks/use-handle-copy";
 import { PlaceModel, TripModel } from "@/lib/types";
 import { snakeToNormalCase } from "@/lib/utils";
-import { StarFilledIcon } from "@radix-ui/react-icons";
-import { Clock, Copy, MapPin } from "lucide-react";
-import { useState } from "react";
 
 interface TripMapWidgetProps {
 	trip: TripModel;
@@ -34,6 +35,21 @@ export function TripMapWidget({ trip, selectedPlace }: TripMapWidgetProps) {
 						<h3 className="text-primary text-lg font-semibold">
 							{selectedPlace?.name}
 						</h3>
+
+						<Separator />
+						<ScrollArea className="w-full whitespace-nowrap">
+							<div className="flex w-max space-x-2 my-1">
+								{selectedPlace?.photos.map((photo, index) => (
+									<img
+										key={index}
+										src={photo}
+										alt={selectedPlace?.name || `photo-${index}`}
+										className="w-full h-28 3xl:h-40 object-cover rounded-lg"
+									/>
+								))}
+							</div>
+							<ScrollBar orientation="horizontal" />
+						</ScrollArea>
 						<Separator />
 						<ScrollArea className="w-full whitespace-nowrap">
 							<div className="flex w-max space-x-3 my-1">
@@ -49,6 +65,7 @@ export function TripMapWidget({ trip, selectedPlace }: TripMapWidgetProps) {
 							</div>
 							<ScrollBar orientation="horizontal" />
 						</ScrollArea>
+
 						<div className="flex items-center">
 							<StarFilledIcon className="h-4 w-4 mr-1 text-yellow-500" />
 							<p className="font-semibold">

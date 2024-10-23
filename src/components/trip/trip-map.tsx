@@ -91,7 +91,7 @@ export function TripMap({
 								className="custom-marker"
 								style={{
 									transform: `scale(${
-										[hoverId, selectedPlace?.id].includes(id) ? 1.5 : 1
+										[hoverId, selectedPlace?.id].includes(id) ? 1.3 : 1
 									})`
 								}}
 								onMarkerClick={() => onMarkerClick(id)}
@@ -118,7 +118,9 @@ export function TripMap({
 								anchorPoint={AdvancedMarkerAnchorPoint.CENTER}
 								position={position}
 							>
-								<div className="visualization-marker" />
+								<div className="text-center translate-y-5 bg-primary-foreground bg-opacity-80 px-3 line-clamp-2 border-2 border-gray-800 rounded text-ellipsis font-semibold">
+									{content.name}
+								</div>
 							</AdvancedMarkerWithRef>
 						</React.Fragment>
 					);

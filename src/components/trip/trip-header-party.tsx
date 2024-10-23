@@ -53,7 +53,9 @@ export function TripHeaderParty({
 		}
 	};
 
-	const sortedUsers = users.sort((a, b) => {
+	const targetUsers = filter ? users : [creator, ...invited];
+
+	const sortedUsers = targetUsers.sort((a, b) => {
 		if (a.id === creator.id) return -1;
 		if (b.id === creator.id) return 1;
 		const aIsInvited = invited.some((user) => user.id === a.id);
@@ -119,7 +121,7 @@ export function TripHeaderParty({
 					<CommandList>
 						{filteredUsers.length === 0 ? (
 							<CommandEmpty>
-								<p className="text-muted-foreground">No user found.</p>
+								<p className="text-muted-foreground">No users found</p>
 							</CommandEmpty>
 						) : (
 							<CommandGroup>

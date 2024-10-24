@@ -5,10 +5,10 @@ import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import { cva } from "class-variance-authority";
 import { useMemo } from "react";
 
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { PlaceModel } from "@/lib/types";
-import { Badge } from "../ui/badge";
 import { TripItineraryCard } from "./trip-itinerary-card";
 import { DndCard, DndColumn, DndColumnDragData } from "./types";
 

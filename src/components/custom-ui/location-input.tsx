@@ -1,9 +1,9 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
 import { cn, placeType } from "@/lib/utils";
 import { useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
-import { Badge } from "../ui/badge";
 
 interface Props {
 	selectedPlace?: string | null;

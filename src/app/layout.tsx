@@ -17,20 +17,20 @@ export const metadata: Metadata = {
 			? `https://${process.env.VERCEL_URL}`
 			: `http://localhost:${process.env.PORT || 3000}`
 	),
-	title: "Tripping",
-	description: "Plan trips, make memories.",
+	title: "trippin",
+	description: "Trip around and you'll find out.",
 	alternates: {
 		canonical: "/"
 	},
 	openGraph: {
 		url: "/",
-		title: "Tripping",
-		description: "Plan trips, make memories.",
+		title: "trippin",
+		description: "Trip around and you'll find out.",
 		type: "website"
 	},
 	twitter: {
 		card: "summary_large_image",
-		title: "Tripping",
+		title: "trippin",
 		description: "Plan trips, make memories."
 	}
 };

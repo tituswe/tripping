@@ -1,5 +1,6 @@
 "use client";
 
+import { format } from "date-fns";
 import { CalendarDays, Cog, Plane, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -34,7 +35,6 @@ import {
 } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
 import { TripModel, UserModel } from "@/lib/types";
-import { format } from "date-fns";
 import { TripHeaderParty } from "./trip-header-party";
 
 interface TripHeaderProps {

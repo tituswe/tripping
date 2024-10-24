@@ -1,57 +1,47 @@
-import { CirclePlus, LayoutGrid, LucideIcon, MapPin } from "lucide-react";
+import { CirclePlus, LayoutGrid, LucideIcon } from "lucide-react";
 import { TripModel } from "./types";
 
-type Submenu = {
-	href: string;
-	label: string;
-	active: boolean;
-};
-
-type Menu = {
+type MenuOption = {
 	href: string;
 	label: string;
 	active: boolean;
 	icon: LucideIcon;
-	submenus: Submenu[];
 };
 
-type Group = {
-	groupLabel: string;
-	menus: Menu[];
+type TripOption = {
+	href: string;
+	label: string;
+	active: boolean;
+	locationId: string;
 };
 
-export function getMenuList(pathname: string, trips: TripModel[]): Group[] {
-	return [
+type MenuList = {
+	menuOptions: MenuOption[];
+	tripOptions: TripOption[];
+};
+
+export function getMenuList(pathname: string, trips: TripModel[]): MenuList {
+	const menuOptions = [
 		{
-			groupLabel: "",
-			menus: [
-				{
-					href: "/dashboard",
-					label: "Dashboard",
-					active: pathname.includes("/dashboard"),
-					icon: LayoutGrid,
-					submenus: []
-				}
-			]
+			href: "/dashboard",
+			label: "Home",
+			active: pathname.includes("/dashboard"),
+			icon: LayoutGrid
 		},
 		{
-			groupLabel: "Trips",
-			menus: [
-				...trips.map((trip) => ({
-					href: `/trips/${trip.id}`,
-					label: trip.title || trip.location.formattedAddress || "",
-					active: pathname.includes(`/${trip.id}`),
-					icon: MapPin,
-					submenus: []
-				})),
-				{
-					href: "/trips/new",
-					label: "New Trip",
-					active: pathname === "/trips/new",
-					icon: CirclePlus,
-					submenus: []
-				}
-			]
+			href: "/trips/new",
+			label: "New",
+			active: pathname === "/trips/new",
+			icon: CirclePlus
 		}
 	];
+
+	const tripOptions = trips.map((trip) => ({
+		href: `/trips/${trip.id}`,
+		label: trip.title || trip.location.formattedAddress || "",
+		active: pathname.includes(`/${trip.id}`),
+		locationId: trip.location.placeId
+	}));
+
+	return { menuOptions, tripOptions };
 }

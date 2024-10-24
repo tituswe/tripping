@@ -1,4 +1,4 @@
-# [Tripping](ENTER_URL_HERE)
+# [trippin](ENTER_URL_HERE)
 
 ## Tech stack
 

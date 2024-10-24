@@ -4,7 +4,7 @@ import { TripModel } from "@/lib/types";
 import { format } from "date-fns";
 import { Dot, Ellipsis, MapPin, Trash2, User } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { deleteTrip } from "@/actions/actions";
 import {
@@ -34,7 +34,15 @@ interface DashboardTripCardProps {
 export function DashboardTripCard({ trip }: DashboardTripCardProps) {
 	const { toast } = useToast();
 	const router = useRouter();
-	const imageUrl = trip.location.photos[0] || "";
+	const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+
+	useEffect(() => {
+		fetchPlacePhoto(trip.location.placeId).then((url) => {
+			if (url) {
+				setPhotoUrl(url);
+			}
+		});
+	}, [trip.location.placeId]);
 
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -65,9 +73,9 @@ export function DashboardTripCard({ trip }: DashboardTripCardProps) {
 			onClick={() => router.push(`/trips/${trip.id}`)}
 		>
 			<div className="w-full h-full aspect-square overflow-hidden rounded-lg">
-				{imageUrl ? (
+				{photoUrl ? (
 					<img
-						src={imageUrl}
+						src={photoUrl}
 						alt={"place-image"}
 						className="w-full h-full object-cover rounded-lg shadow-sm transition-transform duration-300 group-hover:scale-110 group-hover:rounded-lg"
 					/>
@@ -171,4 +179,16 @@ export function DashboardTripCard({ trip }: DashboardTripCardProps) {
 			</AlertDialog>
 		</div>
 	);
+
+	async function fetchPlacePhoto(placeId: string): Promise<string | null> {
+		const res = await fetch(`/api/google-photo?placeId=${placeId}`);
+		const data = await res.json();
+
+		if (res.ok) {
+			return data.photoUrl;
+		} else {
+			console.error("Error fetching photo:", data.error);
+			return null;
+		}
+	}
 }

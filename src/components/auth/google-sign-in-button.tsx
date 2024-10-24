@@ -1,8 +1,8 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { signIn } from "next-auth/react";
 import { Icons } from "../icons";
-import { Button } from "../ui/button";
 
 interface GoogleSignInButtonProps {
 	isLoading: boolean;

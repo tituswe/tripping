@@ -1,5 +1,10 @@
 "use client";
 
+import {
+	ResizableHandle,
+	ResizablePanel,
+	ResizablePanelGroup
+} from "@/components/ui/resizable";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useScreenResize, useScreenSize } from "@/hooks/use-screen-size";
 import { useStore } from "@/hooks/use-store";
@@ -10,11 +15,6 @@ import { TabsContent } from "@radix-ui/react-tabs";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { Kanban, List } from "lucide-react";
 import { useEffect, useState } from "react";
-import {
-	ResizableHandle,
-	ResizablePanel,
-	ResizablePanelGroup
-} from "../ui/resizable";
 import { TripGallery } from "./trip-gallery";
 import { TripHeader } from "./trip-header";
 import { TripItinerary } from "./trip-itinerary";

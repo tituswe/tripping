@@ -59,7 +59,9 @@ export function UserNav() {
 							</Button>
 						</DropdownMenuTrigger>
 					</TooltipTrigger>
-					<TooltipContent side="bottom">Profile</TooltipContent>
+					<TooltipContent side="left" sideOffset={15}>
+						Profile
+					</TooltipContent>
 				</Tooltip>
 			</TooltipProvider>
 

@@ -18,48 +18,41 @@ import {
 	PopoverContent,
 	PopoverTrigger
 } from "@/components/ui/popover";
-import { UserModel } from "@/lib/types";
+import { TripModel, UserModel } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 
-interface TripHeaderPartyProps {
-	tripId: string;
-	creator: UserModel;
-	invited: UserModel[];
-	users: UserModel[];
+interface TripPartyProps {
+	trip: TripModel;
 }
 
-export function TripHeaderParty({
-	tripId,
-	creator,
-	invited,
-	users
-}: TripHeaderPartyProps) {
+export function TripParty({ trip }: TripPartyProps) {
+	const users = [] as UserModel[];
 	const { data: session } = useSession();
 	const [open, setOpen] = useState(false);
 	const [filter, setFilter] = useState("");
 
-	const invitedIds = [creator.id, ...invited.map((user) => user.id)];
+	const invitedIds = [trip.creator.id, ...trip.invited.map((user) => user.id)];
 
 	const handleSelect = async (userId: string) => {
 		if (userId === session?.user?.id) return;
-		if (userId === creator.id) return;
+		if (userId === trip.creator.id) return;
 
 		if (invitedIds.includes(userId)) {
-			await removeUserFromTrip(tripId, userId);
+			await removeUserFromTrip(trip.id, userId);
 		} else {
-			await addUserToTrip(tripId, userId);
+			await addUserToTrip(trip.id, userId);
 		}
 	};
 
-	const targetUsers = filter ? users : [creator, ...invited];
+	const targetUsers = filter ? users : [trip.creator, ...trip.invited];
 
 	const sortedUsers = targetUsers.sort((a, b) => {
-		if (a.id === creator.id) return -1;
-		if (b.id === creator.id) return 1;
-		const aIsInvited = invited.some((user) => user.id === a.id);
-		const bIsInvited = invited.some((user) => user.id === b.id);
+		if (a.id === trip.creator.id) return -1;
+		if (b.id === trip.creator.id) return 1;
+		const aIsInvited = trip.invited.some((user) => user.id === a.id);
+		const bIsInvited = trip.invited.some((user) => user.id === b.id);
 		if (aIsInvited && !bIsInvited) return -1;
 		if (!aIsInvited && bIsInvited) return 1;
 		return 0;
@@ -76,17 +69,17 @@ export function TripHeaderParty({
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
 			<PopoverTrigger asChild>
-				<Button variant="ghost" className="flex flex-row -space-x-0.5">
-					<Avatar className="h-8 w-8 outline outline-1 outline-primary">
-						<AvatarImage src={creator.image || ""} alt="Avatar" />
+				<Button variant="ghost" className="flex flex-row -space-x-0.5 px-2">
+					<Avatar className="h-6 w-6 outline outline-1 outline-muted">
+						<AvatarImage src={trip.creator.image || ""} alt="Avatar" />
 						<AvatarFallback className="bg-muted">
-							{creator.name?.charAt(0)}
+							{trip.creator.name?.charAt(0)}
 						</AvatarFallback>
 					</Avatar>
-					{invited.map((user) => (
+					{trip.invited.slice(0, 2).map((user) => (
 						<Avatar
 							key={user.id}
-							className="h-8 w-8 outline outline-1 outline-primary"
+							className="h-6 w-6 outline outline-1 outline-muted"
 						>
 							<AvatarImage src={user.image || ""} alt="Avatar" />
 							<AvatarFallback className="bg-muted">
@@ -94,23 +87,28 @@ export function TripHeaderParty({
 							</AvatarFallback>
 						</Avatar>
 					))}
+					{trip.invited.length > 3 && (
+						<div className="h-6 w-6 outline outline-1 outline-muted bg-muted-foreground text-primary-foreground text-xs rounded-full flex justify-center items-center font-light z-10">
+							<p>+{trip.invited.length - 3}</p>
+						</div>
+					)}
 				</Button>
 			</PopoverTrigger>
 			<PopoverContent className="w-[280px] p-0" align="end">
 				<Command>
 					<div className="mx-3 my-2">
 						<div className="flex flex-row mb-0.5">
-							<PartyPopper className="h-4 w-4 mr-1.5" />
-							<p className="font-semibold text-sm">Your party</p>
+							<PartyPopper className="h-3.5 w-3.5 mr-1.5" />
+							<p className="font-medium text-xs">Your party</p>
 						</div>
-						<p className="font-light text-xs text-muted-foreground">
+						<p className="font-light text-2xs text-muted-foreground">
 							Search and add friends to this trip.
 						</p>
 					</div>
 					<div className="relative">
-						<Search className="absolute h-4 w-4 text-muted-foreground top-2.5 left-2.5" />
+						<Search className="absolute h-3 w-3 text-muted-foreground top-3 left-3" />
 						<Input
-							className="pl-8 focus-visible:outline-none focus-visible:ring-0 shadow-none border-t-1 border-b-1 border-r-0 border-l-0 rounded-none"
+							className="pl-8 text-xs focus-visible:outline-none focus-visible:ring-0 shadow-none border-t-1 border-b-1 border-r-0 border-l-0 rounded-none"
 							placeholder="Add friend..."
 							value={filter}
 							onInputCapture={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -131,20 +129,21 @@ export function TripHeaderParty({
 										value={user.id}
 										onSelect={() => handleSelect(user.id)}
 										className={`px-3 ${
-											user.id === session?.user?.id || user.id === creator.id
+											user.id === session?.user?.id ||
+											user.id === trip.creator.id
 												? "bg-muted"
 												: "cursor-pointer"
 										}`}
 									>
 										<Avatar className="h-6 w-6 outline outline-1 outline-primary mr-3">
 											<AvatarImage src={user.image || ""} alt="Avatar" />
-											<AvatarFallback className="bg-transparent">
+											<AvatarFallback className="bg-transparent text-xs">
 												{user.name?.charAt(0)}
 											</AvatarFallback>
 										</Avatar>
 										<div className="flex flex-col">
-											<p>{user.name}</p>
-											<p className="text-xs text-muted-foreground">
+											<p className="text-xs translate-y-1">{user.name}</p>
+											<p className="text-2xs text-muted-foreground">
 												{user.email}
 											</p>
 										</div>

@@ -170,7 +170,7 @@ export function TripItinerary({
 				onDragOver={onDragOver}
 			>
 				<SortableContext items={columnsId}>
-					<div className="flex flex-col md:flex-row mt-3 h-[calc(100vh_-_240px)]">
+					<div className="flex flex-col md:flex-row mt-3 h-[calc(100vh_-_188px)]">
 						{screen.screenSize !== "sm" && (
 							<TripItineraryColumn
 								isSentinel

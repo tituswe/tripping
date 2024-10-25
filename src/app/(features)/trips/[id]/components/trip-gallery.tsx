@@ -3,7 +3,7 @@
 import { createPlace } from "@/actions/actions";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { TripModel } from "@/lib/types";
+import { TripModel, UserModel } from "@/lib/types";
 import { PlaceReview } from "@prisma/client";
 import { ChevronDown, ChevronLeft, Kanban } from "lucide-react";
 import { useState } from "react";
@@ -18,12 +18,13 @@ import { TripTitle } from "./trip-title";
 import { TripViewOptionIconButton } from "./trip-view-option-icon-button";
 
 interface TripGalleryProps {
+	users: UserModel[];
 	trip: TripModel;
 	view: ViewType;
 	setView: (view: ViewType) => void;
 }
 
-export function TripGallery({ trip, view, setView }: TripGalleryProps) {
+export function TripGallery({ users, trip, view, setView }: TripGalleryProps) {
 	const [selectedDay, setSelectedDay] = useState<number>(1);
 
 	return (
@@ -72,7 +73,7 @@ export function TripGallery({ trip, view, setView }: TripGalleryProps) {
 							<div className="flex justify-between items-center px-5">
 								<TripDates trip={trip} />
 								<div className="flex flex-row items-center space-x-1.5">
-									<TripParty trip={trip} />
+									<TripParty users={users} trip={trip} />
 									<TripSettings trip={trip} />
 								</div>
 							</div>

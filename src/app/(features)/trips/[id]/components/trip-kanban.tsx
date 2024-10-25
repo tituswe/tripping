@@ -1,7 +1,7 @@
 "use client";
 
 import { createPlace } from "@/actions/actions";
-import { TripModel } from "@/lib/types";
+import { TripModel, UserModel } from "@/lib/types";
 import { PlaceReview } from "@prisma/client";
 import { ChevronDown, ChevronLeft, List } from "lucide-react";
 import { ViewType } from "../types";
@@ -14,12 +14,13 @@ import { TripTitle } from "./trip-title";
 import { TripViewOptionIconButton } from "./trip-view-option-icon-button";
 
 interface TripKanbanProps {
+	users: UserModel[];
 	trip: TripModel;
 	view: ViewType;
 	setView: (view: ViewType) => void;
 }
 
-export function TripKanban({ trip, view, setView }: TripKanbanProps) {
+export function TripKanban({ users, trip, view, setView }: TripKanbanProps) {
 	return (
 		<div
 			className={`absolute bottom-0 sm:top-0 left-0 z-20 bg-background h-screen sm:w-5/6 w-full xs:transition-transform duration-700 ${
@@ -64,7 +65,7 @@ export function TripKanban({ trip, view, setView }: TripKanbanProps) {
 					<div className="flex justify-between items-center px-5">
 						<TripDates trip={trip} />
 						<div className="flex flex-row items-center space-x-1.5">
-							<TripParty trip={trip} />
+							<TripParty users={users} trip={trip} />
 							<TripSettings trip={trip} />
 						</div>
 					</div>

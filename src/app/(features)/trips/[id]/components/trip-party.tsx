@@ -24,11 +24,11 @@ import { useSession } from "next-auth/react";
 import { useState } from "react";
 
 interface TripPartyProps {
+	users: UserModel[];
 	trip: TripModel;
 }
 
-export function TripParty({ trip }: TripPartyProps) {
-	const users = [] as UserModel[];
+export function TripParty({ users, trip }: TripPartyProps) {
 	const { data: session } = useSession();
 	const [open, setOpen] = useState(false);
 	const [filter, setFilter] = useState("");
@@ -111,7 +111,7 @@ export function TripParty({ trip }: TripPartyProps) {
 							className="pl-8 text-xs focus-visible:outline-none focus-visible:ring-0 shadow-none border-t-1 border-b-1 border-r-0 border-l-0 rounded-none"
 							placeholder="Add friend..."
 							value={filter}
-							onInputCapture={(e: React.ChangeEvent<HTMLInputElement>) =>
+							onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
 								setFilter(e.target.value)
 							}
 						/>

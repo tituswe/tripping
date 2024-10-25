@@ -23,12 +23,6 @@ export function Dashboard({ trips }: DashboardProps) {
 	);
 	const exploreTrips = [] as TripModel[];
 
-	console.log(
-		session?.user
-			? `User is signed in\n${session.user.email}`
-			: "No user signed in"
-	);
-
 	return (
 		<div className="pt-[92px] sm:pt-6 h-full w-full flex flex-col justify-center p-6">
 			{session?.user && (

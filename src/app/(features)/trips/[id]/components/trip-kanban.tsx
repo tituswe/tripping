@@ -3,7 +3,7 @@
 import { createPlace } from "@/actions/actions";
 import { TripModel } from "@/lib/types";
 import { PlaceReview } from "@prisma/client";
-import { ChevronLeft, List } from "lucide-react";
+import { ChevronDown, ChevronLeft, List } from "lucide-react";
 import { ViewType } from "../types";
 import { TripDates } from "./trip-dates";
 import { TripKanbanBoard } from "./trip-kanban-board";
@@ -22,8 +22,15 @@ interface TripKanbanProps {
 export function TripKanban({ trip, view, setView }: TripKanbanProps) {
 	return (
 		<div
-			className={`absolute top-0 left-0 bg-background h-screen min-w-[960px] transition-transform duration-700 ${
-				view === "kanban" ? "translate-x-0" : "-translate-x-full"
+			className={`absolute bottom-0 sm:top-0 left-0 z-20 bg-background h-screen sm:w-5/6 w-full xs:transition-transform duration-700 ${
+				view === "kanban"
+					? "translate-y-0 sm:translate-x-0"
+					: "translate-y-full sm:translate-y-0 sm:-translate-x-full"
+			}
+			${
+				view === "kanban"
+					? "sm:h-screen h-[calc(100vh_-_160px)] rounded-t-xl sm:rounded-t-none"
+					: "h-0 sm:h-auto"
 			}`}
 		>
 			{view === "kanban" && (
@@ -41,6 +48,7 @@ export function TripKanban({ trip, view, setView }: TripKanbanProps) {
 							/>
 							<TripViewOptionIconButton
 								icon={ChevronLeft}
+								smIcon={ChevronDown}
 								tooltip="Close"
 								callBack={() => setView(null)}
 							/>
@@ -60,9 +68,7 @@ export function TripKanban({ trip, view, setView }: TripKanbanProps) {
 							<TripSettings trip={trip} />
 						</div>
 					</div>
-					<div className="h-[calc(100vh_-_178px)]">
-						<TripKanbanBoard trip={trip} />
-					</div>
+					<TripKanbanBoard trip={trip} />
 				</div>
 			)}
 		</div>

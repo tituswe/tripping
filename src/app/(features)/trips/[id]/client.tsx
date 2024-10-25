@@ -1,5 +1,7 @@
 "use client";
 
+import { useStore } from "@/hooks/use-store";
+import { useTripView } from "@/hooks/use-trip-view";
 import { PlaceModel, TripModel } from "@/lib/types";
 import { GoogleMapsProvider } from "@/providers/google-maps-provider";
 import { useState } from "react";
@@ -8,7 +10,6 @@ import { TripGallery } from "./components/trip-gallery";
 import { TripKanban } from "./components/trip-kanban";
 import { TripMap } from "./components/trip-map";
 import { TripViewOptions } from "./components/trip-view-options";
-import { ViewType } from "./types";
 
 interface TripClientProps {
 	trip: TripModel;
@@ -17,7 +18,11 @@ interface TripClientProps {
 export function TripClient({ trip }: TripClientProps) {
 	const [hoveredPlace, setHoveredPlace] = useState<PlaceModel | null>(null);
 	const [selectedPlace, setSelectedPlace] = useState<PlaceModel | null>(null);
-	const [view, setView] = useState<ViewType>(null);
+	const viewStore = useStore(useTripView, (state) => state);
+
+	if (!viewStore) return;
+
+	const { view, setView } = viewStore;
 
 	return (
 		<GoogleMapsProvider>

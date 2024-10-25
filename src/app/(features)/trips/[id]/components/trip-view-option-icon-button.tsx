@@ -12,11 +12,13 @@ import { LucideIcon } from "lucide-react";
 interface TripViewOptionIconButtonProps {
 	tooltip: string;
 	icon: LucideIcon;
+	smIcon?: LucideIcon;
 	callBack?: () => void;
 }
 
 export function TripViewOptionIconButton({
 	icon: Icon,
+	smIcon: SmallIcon,
 	tooltip,
 	callBack
 }: TripViewOptionIconButtonProps) {
@@ -25,10 +27,17 @@ export function TripViewOptionIconButton({
 			<Tooltip>
 				<TooltipTrigger asChild>
 					<Button size="icon" variant="outline" onClick={callBack}>
-						<Icon className="w-4 h-4 text-secondary-foreground" />
+						<Icon
+							className={`${
+								SmallIcon && "hidden sm:block"
+							} w-4 h-4 text-secondary-foreground`}
+						/>
+						{SmallIcon && (
+							<SmallIcon className="sm:hidden w-4 h-4 text-secondary-foreground" />
+						)}
 					</Button>
 				</TooltipTrigger>
-				<TooltipContent>
+				<TooltipContent side="bottom">
 					<p>{tooltip}</p>
 				</TooltipContent>
 			</Tooltip>

@@ -30,7 +30,7 @@ export function Dashboard({ trips }: DashboardProps) {
 	);
 
 	return (
-		<div className="h-full w-full flex flex-col justify-center p-6">
+		<div className="pt-[92px] sm:pt-6 h-full w-full flex flex-col justify-center p-6">
 			{session?.user && (
 				<>
 					<DashboardUpcomingTrips trips={upcomingTrips} />

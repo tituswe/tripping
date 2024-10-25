@@ -5,7 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { TripModel } from "@/lib/types";
 import { PlaceReview } from "@prisma/client";
-import { ChevronLeft, Kanban } from "lucide-react";
+import { ChevronDown, ChevronLeft, Kanban } from "lucide-react";
 import { useState } from "react";
 import { ViewType } from "../types";
 import { TripDates } from "./trip-dates";
@@ -28,9 +28,16 @@ export function TripGallery({ trip, view, setView }: TripGalleryProps) {
 
 	return (
 		<div
-			className={`absolute top-0 left-0 overflow-y-hidden bg-background h-screen w-[388px] transition-transform duration-500 ${
-				view === "gallery" ? "translate-x-0" : "-translate-x-full"
-			}`}
+			className={`absolute bottom-0 sm:top-0 left-0 overflow-y-hidden bg-background h-screen sm:w-[388px] w-full xs:transition-transform duration-500 ${
+				view === "gallery"
+					? "translate-y-0 sm:translate-x-0"
+					: "translate-y-full sm:translate-y-0 sm:-translate-x-full"
+			}
+			 ${
+					view === "gallery"
+						? "sm:h-screen h-[calc(100vh_-_160px)] rounded-t-xl sm:rounded-t-none"
+						: "h-0 sm:h-auto"
+				}`}
 		>
 			{view === "gallery" && (
 				<div className="py-5 flex flex-col space-y-1.5">
@@ -47,6 +54,7 @@ export function TripGallery({ trip, view, setView }: TripGalleryProps) {
 							/>
 							<TripViewOptionIconButton
 								icon={ChevronLeft}
+								smIcon={ChevronDown}
 								tooltip="Close"
 								callBack={() => setView(null)}
 							/>

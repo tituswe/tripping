@@ -41,8 +41,8 @@ export async function addUserToTrip(
 
 	const updatedTripModel = {
 		...updatedTrip,
-		location: { ...updatedTrip.location, photos: [] },
-		places: updatedTrip.places.map((place) => ({ ...place, photos: [] }))
+		location: { ...updatedTrip.location },
+		places: updatedTrip.places.map((place) => ({ ...place }))
 	};
 
 	revalidatePath(`/trips/${tripId}`);
@@ -73,8 +73,8 @@ export async function removeUserFromTrip(
 
 	const updatedTripModel = {
 		...updatedTrip,
-		location: { ...updatedTrip.location, photos: [] },
-		places: updatedTrip.places.map((place) => ({ ...place, photos: [] }))
+		location: { ...updatedTrip.location },
+		places: updatedTrip.places.map((place) => ({ ...place }))
 	};
 
 	revalidatePath(`/trips/${tripId}`);
@@ -141,8 +141,8 @@ export async function createTrip(
 
 	const newTripModel = {
 		...newTrip,
-		location: { ...newTrip.location, photos: [] },
-		places: newTrip.places.map((place) => ({ ...place, photos: [] }))
+		location: { ...newTrip.location },
+		places: newTrip.places.map((place) => ({ ...place }))
 	};
 
 	revalidatePath(`/trips`);
@@ -165,8 +165,8 @@ export async function getTrip(id: string): Promise<TripModel> {
 
 	const tripModel = {
 		...trip,
-		location: { ...trip.location, photos: [] },
-		places: trip.places.map((place) => ({ ...place, photos: [] }))
+		location: { ...trip.location },
+		places: trip.places.map((place) => ({ ...place }))
 	};
 
 	return tripModel;
@@ -205,8 +205,8 @@ export async function getTrips(): Promise<TripModel[]> {
 
 	const tripModels = trips.map((trip) => ({
 		...trip,
-		location: { ...trip.location, photos: [] },
-		places: trip.places.map((place) => ({ ...place, photos: [] }))
+		location: { ...trip.location },
+		places: trip.places.map((place) => ({ ...place }))
 	}));
 
 	return tripModels;
@@ -231,8 +231,8 @@ export async function updateTrip(
 
 	const updatedTripModel = {
 		...updatedTrip,
-		location: { ...updatedTrip.location, photos: [] },
-		places: updatedTrip.places.map((place) => ({ ...place, photos: [] }))
+		location: { ...updatedTrip.location },
+		places: updatedTrip.places.map((place) => ({ ...place }))
 	};
 
 	revalidatePath(`/trips`);
@@ -330,7 +330,7 @@ export async function updatePlace(
 		include: { reviews: true }
 	});
 
-	const updatedPlaceModel = { ...updatedPlace, photos: [] };
+	const updatedPlaceModel = { ...updatedPlace };
 
 	revalidatePath(`/trips/${updatedPlace.tripId}`);
 
@@ -362,7 +362,7 @@ export async function updatePlaceDate(
 		include: { reviews: true }
 	});
 
-	const updatedPlaceModel = { ...updatedPlace, photos: [] };
+	const updatedPlaceModel = { ...updatedPlace };
 
 	revalidatePath(`/trips/${updatedPlace.tripId}`);
 

@@ -14,19 +14,19 @@ import { TripModel } from "@/lib/types";
 
 interface TripDayTabsProps {
 	trip: TripModel;
-	selectedDay: number;
-	setSelectedDay: (day: number) => void;
+	selectedDate: Date | null;
+	setSelectedDate: (day: Date | null) => void;
 }
 
 export function TripDayTabs({
 	trip,
-	selectedDay,
-	setSelectedDay
+	selectedDate,
+	setSelectedDate
 }: TripDayTabsProps) {
-	const days = eachDayOfInterval({
+	const dates = eachDayOfInterval({
 		start: new Date(trip.from || Date.now()),
 		end: new Date(trip.to || Date.now())
-	}).map((_, index) => index + 1);
+	});
 
 	return (
 		<div className="w-full flex justify-center">
@@ -38,14 +38,18 @@ export function TripDayTabs({
 			>
 				<CarouselPrevious size="smIcon" variant="ghost" />
 				<CarouselContent>
-					{days.map((day, index) => (
+					{dates.map((date, index) => (
 						<CarouselItem key={index} className="basis-1/9">
 							<Button
 								size="smIcon"
-								variant={selectedDay === day ? "default" : "secondary"}
-								onClick={() => setSelectedDay(day)}
+								variant={
+									selectedDate?.toDateString() === date.toDateString()
+										? "default"
+										: "secondary"
+								}
+								onClick={() => setSelectedDate(date)}
 							>
-								<p className="text-xs font-normal">{day}</p>
+								<p className="text-xs font-normal">{index + 1}</p>
 							</Button>
 						</CarouselItem>
 					))}

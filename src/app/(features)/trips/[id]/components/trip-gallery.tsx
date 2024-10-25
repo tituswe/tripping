@@ -2,14 +2,12 @@
 
 import { createPlace } from "@/actions/actions";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import { TripModel, UserModel } from "@/lib/types";
 import { PlaceReview } from "@prisma/client";
 import { ChevronDown, ChevronLeft, Kanban } from "lucide-react";
 import { useState } from "react";
 import { ViewType } from "../types";
 import { TripDates } from "./trip-dates";
-import { TripDayTabs } from "./trip-day-tabs";
 import { TripGalleryList } from "./trip-gallery-list";
 import { TripParty } from "./trip-party";
 import { TripSearch } from "./trip-search";
@@ -25,7 +23,7 @@ interface TripGalleryProps {
 }
 
 export function TripGallery({ users, trip, view, setView }: TripGalleryProps) {
-	const [selectedDay, setSelectedDay] = useState<number>(1);
+	const [selectedDate, setSelectedDate] = useState<Date | null>(trip.from);
 
 	return (
 		<div
@@ -73,16 +71,11 @@ export function TripGallery({ users, trip, view, setView }: TripGalleryProps) {
 										<TripSettings trip={trip} />
 									</div>
 								</div>
-								<div className="sticky top-0 pt-3 space-y-1.5 px-5 bg-background duration-700 ease-in-out">
-									<TripDayTabs
-										trip={trip}
-										selectedDay={selectedDay}
-										setSelectedDay={setSelectedDay}
-									/>
-									<div className="h-1" />
-									<Separator />
-								</div>
-								<TripGalleryList trip={trip} selectedDay={selectedDay} />
+								<TripGalleryList
+									trip={trip}
+									selectedDate={selectedDate}
+									setSelectedDate={setSelectedDate}
+								/>
 							</div>
 						</ScrollArea>
 						<div className="py-3">{/* Footer Widgets */}</div>

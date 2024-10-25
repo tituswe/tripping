@@ -29,19 +29,14 @@ export function TripGallery({ users, trip, view, setView }: TripGalleryProps) {
 
 	return (
 		<div
-			className={`absolute bottom-0 sm:top-0 left-0 overflow-y-hidden bg-background h-screen sm:w-[388px] w-full xs:transition-transform duration-500 ${
+			className={`absolute bottom-0 sm:top-0 left-0 z-20 bg-background h-0 sm:h-screen sm:w-[388px] w-full xs:transition-transform ease-in-out duration-700 rounded-t-xl sm:rounded-t-none ${
 				view === "gallery"
-					? "translate-y-0 sm:translate-x-0"
-					: "translate-y-full sm:translate-y-0 sm:-translate-x-full"
-			}
-			 ${
-					view === "gallery"
-						? "sm:h-screen h-[calc(100vh_-_160px)] rounded-t-xl sm:rounded-t-none"
-						: "h-0 sm:h-auto"
-				}`}
+					? "translate-y-0 sm:translate-x-0 sm:h-screen h-[calc(100vh-160px)] sm:rounded-t-none"
+					: "translate-y-full sm:translate-y-0 sm:-translate-x-full h-0 sm:h-auto"
+			}`}
 		>
 			{view === "gallery" && (
-				<div className="py-5 flex flex-col space-y-1.5">
+				<div className="h-full pt-5 flex flex-col space-y-1.5">
 					<div className="mx-5 flex items-center overflow-hidden max-w-full">
 						<TripTitle trip={trip} />
 						<div className="ml-auto space-x-2 flex-shrink-0">
@@ -68,27 +63,30 @@ export function TripGallery({ users, trip, view, setView }: TripGalleryProps) {
 							onPlaceSelect={onPlaceSelect}
 						/>
 					</div>
-					<ScrollArea className="h-[calc(100vh_-_110px)]">
-						<div>
-							<div className="flex justify-between items-center px-5">
-								<TripDates trip={trip} />
-								<div className="flex flex-row items-center space-x-1.5">
-									<TripParty users={users} trip={trip} />
-									<TripSettings trip={trip} />
+					<div>
+						<ScrollArea className="h-[calc(100vh_-_318px)] sm:h-[calc(100vh_-_318px_+_160px)]">
+							<div>
+								<div className="flex justify-between items-center px-5 bg-background  duration-700 ease-in-out">
+									<TripDates trip={trip} />
+									<div className="flex flex-row items-center space-x-1.5">
+										<TripParty users={users} trip={trip} />
+										<TripSettings trip={trip} />
+									</div>
 								</div>
+								<div className="sticky top-0 pt-3 space-y-1.5 px-5 bg-background duration-700 ease-in-out">
+									<TripDayTabs
+										trip={trip}
+										selectedDay={selectedDay}
+										setSelectedDay={setSelectedDay}
+									/>
+									<div className="h-1" />
+									<Separator />
+								</div>
+								<TripGalleryList trip={trip} selectedDay={selectedDay} />
 							</div>
-							<div className="sticky top-0 pt-3 space-y-1.5 px-5 bg-background">
-								<TripDayTabs
-									trip={trip}
-									selectedDay={selectedDay}
-									setSelectedDay={setSelectedDay}
-								/>
-								<div className="h-1" />
-								<Separator />
-							</div>
-							<TripGalleryList trip={trip} selectedDay={selectedDay} />
-						</div>
-					</ScrollArea>
+						</ScrollArea>
+						<div className="py-3">{/* Footer Widgets */}</div>
+					</div>
 				</div>
 			)}
 		</div>

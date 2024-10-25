@@ -8,5 +8,9 @@ interface TripGalleryListProps {
 }
 
 export function TripGalleryList({ trip, selectedDay }: TripGalleryListProps) {
-	return <div className="h-screen text-center pt-12">Gallery List</div>;
+	return (
+		<div className="h-screen text-center pt-12 ">
+			<p>Gallery List</p>
+		</div>
+	);
 }

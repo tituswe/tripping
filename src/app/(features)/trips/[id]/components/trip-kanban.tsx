@@ -23,19 +23,14 @@ interface TripKanbanProps {
 export function TripKanban({ users, trip, view, setView }: TripKanbanProps) {
 	return (
 		<div
-			className={`absolute bottom-0 sm:top-0 left-0 z-20 bg-background h-screen sm:w-5/6 w-full xs:transition-transform duration-700 ${
+			className={`absolute bottom-0 sm:top-0 left-0 z-20 bg-background h-0 sm:h-screen sm:w-5/6 w-full xs:transition-transform ease-in-out duration-700 rounded-t-xl sm:rounded-t-none ${
 				view === "kanban"
-					? "translate-y-0 sm:translate-x-0"
-					: "translate-y-full sm:translate-y-0 sm:-translate-x-full"
-			}
-			${
-				view === "kanban"
-					? "sm:h-screen h-[calc(100vh_-_160px)] rounded-t-xl sm:rounded-t-none"
-					: "h-0 sm:h-auto"
+					? "translate-y-0 sm:translate-x-0 sm:h-screen h-[calc(100vh-160px)] sm:rounded-t-none"
+					: "translate-y-full sm:translate-y-0 sm:-translate-x-full h-0 sm:h-auto"
 			}`}
 		>
 			{view === "kanban" && (
-				<div className="py-5 flex flex-col space-y-1.5">
+				<div className="h-full pt-5 flex flex-col space-y-1.5">
 					<div className="mx-5 flex items-center overflow-hidden max-w-full">
 						<TripTitle trip={trip} />
 						<div className="ml-auto space-x-2 flex-shrink-0">
@@ -62,7 +57,7 @@ export function TripKanban({ users, trip, view, setView }: TripKanbanProps) {
 							onPlaceSelect={onPlaceSelect}
 						/>
 					</div>
-					<div className="flex justify-between items-center px-5">
+					<div className="flex justify-between items-center px-5 bg-background  duration-700 ease-in-out">
 						<TripDates trip={trip} />
 						<div className="flex flex-row items-center space-x-1.5">
 							<TripParty users={users} trip={trip} />
@@ -70,6 +65,7 @@ export function TripKanban({ users, trip, view, setView }: TripKanbanProps) {
 						</div>
 					</div>
 					<TripKanbanBoard trip={trip} />
+					<div className="py-3">{/* Footer Widgets */}</div>
 				</div>
 			)}
 		</div>

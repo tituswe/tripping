@@ -7,5 +7,5 @@ interface TripKanbanBoardProps {
 }
 
 export function TripKanbanBoard({ trip }: TripKanbanBoardProps) {
-	return <div className="text-center pt-12">Kanban Board</div>;
+	return <div className="flex-grow text-center pt-12">Kanban Board</div>;
 }

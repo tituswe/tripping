@@ -1,6 +1,7 @@
 "use client";
 
 import { TripModel } from "@/lib/types";
+import { TripGalleryCard } from "./trip-gallery-card";
 
 interface TripGalleryListProps {
 	trip: TripModel;
@@ -9,8 +10,8 @@ interface TripGalleryListProps {
 
 export function TripGalleryList({ trip, selectedDay }: TripGalleryListProps) {
 	return (
-		<div className="h-screen text-center pt-12 ">
-			<p>Gallery List</p>
+		<div className="">
+			<TripGalleryCard place={trip.places[0]} />
 		</div>
 	);
 }

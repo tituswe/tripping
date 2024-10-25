@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { getMenuList } from "@/lib/menu-list";
 import { TripModel } from "@/lib/types";
 import Link from "next/link";
-import { MenuTripPhoto } from "./menu-trip-photo";
+import { GooglePhoto } from "./google-photo";
 
 interface MenuProps {
 	trips: TripModel[];
@@ -39,7 +39,7 @@ export function Menu({ trips }: MenuProps) {
 					{tripOptions.map((item) => (
 						<Link key={item.href} href={item.href}>
 							<li className="w-16 h-16 flex flex-col items-center justify-center space-y-1 cursor-pointer group transition">
-								<MenuTripPhoto placeId={item.locationId} />
+								<GooglePhoto placeId={item.locationId} />
 								<p className="text-xs text-center w-full truncate px-1">
 									{item.label}
 								</p>

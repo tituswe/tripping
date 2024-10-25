@@ -1,13 +1,16 @@
 "use client";
 
-import { Image } from "lucide-react";
+import { Image as ImageIcon } from "lucide-react";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 interface MenuTripPhotoProps {
 	placeId: string;
+	width?: number;
+	height?: number;
 }
 
-export function MenuTripPhoto({ placeId }: MenuTripPhotoProps) {
+export function GooglePhoto({ placeId, width, height }: MenuTripPhotoProps) {
 	const [photoUrl, setPhotoUrl] = useState<string | null>(null);
 
 	useEffect(() => {
@@ -18,17 +21,24 @@ export function MenuTripPhoto({ placeId }: MenuTripPhotoProps) {
 		});
 	}, [placeId]);
 
+	if (!width) width = 40;
+	if (!height) height = 40;
+
 	return (
-		<div>
+		<div className="flex-shrink-0">
 			{photoUrl ? (
-				<img
+				<Image
 					src={photoUrl}
 					alt={photoUrl}
-					className="w-10 h-10 flex-shrink-0 rounded-md transition group-hover:shadow-md"
+					width={width}
+					height={height}
+					className={`w-[${width}px] h-[${height}px] object-cover aspect-square flex-shrink-0 rounded-md transition group-hover:shadow-md`}
 				/>
 			) : (
-				<div className="w-10 h-10 flex-shrink-0 rounded-md bg-gray-200 flex items-center justify-center transition group-hover:shadow-md">
-					<Image className="w-6 h-6 text-secondary" />
+				<div
+					className={`w-[${width}px] h-[${width}px] flex-shrink-0 rounded-md bg-gray-200 flex items-center justify-center transition group-hover:shadow-md`}
+				>
+					<ImageIcon className="w-6 h-6 text-secondary" />
 				</div>
 			)}
 		</div>

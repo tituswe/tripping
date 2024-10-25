@@ -39,7 +39,9 @@ export const shortNumber = (num: number): string => {
 	return num.toString();
 };
 
-export const snakeToNormalCase = (snakeCaseStr: string): string => {
+export const snakeToNormalCase = (snakeCaseStr?: string): string => {
+	if (!snakeCaseStr) return "";
+
 	return snakeCaseStr
 		.split("_")
 		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))

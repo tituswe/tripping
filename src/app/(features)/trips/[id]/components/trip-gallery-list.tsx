@@ -2,8 +2,8 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { TripModel } from "@/lib/types";
-import { differenceInDays, format } from "date-fns";
+import { PlaceModel, TripModel } from "@/lib/types";
+import { differenceInDays, eachDayOfInterval, format } from "date-fns";
 import { TripDayTabs } from "./trip-day-tabs";
 import { TripGalleryCard } from "./trip-gallery-card";
 
@@ -18,20 +18,7 @@ export function TripGalleryList({
 	selectedDate,
 	setSelectedDate
 }: TripGalleryListProps) {
-	const groupedPlaces = Object.entries(
-		trip.places.reduce((acc, place) => {
-			const dateString = place.date?.toDateString();
-			if (dateString) {
-				if (!acc[dateString]) {
-					acc[dateString] = [];
-				}
-				acc[dateString].push(place);
-			}
-			return acc;
-		}, {} as Record<string, typeof trip.places>)
-	).sort((a, b) => {
-		return differenceInDays(new Date(a[0]), new Date(b[0]));
-	});
+	const groupedPlaces = getGroupedPlaces(trip);
 
 	return (
 		<>
@@ -45,7 +32,7 @@ export function TripGalleryList({
 				<Separator />
 			</div>
 
-			<div>
+			<>
 				{trip.from
 					? groupedPlaces.map(([dateString, places], index) => (
 							<div key={index}>
@@ -67,12 +54,44 @@ export function TripGalleryList({
 								{places.map((place, index) => (
 									<TripGalleryCard key={index} place={place} />
 								))}
+								{places.length === 0 && (
+									<div className="text-center p-1.5">
+										<p className="text-xs text-muted-foreground font-light">
+											No places added
+										</p>
+									</div>
+								)}
 							</div>
 					  ))
 					: trip.places.map((place, index) => (
 							<TripGalleryCard key={index} place={place} />
 					  ))}
-			</div>
+			</>
 		</>
 	);
+
+	function getGroupedPlaces(trip: TripModel): [string, PlaceModel[]][] {
+		if (!trip.from || !trip.to) return [];
+
+		const dates = eachDayOfInterval({
+			start: new Date(trip.from),
+			end: new Date(trip.to)
+		});
+
+		const groups = trip.places.reduce((acc, place) => {
+			const dateString = place.date?.toDateString();
+			if (dateString) {
+				if (!acc[dateString]) {
+					acc[dateString] = [];
+				}
+				acc[dateString].push(place);
+			}
+			return acc;
+		}, {} as Record<string, typeof trip.places>);
+
+		return dates.map((date) => [
+			date.toDateString(),
+			(groups[date.toDateString()] || []) as PlaceModel[]
+		]);
+	}
 }

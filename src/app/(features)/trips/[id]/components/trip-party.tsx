@@ -128,16 +128,16 @@ export function TripParty({ users, trip }: TripPartyProps) {
 										key={index}
 										value={user.id}
 										onSelect={() => handleSelect(user.id)}
-										className={`px-3 ${
+										className={`px-3 transition ${
 											user.id === session?.user?.id ||
 											user.id === trip.creator.id
 												? "bg-muted"
 												: "cursor-pointer"
 										}`}
 									>
-										<Avatar className="h-6 w-6 outline outline-1 outline-primary mr-3">
+										<Avatar className="h-6 w-6 mr-3">
 											<AvatarImage src={user.image || ""} alt="Avatar" />
-											<AvatarFallback className="bg-transparent text-xs">
+											<AvatarFallback className="bg-muted text-xs">
 												{user.name?.charAt(0)}
 											</AvatarFallback>
 										</Avatar>

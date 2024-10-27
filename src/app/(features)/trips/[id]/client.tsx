@@ -27,7 +27,7 @@ export function TripClient({ users, trip }: TripClientProps) {
 
 	return (
 		<GoogleMapsProvider>
-			<div className="relative h-screen">
+			<div className="relative h-screen overflow-y-hidden">
 				<TripMap
 					trip={trip}
 					hoveredPlace={hoveredPlace}

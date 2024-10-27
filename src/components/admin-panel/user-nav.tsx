@@ -52,7 +52,7 @@ export function UserNav() {
 							>
 								<Avatar className="h-8 w-8">
 									<AvatarImage src={session?.user?.image || ""} alt="Avatar" />
-									<AvatarFallback className="bg-transparent">
+									<AvatarFallback className="bg-muted">
 										{session?.user?.name?.charAt(0)}
 									</AvatarFallback>
 								</Avatar>

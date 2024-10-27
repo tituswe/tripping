@@ -337,6 +337,29 @@ export async function updatePlace(
 	return updatedPlaceModel;
 }
 
+export async function reorderPlaces(
+	tripId: string,
+	date: Date,
+	placeIds: string[]
+): Promise<PlaceModel[]> {
+	const updates = placeIds.map((id, index) => {
+		return prisma.place.update({
+			where: { id },
+			data: {
+				date,
+				sortOrder: index
+			},
+			include: { reviews: true }
+		});
+	});
+
+	const reorderedPlaces = await prisma.$transaction(updates);
+
+	revalidatePath(`/trips/${tripId}`);
+
+	return reorderedPlaces;
+}
+
 export async function updatePlaceDate(
 	id: string,
 	date: Date

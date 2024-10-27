@@ -15,7 +15,7 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { eachDayOfInterval } from "date-fns";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { reorderPlaces } from "@/actions/actions";
 import { Separator } from "@/components/ui/separator";
@@ -35,7 +35,9 @@ export function TripGalleryList({
 	selectedDate,
 	setSelectedDate
 }: TripGalleryListProps) {
-	const groupedPlaces = getGroupedPlaces(trip);
+	const [placesMap, setPlacesMap] = useState<Record<string, PlaceModel[]>>(
+		getPlacesMap(trip)
+	);
 
 	const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -46,6 +48,14 @@ export function TripGalleryList({
 			coordinateGetter: sortableKeyboardCoordinates
 		})
 	);
+
+	useEffect(() => {
+		if (selectedDate) {
+			const dateString = selectedDate.toDateString();
+			const element = document.getElementById(dateString);
+			element?.scrollIntoView({ behavior: "smooth", block: "start" });
+		}
+	}, [selectedDate]);
 
 	return (
 		<>
@@ -67,12 +77,14 @@ export function TripGalleryList({
 					onDragOver={handleDragOver}
 					onDragEnd={handleDragEnd}
 				>
-					{groupedPlaces.map(([dateString, places], index) => (
+					{Object.entries(placesMap).map(([dateString, places]) => (
 						<TripGalleryDay
 							key={dateString}
+							id={dateString}
 							places={places}
 							from={trip.from!}
 							selectedDate={selectedDate}
+							setSelectedDate={setSelectedDate}
 							dateString={dateString}
 						/>
 					))}
@@ -105,53 +117,85 @@ export function TripGalleryList({
 
 		if (!over) return;
 		if (!over.data.current) {
-			// This means that over a droppable
-			if (active.data.current?.sortable.containerId === over.id) return; // This means that the active is in the over container
-
+			// This means that over is a container
+			const activeDateString = active.data.current?.sortable.containerId;
 			const overDateString = over.id as string;
-			const overPlaces = trip.places.filter(
-				(place) => place.date?.toDateString() === overDateString
-			);
-			const activePlace = trip.places.find(
-				(place) => place.placeId === active.id
-			)!;
-			const reorderedPlaces = [activePlace, ...overPlaces];
 
-			await reorderPlaces(
-				trip.id,
-				new Date(overDateString),
-				reorderedPlaces.map((place) => place.id)
+			if (activeDateString === overDateString) return; // This means that active and over are in the same container
+
+			if (placesMap[overDateString].length > 0) return; // This means that over container is not empty
+
+			const activeDatePlaces = placesMap[activeDateString].filter(
+				(place) => place.placeId !== active.id
 			);
+			const overDatePlaces = [
+				...placesMap[overDateString],
+				trip.places.find((place) => place.placeId === active.id)!
+			];
+
+			// BUG: When moving a card to an empty container above, there is a weird behavior where the scroll area keeps snapping to the above container. This causes a flickering effect which subsequently causes a max depth exceeded error. To fix this, we need to set the over container to the active container and the active container to the over container. This way, the scroll area will not snap to the above container.
+
+			setPlacesMap({
+				...placesMap,
+				[activeDateString]: activeDatePlaces,
+				[overDateString]: overDatePlaces
+			});
 		} else {
 			// This means that over is a card
 			if (active.id === over.id) return; // This means that active and over are the same card
-			if (
-				active.data.current?.sortable.containerId ===
-				over.data.current?.sortable.containerId
-			)
-				return; // This means that the active is in the over container
 
+			const activeDateString = active.data.current?.sortable.containerId;
 			const overDateString = over.data.current?.sortable.containerId;
-			const overPlaces = trip.places
-				.filter((place) => place.date?.toDateString() === overDateString)
-				.sort((a, b) => a.sortOrder - b.sortOrder);
-			const newPlaces = [
-				...overPlaces,
-				trip.places.find((place) => place.placeId === active.id)!
-			];
-			const activeIndex = newPlaces.findIndex(
-				(place) => place.placeId === active.id
-			);
-			const overIndex = newPlaces.findIndex(
-				(place) => place.placeId === over.id
-			);
-			const reorderedPlaces = arrayMove(newPlaces, activeIndex, overIndex);
 
-			await reorderPlaces(
-				trip.id,
-				new Date(overDateString),
-				reorderedPlaces.map((place) => place.id)
-			);
+			if (activeDateString === overDateString) {
+				// This means that active and over are in the same container
+				const overDatePlaces = placesMap[overDateString];
+
+				const activeIndex = overDatePlaces.findIndex(
+					(place) => place.placeId === active.id
+				);
+				const overIndex = overDatePlaces.findIndex(
+					(place) => place.placeId === over.id
+				);
+
+				const reorderedOverPlaces = arrayMove(
+					overDatePlaces,
+					activeIndex,
+					overIndex
+				);
+
+				setPlacesMap({
+					...placesMap,
+					[overDateString]: reorderedOverPlaces
+				});
+			} else {
+				const activeDatePlaces = placesMap[activeDateString].filter(
+					(place) => place.placeId !== active.id
+				);
+				const overDatePlaces = [
+					...placesMap[overDateString],
+					trip.places.find((place) => place.placeId === active.id)!
+				];
+
+				const activeIndex = overDatePlaces.findIndex(
+					(place) => place.placeId === active.id
+				);
+				const overIndex = overDatePlaces.findIndex(
+					(place) => place.placeId === over.id
+				);
+
+				const reorderedOverPlaces = arrayMove(
+					overDatePlaces,
+					activeIndex,
+					overIndex
+				);
+
+				setPlacesMap({
+					...placesMap,
+					[activeDateString]: activeDatePlaces,
+					[overDateString]: reorderedOverPlaces
+				});
+			}
 		}
 	}
 
@@ -159,30 +203,37 @@ export function TripGalleryList({
 		const { active, over } = event;
 
 		if (!over) return;
-		if (!over.data.current) return; // This means that over is not a card
-		if (active.id === over.id) return; // This means that active and over are the same card
 
-		const overDateString = over.data.current?.sortable.containerId;
-		const overPlaces = trip.places
-			.filter((place) => place.date?.toDateString() === overDateString)
-			.sort((a, b) => a.sortOrder - b.sortOrder);
-		const activeIndex = overPlaces.findIndex(
-			(place) => place.placeId === active.id
-		);
-		const overIndex = overPlaces.findIndex(
-			(place) => place.placeId === over.id
-		);
-		const reorderedPlaces = arrayMove(overPlaces, activeIndex, overIndex);
+		const activeDateString = active.data.current?.sortable.containerId;
+
+		let overDateString;
+		if (!over.data.current) {
+			// This means that over is a container
+			overDateString = over.id as string;
+		} else {
+			// This means that over is a card
+			overDateString = over.data.current?.sortable.containerId;
+		}
+
+		if (activeDateString !== overDateString) {
+			await reorderPlaces(
+				trip.id,
+				new Date(overDateString),
+				placesMap[activeDateString].map((place) => place.id)
+			);
+		}
 
 		await reorderPlaces(
 			trip.id,
 			new Date(overDateString),
-			reorderedPlaces.map((place) => place.id)
+			placesMap[overDateString].map((place) => place.id)
 		);
+
+		setSelectedDate(new Date(overDateString));
 	}
 
-	function getGroupedPlaces(trip: TripModel): [string, PlaceModel[]][] {
-		if (!trip.from || !trip.to) return [];
+	function getPlacesMap(trip: TripModel): Record<string, PlaceModel[]> {
+		if (!trip.from || !trip.to) return {};
 
 		const dates = eachDayOfInterval({
 			start: new Date(trip.from),
@@ -198,12 +249,15 @@ export function TripGalleryList({
 				acc[dateString].push(place);
 			}
 			return acc;
-		}, {} as Record<string, typeof trip.places>);
+		}, {} as Record<string, PlaceModel[]>);
 
-		return dates.map((date) => [
-			date.toDateString(),
-			(groups[date.toDateString()]?.sort((a, b) => a.sortOrder - b.sortOrder) ||
-				[]) as PlaceModel[]
-		]);
+		return dates.reduce((acc, date) => {
+			const dateString = date.toDateString();
+			if (!acc[dateString]) {
+				acc[dateString] = [];
+			}
+			acc[dateString] = groups[dateString] || [];
+			return acc;
+		}, {} as Record<string, PlaceModel[]>);
 	}
 }

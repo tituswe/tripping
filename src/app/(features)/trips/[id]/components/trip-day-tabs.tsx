@@ -1,6 +1,6 @@
 "use client";
 
-import { eachDayOfInterval } from "date-fns";
+import { differenceInDays, eachDayOfInterval } from "date-fns";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -11,6 +11,7 @@ import {
 	CarouselPrevious
 } from "@/components/ui/carousel";
 import { TripModel } from "@/lib/types";
+import { useEffect, useRef, useState } from "react";
 
 interface TripDayTabsProps {
 	trip: TripModel;
@@ -28,6 +29,34 @@ export function TripDayTabs({
 		end: new Date(trip.to || Date.now())
 	});
 
+	const [startDay, setStartDay] = useState(1);
+	const [endDay, setEndDay] = useState(7);
+
+	const nextRef = useRef<HTMLButtonElement>(null);
+	const previousRef = useRef<HTMLButtonElement>(null);
+
+	useEffect(() => {
+		if (!selectedDate || !trip.from) return;
+
+		const selectedDay = differenceInDays(selectedDate, new Date(trip.from)) + 1;
+
+		if (selectedDay > endDay) {
+			for (let i = 0; i < selectedDay - endDay; i++) {
+				setTimeout(() => {
+					nextRef.current?.click();
+				}, 100);
+			}
+		}
+
+		if (selectedDay < startDay) {
+			for (let i = 0; i < startDay - selectedDay; i++) {
+				setTimeout(() => {
+					previousRef.current?.click();
+				}, 100);
+			}
+		}
+	}, [selectedDate]);
+
 	return (
 		<div className="w-full flex justify-center">
 			<Carousel
@@ -36,7 +65,15 @@ export function TripDayTabs({
 				}}
 				className="w-[264px] rounded-full"
 			>
-				<CarouselPrevious size="smIcon" variant="ghost" />
+				<CarouselPrevious
+					ref={previousRef}
+					size="smIcon"
+					variant="ghost"
+					onClickCapture={() => {
+						setStartDay(startDay - 1);
+						setEndDay(endDay - 1);
+					}}
+				/>
 				<CarouselContent>
 					{dates.map((date, index) => (
 						<CarouselItem key={index} className="basis-1/9">
@@ -54,7 +91,15 @@ export function TripDayTabs({
 						</CarouselItem>
 					))}
 				</CarouselContent>
-				<CarouselNext size="smIcon" variant="ghost" />
+				<CarouselNext
+					ref={nextRef}
+					size="smIcon"
+					variant="ghost"
+					onClickCapture={() => {
+						setStartDay(startDay + 1);
+						setEndDay(endDay + 1);
+					}}
+				/>
 			</Carousel>
 		</div>
 	);

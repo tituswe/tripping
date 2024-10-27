@@ -1,7 +1,7 @@
 "use client";
 
 import { createPlace } from "@/actions/actions";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { TripModel, UserModel } from "@/lib/types";
 import { PlaceReview } from "@prisma/client";
 import { ChevronDown, ChevronLeft, Kanban } from "lucide-react";
@@ -27,7 +27,7 @@ export function TripGallery({ users, trip, view, setView }: TripGalleryProps) {
 
 	return (
 		<div
-			className={`absolute bottom-0 sm:top-0 left-0 z-20 bg-background h-0 sm:h-screen sm:w-[388px] w-full xs:transition-transform ease-in-out duration-700 rounded-t-xl sm:rounded-t-none ${
+			className={`absolute bottom-0 sm:top-0 left-0 z-20 bg-background h-0 sm:h-screen sm:w-[388px] w-full xs:transition-transform ease-in-out duration-700 rounded-t-xl sm:rounded-t-none overflow-hidden ${
 				view === "gallery"
 					? "translate-y-0 sm:translate-x-0 sm:h-screen h-[calc(100vh-160px)] sm:rounded-t-none"
 					: "translate-y-full sm:translate-y-0 sm:-translate-x-full h-0 sm:h-auto"
@@ -77,6 +77,7 @@ export function TripGallery({ users, trip, view, setView }: TripGalleryProps) {
 									setSelectedDate={setSelectedDate}
 								/>
 							</div>
+							<ScrollBar className="z-30" />
 						</ScrollArea>
 						<div className="py-3">{/* Footer Widgets */}</div>
 					</div>

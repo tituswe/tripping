@@ -256,7 +256,6 @@ export function TripItinerary({
 		if (!isActiveACard) return;
 
 		if (isActiveACard && isOverACard) {
-			console.log("DRAG END");
 			setCards((cards) => {
 				const activeIndex = cards.findIndex((c) => c.id === activeId);
 				const overIndex = cards.findIndex((c) => c.id === overId);
@@ -297,7 +296,6 @@ export function TripItinerary({
 		const isOverAColumn = overData?.type === "Column";
 
 		if (isActiveACard && isOverAColumn) {
-			console.log("DRAG OVER");
 			setCards((cards) => {
 				const activeIndex = cards.findIndex((t) => t.id === activeId);
 				const activeCard = cards[activeIndex];

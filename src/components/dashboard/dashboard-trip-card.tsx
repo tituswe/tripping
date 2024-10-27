@@ -94,19 +94,15 @@ export function DashboardTripCard({ trip }: DashboardTripCardProps) {
 						{trip.places.length > 0 && (
 							<div className="flex items-center">
 								<MapPin className="mr-0.5 h-3 w-3 flex-shrink-0" />
-								<p>{trip.places.length}</p>
+								<p>{trip.places.length <= 99 ? trip.places.length : "99+"}</p>
 							</div>
 						)}
 						{trip.places.length <= 0 && <p>No places added</p>}
-						{trip.invited.length > 0 && (
-							<Dot className="h-4 w-4 flex-shrink-0" />
-						)}
-						{trip.invited.length > 0 && (
-							<div className="flex items-center">
-								<User className="mr-0.5 h-3 w-3 flex-shrink-0" />
-								<p>{trip.invited.length}</p>
-							</div>
-						)}
+						<Dot className="h-4 w-4 flex-shrink-0" />
+						<div className="flex items-center">
+							<User className="mr-0.5 h-3 w-3 flex-shrink-0" />
+							<p>{trip.invited.length <= 8 ? trip.invited.length + 1 : "9+"}</p>
+						</div>
 					</div>
 				</div>
 				<Avatar className="translate-y-1 ml-auto h-6 w-6 outline outline-1 outline-muted-foreground">

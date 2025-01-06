@@ -66,6 +66,7 @@ export function TripKanban({
 					<div className="h-1" />
 					<div className="mx-5">
 						<TripSearch
+							disabled={trip.from === null || trip.to === null}
 							existingPlaces={trip.places}
 							onPlaceSelect={onPlaceSelect}
 						/>

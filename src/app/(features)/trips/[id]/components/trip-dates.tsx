@@ -49,7 +49,7 @@ export function TripDates({ trip }: TripDatesProps) {
 								<p>{format(trip.to, "MMM d, yyyy")}</p>
 							</span>
 						) : (
-							<span className="border-l pl-2 mr-[472px]">Add dates</span>
+							<span className="border-l pl-2 mr-[124px]">Add dates</span>
 						)}
 					</Button>
 				</PopoverTrigger>

@@ -4,7 +4,7 @@ import { useStore } from "@/hooks/use-store";
 import { useTripView } from "@/hooks/use-trip-view";
 import { PlaceModel, TripModel, UserModel } from "@/lib/types";
 import { GoogleMapsProvider } from "@/providers/google-maps-provider";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TripConfigOptions } from "./components/trip-config-options";
 import { TripGallery } from "./components/trip-gallery";
 import { TripKanban } from "./components/trip-kanban";
@@ -21,6 +21,24 @@ export function TripClient({ users, trip }: TripClientProps) {
 	const [selectedPlace, setSelectedPlace] = useState<PlaceModel | null>(null);
 	const [selectedDate, setSelectedDate] = useState<Date | null>(trip.from);
 	const viewStore = useStore(useTripView, (state) => state);
+
+	useEffect(() => {
+		const placeIds = trip.places.map((place) => place.id);
+
+		if (!selectedPlace?.id) return;
+
+		if (!placeIds.includes(selectedPlace?.id)) {
+			setSelectedPlace(null);
+		}
+	}, [trip, selectedPlace]);
+
+	useEffect(() => {
+		if (!trip || !trip.from || !trip.to) return;
+
+		if (!selectedDate || trip.from > selectedDate || trip.to < selectedDate) {
+			setSelectedDate(trip.from);
+		}
+	}, [trip, selectedDate]);
 
 	if (!viewStore) return;
 

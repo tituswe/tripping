@@ -54,7 +54,7 @@ export function TripKanbanBoard({
 		})
 	);
 
-	return (
+	return trip.from ? (
 		<DndContext
 			sensors={sensors}
 			collisionDetection={closestCenter}
@@ -84,6 +84,12 @@ export function TripKanbanBoard({
 				</DragOverlay>
 			</div>
 		</DndContext>
+	) : (
+		<div className="h-full flex justify-center items-center">
+			<p className="text-xs text-muted-foreground -translate-y-12">
+				Add dates to start planning
+			</p>
+		</div>
 	);
 
 	function handleDragStart(event: DragStartEvent) {

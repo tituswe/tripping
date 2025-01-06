@@ -10,12 +10,14 @@ import { PlaceModel } from "@/lib/types";
 import { cn, placeType } from "@/lib/utils";
 
 interface TripSearchProps {
+	disabled?: boolean;
 	selectedPlace?: string | null;
 	existingPlaces?: PlaceModel[];
 	onPlaceSelect: (place: google.maps.places.PlaceResult | null) => void;
 }
 
 export function TripSearch({
+	disabled,
 	selectedPlace,
 	existingPlaces,
 	onPlaceSelect
@@ -168,6 +170,7 @@ export function TripSearch({
 				<X className="w-3 h-3" />
 			</Button>
 			<input
+				disabled={disabled}
 				value={inputValue}
 				className={cn(
 					"flex h-10 w-full rounded-full border border-input bg-transparent py-2 px-8 text-xs font-normal shadow-sm transition-colors file:border-0 file:bg-transparent file:text-xs file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",

@@ -42,7 +42,6 @@ export function TripGallery({
 	selectedDate,
 	setSelectedDate
 }: TripGalleryProps) {
-	console.log(selectedPlace?.reviews);
 	return (
 		<>
 			<div
@@ -76,6 +75,7 @@ export function TripGallery({
 						<div className="h-1" />
 						<div className="mx-5">
 							<TripSearch
+								disabled={trip.from === null || trip.to === null}
 								existingPlaces={trip.places}
 								onPlaceSelect={onPlaceSelect}
 							/>

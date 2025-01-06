@@ -229,6 +229,19 @@ export async function updateTrip(
 		}
 	});
 
+	// Delete places where the date is not within the trip's date range
+	if (updatedTrip.from && updatedTrip.to) {
+		await prisma.place.deleteMany({
+			where: {
+				tripId: id,
+				OR: [
+					{ date: { lt: updatedTrip.from } },
+					{ date: { gt: updatedTrip.to } }
+				]
+			}
+		});
+	}
+
 	const updatedTripModel = {
 		...updatedTrip,
 		location: { ...updatedTrip.location },

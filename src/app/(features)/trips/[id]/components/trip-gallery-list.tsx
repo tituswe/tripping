@@ -65,7 +65,7 @@ export function TripGalleryList({
 		}
 	}, [selectedDate]);
 
-	return (
+	return trip.from ? (
 		<>
 			<div className="sticky top-0 z-20 pt-3 space-y-1.5 px-5 bg-background duration-700 ease-in-out">
 				<TripDayTabs
@@ -76,42 +76,40 @@ export function TripGalleryList({
 				<div className="h-1" />
 				<Separator />
 			</div>
-
-			{trip.from && (
-				<DndContext
-					sensors={sensors}
-					collisionDetection={closestCenter}
-					onDragStart={handleDragStart}
-					onDragOver={handleDragOver}
-					onDragEnd={handleDragEnd}
-				>
-					{Object.entries(placesMap).map(([dateString, places]) => (
-						<TripGalleryDay
-							key={dateString}
-							id={dateString}
-							places={places}
-							from={trip.from!}
-							selectedDate={selectedDate}
-							setSelectedDate={setSelectedDate}
-							dateString={dateString}
-						/>
-					))}
-					<DragOverlay>
-						{activeId ? (
-							<TripGalleryCard
-								place={trip.places.find((place) => place.placeId === activeId)!}
-								isOverlay
-							/>
-						) : null}
-					</DragOverlay>
-				</DndContext>
-			)}
-
-			{!trip.from &&
-				trip.places.map((place, index) => (
-					<TripGalleryCard key={index} place={place} />
+			<DndContext
+				sensors={sensors}
+				collisionDetection={closestCenter}
+				onDragStart={handleDragStart}
+				onDragOver={handleDragOver}
+				onDragEnd={handleDragEnd}
+			>
+				{Object.entries(placesMap).map(([dateString, places]) => (
+					<TripGalleryDay
+						key={dateString}
+						id={dateString}
+						places={places}
+						from={trip.from!}
+						selectedDate={selectedDate}
+						setSelectedDate={setSelectedDate}
+						dateString={dateString}
+					/>
 				))}
+				<DragOverlay>
+					{activeId ? (
+						<TripGalleryCard
+							place={trip.places.find((place) => place.placeId === activeId)!}
+							isOverlay
+						/>
+					) : null}
+				</DragOverlay>
+			</DndContext>
 		</>
+	) : (
+		<div className="h-[calc(100vh_-_200px)] flex justify-center items-center">
+			<p className="text-xs text-muted-foreground -translate-y-12">
+				Add dates to start planning
+			</p>
+		</div>
 	);
 
 	function handleDragStart(event: DragStartEvent) {

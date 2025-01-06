@@ -11,6 +11,7 @@ type MenuOption = {
 type TripOption = {
 	href: string;
 	label: string;
+	tooltip: string;
 	active: boolean;
 	locationId: string;
 };
@@ -38,7 +39,8 @@ export function getMenuList(pathname: string, trips: TripModel[]): MenuList {
 
 	const tripOptions = trips.map((trip) => ({
 		href: `/trips/${trip.id}`,
-		label: trip.title || trip.location.formattedAddress || "",
+		label: trip.location.name || trip.location.formattedAddress || "",
+		tooltip: trip.title || trip.location.formattedAddress || "",
 		active: pathname.includes(`/${trip.id}`),
 		locationId: trip.location.placeId
 	}));

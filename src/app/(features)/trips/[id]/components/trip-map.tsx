@@ -36,7 +36,6 @@ export function TripMap({
 }: TripMapProps) {
 	const map = useMap();
 	const getMapMarkers = useMapMarkers(trip);
-	console.log(view);
 
 	const { markers, hoverZIdx, selectedZIdx, center } = getMapMarkers();
 
@@ -68,9 +67,10 @@ export function TripMap({
 		if (!map || !selectedPlace || !selectedPlace.lat || !selectedPlace.lng)
 			return;
 
-		const offset = view === "gallery" ? 0.03 : view === "kanban" ? 0.08 : 0;
+		const offset = view === "gallery" ? 0.016 : view === "kanban" ? 0.024 : 0;
 
 		map.panTo({ lat: selectedPlace.lat, lng: selectedPlace.lng - offset });
+		map.setZoom(15);
 	}, [view, selectedPlace]);
 
 	return (
@@ -103,7 +103,7 @@ export function TripMap({
 							className="custom-marker"
 							style={{
 								transform: `scale(${
-									[hoveredPlace?.id, selectedPlace?.id].includes(id) ? 1.3 : 1
+									[hoveredPlace?.id, selectedPlace?.id].includes(id) ? 1.2 : 0.8
 								})`
 							}}
 							onMarkerClick={() => onMarkerClick(id)}

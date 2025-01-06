@@ -44,7 +44,12 @@ export function TripGalleryCard({ place, isOverlay }: TripGalleryCardProps) {
 				{...listeners}
 				className="flex flex-row rounded-md w-full overflow-hidden cursor-grab"
 			>
-				<GooglePhoto placeId={place.placeId} width={80} height={80} />
+				<GooglePhoto
+					placeId={place.placeId}
+					width={80}
+					height={80}
+					className="aspect-square rounded-md"
+				/>
 
 				<div className="ml-3 flex flex-col">
 					<h3 className="text-sm font-medium mr-6">{place.name || "Unamed"}</h3>

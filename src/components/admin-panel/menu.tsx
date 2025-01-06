@@ -4,6 +4,12 @@ import { usePathname } from "next/navigation";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger
+} from "@/components/ui/tooltip";
 import { getMenuList } from "@/lib/menu-list";
 import { TripModel } from "@/lib/types";
 import Link from "next/link";
@@ -38,12 +44,22 @@ export function Menu({ trips }: MenuProps) {
 				<ScrollArea className="mb-20">
 					{tripOptions.map((item) => (
 						<Link key={item.href} href={item.href}>
-							<li className="w-16 h-16 flex flex-col items-center justify-center space-y-1 cursor-pointer group transition">
-								<GooglePhoto placeId={item.locationId} />
-								<p className="text-xs text-center w-full truncate px-1">
-									{item.label}
-								</p>
-							</li>
+							<TooltipProvider disableHoverableContent>
+								<Tooltip delayDuration={100}>
+									<TooltipTrigger asChild>
+										<li className="w-16 h-16 flex flex-col items-center justify-center space-y-1 cursor-pointer group transition">
+											<GooglePhoto
+												placeId={item.locationId}
+												className="w-[40px] height-[40px] aspect-square rounded-md"
+											/>
+											<p className="text-xs text-center w-full truncate px-1">
+												{item.label}
+											</p>
+										</li>
+									</TooltipTrigger>
+									<TooltipContent side="top">{item.tooltip}</TooltipContent>
+								</Tooltip>
+							</TooltipProvider>
 						</Link>
 					))}
 				</ScrollArea>

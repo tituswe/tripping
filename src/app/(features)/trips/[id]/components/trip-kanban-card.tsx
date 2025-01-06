@@ -41,7 +41,11 @@ export function TripKanbanCard({ place, isOverlay }: TripKanbanCardProps) {
 				{...listeners}
 				className="flex flex-col rounded-md w-full overflow-hidden cursor-grab"
 			>
-				<GooglePhoto placeId={place.placeId} width={224} />
+				<GooglePhoto
+					placeId={place.placeId}
+					width={200}
+					className="w-[200px] h-20 object-cover"
+				/>
 
 				<div className="flex flex-col">
 					<h3 className="text-sm font-medium my-1 mr-6">

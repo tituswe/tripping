@@ -9,9 +9,15 @@ interface MenuTripPhotoProps {
 	placeId: string;
 	width?: number;
 	height?: number;
+	className?: string;
 }
 
-export function GooglePhoto({ placeId, width, height }: MenuTripPhotoProps) {
+export function GooglePhoto({
+	placeId,
+	width,
+	height,
+	className
+}: MenuTripPhotoProps) {
 	const [photoUrl, setPhotoUrl] = useState<string | null>(null);
 	const [loading, setLoading] = useState<boolean>(true); // Add loading state
 
@@ -29,7 +35,7 @@ export function GooglePhoto({ placeId, width, height }: MenuTripPhotoProps) {
 	if (!height) height = 40;
 
 	return (
-		<div className="flex-shrink-0">
+		<div className={`flex-shrink-0`}>
 			{loading ? (
 				<Skeleton className={`w-[${width}px] h-[${height}px]`} /> // Render Skeleton while loading
 			) : photoUrl ? (
@@ -38,7 +44,7 @@ export function GooglePhoto({ placeId, width, height }: MenuTripPhotoProps) {
 					alt={photoUrl}
 					width={width}
 					height={height}
-					className={`w-[${width}px] h-[${height}px] object-cover aspect-square flex-shrink-0 rounded-md transition group-hover:shadow-md`}
+					className={className}
 				/>
 			) : (
 				<div

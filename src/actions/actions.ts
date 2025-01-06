@@ -287,6 +287,7 @@ export async function createPlace(
 			placeId: place.placeId,
 			tripId,
 			name: place.name,
+			date: place.date,
 			sortOrder: maxOrder + 1,
 			formattedAddress: place.formattedAddress,
 			country: place.country,

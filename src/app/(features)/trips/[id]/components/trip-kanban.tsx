@@ -1,7 +1,7 @@
 "use client";
 
 import { createPlace } from "@/actions/actions";
-import { TripModel, UserModel } from "@/lib/types";
+import { PlaceModel, TripModel, UserModel } from "@/lib/types";
 import { PlaceReview } from "@prisma/client";
 import { ChevronDown, ChevronLeft, List } from "lucide-react";
 import { ViewType } from "../types";
@@ -18,9 +18,22 @@ interface TripKanbanProps {
 	trip: TripModel;
 	view: ViewType;
 	setView: (view: ViewType) => void;
+	selectedPlace: PlaceModel | null;
+	setSelectedPlace: (place: PlaceModel | null) => void;
+	selectedDate: Date | null;
+	setSelectedDate: (date: Date | null) => void;
 }
 
-export function TripKanban({ users, trip, view, setView }: TripKanbanProps) {
+export function TripKanban({
+	users,
+	trip,
+	view,
+	setView,
+	selectedPlace,
+	setSelectedPlace,
+	selectedDate,
+	setSelectedDate
+}: TripKanbanProps) {
 	return (
 		<div
 			className={`absolute bottom-0 sm:top-0 left-0 z-20 bg-background h-0 sm:h-screen sm:w-5/6 w-full xs:transition-transform ease-in-out duration-700 rounded-t-xl sm:rounded-t-none ${
@@ -31,7 +44,7 @@ export function TripKanban({ users, trip, view, setView }: TripKanbanProps) {
 		>
 			{view === "kanban" && (
 				<div className="h-full pt-5 flex flex-col space-y-1.5">
-					<div className="mx-5 flex items-center overflow-hidden max-w-full">
+					<div className="mx-5 flex items-center overflow-hidden max-w-full flex-shrink-0">
 						<TripTitle trip={trip} />
 						<div className="ml-auto space-x-2 flex-shrink-0">
 							<TripViewOptionIconButton
@@ -64,8 +77,13 @@ export function TripKanban({ users, trip, view, setView }: TripKanbanProps) {
 							<TripSettings trip={trip} />
 						</div>
 					</div>
-					<TripKanbanBoard trip={trip} />
-					<div className="py-3">{/* Footer Widgets */}</div>
+					<TripKanbanBoard
+						trip={trip}
+						selectedPlace={selectedPlace}
+						setSelectedPlace={setSelectedPlace}
+						selectedDate={selectedDate}
+						setSelectedDate={setSelectedDate}
+					/>
 				</div>
 			)}
 		</div>
@@ -108,7 +126,7 @@ export function TripKanban({ users, trip, view, setView }: TripKanbanProps) {
 			placeId: place.place_id,
 			tripId: trip.id,
 			name: place.name || null,
-			date: null,
+			date: selectedDate,
 			dateSortOrder: null,
 			formattedAddress: place.formatted_address || null,
 			country,

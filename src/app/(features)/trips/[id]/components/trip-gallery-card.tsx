@@ -1,5 +1,6 @@
 "use client";
 
+import { deletePlace } from "@/actions/actions";
 import { GooglePhoto } from "@/components/admin-panel/google-photo";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -46,7 +47,7 @@ export function TripGalleryCard({ place, isOverlay }: TripGalleryCardProps) {
 				<GooglePhoto placeId={place.placeId} width={80} height={80} />
 
 				<div className="ml-3 flex flex-col">
-					<h3 className="text-sm font-medium">{place.name || "Unamed"}</h3>
+					<h3 className="text-sm font-medium mr-6">{place.name || "Unamed"}</h3>
 					<div className="flex flex-row items-center space-x-1 my-1.5">
 						<StarFilledIcon className="w-3 h-3 text-yellow-400" />
 						<p className="text-xs font-light">{place.rating || "No rating"}</p>
@@ -54,11 +55,11 @@ export function TripGalleryCard({ place, isOverlay }: TripGalleryCardProps) {
 							({place.userRatingsTotal || "0"})
 						</p>
 					</div>
-					<p className="text-xs text-muted-foreground font-medium mb-0.5">
-						{place.district || place.city || "No address"}
+					<p className="text-xs text-muted-foreground font-medium mb-0.5 mr-6">
+						{place.district || place.city || "-"}
 					</p>
-					<p className="text-xs text-muted-foreground">
-						{snakeToNormalCase(place.tags[0]) || "No label"}
+					<p className="text-xs text-muted-foreground mr-6">
+						{snakeToNormalCase(place.tags[0]) || "-"}
 					</p>
 				</div>
 			</div>
@@ -81,11 +82,18 @@ export function TripGalleryCard({ place, isOverlay }: TripGalleryCardProps) {
 				<Button
 					size="smIcon"
 					variant="destructiveGhost"
-					onClick={(e) => e.stopPropagation()}
+					onClick={(e) => {
+						e.stopPropagation();
+						onPlaceDelete();
+					}}
 				>
 					<X className="w-4 h-4" />
 				</Button>
 			</div>
 		</div>
 	);
+
+	async function onPlaceDelete() {
+		await deletePlace(place.id);
+	}
 }

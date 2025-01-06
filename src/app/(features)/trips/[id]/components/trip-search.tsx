@@ -182,7 +182,7 @@ export function TripSearch({
 			/>
 
 			{isFocused && predictionResults.length > 0 && (
-				<ul className="absolute top-12 w-full z-20 border rounded bg-background transition-all duration-300">
+				<ul className="absolute top-12 w-full z-30 border rounded bg-background transition-all duration-300">
 					{predictionResults.map(
 						({ place_id, structured_formatting, types }, index) => {
 							const type = placeType(types);

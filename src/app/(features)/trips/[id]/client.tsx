@@ -19,6 +19,7 @@ interface TripClientProps {
 export function TripClient({ users, trip }: TripClientProps) {
 	const [hoveredPlace, setHoveredPlace] = useState<PlaceModel | null>(null);
 	const [selectedPlace, setSelectedPlace] = useState<PlaceModel | null>(null);
+	const [selectedDate, setSelectedDate] = useState<Date | null>(trip.from);
 	const viewStore = useStore(useTripView, (state) => state);
 
 	if (!viewStore) return;
@@ -29,6 +30,7 @@ export function TripClient({ users, trip }: TripClientProps) {
 		<GoogleMapsProvider>
 			<div className="relative h-screen overflow-y-hidden">
 				<TripMap
+					view={view}
 					trip={trip}
 					hoveredPlace={hoveredPlace}
 					setHoveredPlace={setHoveredPlace}
@@ -36,8 +38,26 @@ export function TripClient({ users, trip }: TripClientProps) {
 					setSelectedPlace={setSelectedPlace}
 				/>
 				<TripViewOptions view={view} setView={setView} />
-				<TripGallery users={users} trip={trip} view={view} setView={setView} />
-				<TripKanban users={users} trip={trip} view={view} setView={setView} />
+				<TripGallery
+					users={users}
+					trip={trip}
+					view={view}
+					setView={setView}
+					selectedPlace={selectedPlace}
+					setSelectedPlace={setSelectedPlace}
+					selectedDate={selectedDate}
+					setSelectedDate={setSelectedDate}
+				/>
+				<TripKanban
+					users={users}
+					trip={trip}
+					view={view}
+					setView={setView}
+					selectedPlace={selectedPlace}
+					setSelectedPlace={setSelectedPlace}
+					selectedDate={selectedDate}
+					setSelectedDate={setSelectedDate}
+				/>
 				<TripConfigOptions />
 			</div>
 		</GoogleMapsProvider>

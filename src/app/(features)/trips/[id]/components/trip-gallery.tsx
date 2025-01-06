@@ -2,10 +2,9 @@
 
 import { createPlace } from "@/actions/actions";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { TripModel, UserModel } from "@/lib/types";
+import { PlaceModel, TripModel, UserModel } from "@/lib/types";
 import { PlaceReview } from "@prisma/client";
 import { ChevronDown, ChevronLeft, Kanban } from "lucide-react";
-import { useState } from "react";
 import { ViewType } from "../types";
 import { TripDates } from "./trip-dates";
 import { TripGalleryList } from "./trip-gallery-list";
@@ -20,11 +19,22 @@ interface TripGalleryProps {
 	trip: TripModel;
 	view: ViewType;
 	setView: (view: ViewType) => void;
+	selectedPlace: PlaceModel | null;
+	setSelectedPlace: (place: PlaceModel | null) => void;
+	selectedDate: Date | null;
+	setSelectedDate: (date: Date | null) => void;
 }
 
-export function TripGallery({ users, trip, view, setView }: TripGalleryProps) {
-	const [selectedDate, setSelectedDate] = useState<Date | null>(trip.from);
-
+export function TripGallery({
+	users,
+	trip,
+	view,
+	setView,
+	selectedPlace,
+	setSelectedPlace,
+	selectedDate,
+	setSelectedDate
+}: TripGalleryProps) {
 	return (
 		<div
 			className={`absolute bottom-0 sm:top-0 left-0 z-20 bg-background h-0 sm:h-screen sm:w-[388px] w-full xs:transition-transform ease-in-out duration-700 rounded-t-xl sm:rounded-t-none overflow-hidden ${
@@ -73,6 +83,8 @@ export function TripGallery({ users, trip, view, setView }: TripGalleryProps) {
 								</div>
 								<TripGalleryList
 									trip={trip}
+									selectedPlace={selectedPlace}
+									setSelectedPlace={setSelectedPlace}
 									selectedDate={selectedDate}
 									setSelectedDate={setSelectedDate}
 								/>
@@ -123,7 +135,7 @@ export function TripGallery({ users, trip, view, setView }: TripGalleryProps) {
 			placeId: place.place_id,
 			tripId: trip.id,
 			name: place.name || null,
-			date: null,
+			date: selectedDate,
 			dateSortOrder: null,
 			formattedAddress: place.formatted_address || null,
 			country,

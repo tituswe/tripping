@@ -14,9 +14,11 @@ import {
 
 import { useMapMarkers } from "@/hooks/use-map-markers";
 import { PlaceModel, TripModel } from "@/lib/types";
+import { ViewType } from "../types";
 import "./trip-map.css";
 
 interface TripMapProps {
+	view: ViewType;
 	trip: TripModel;
 	hoveredPlace: PlaceModel | null;
 	setHoveredPlace: (place: PlaceModel | null) => void;
@@ -25,6 +27,7 @@ interface TripMapProps {
 }
 
 export function TripMap({
+	view,
 	trip,
 	hoveredPlace,
 	setHoveredPlace,
@@ -33,6 +36,7 @@ export function TripMap({
 }: TripMapProps) {
 	const map = useMap();
 	const getMapMarkers = useMapMarkers(trip);
+	console.log(view);
 
 	const { markers, hoverZIdx, selectedZIdx, center } = getMapMarkers();
 
@@ -64,8 +68,10 @@ export function TripMap({
 		if (!map || !selectedPlace || !selectedPlace.lat || !selectedPlace.lng)
 			return;
 
-		map.panTo({ lat: selectedPlace.lat, lng: selectedPlace.lng });
-	}, [selectedPlace]);
+		const offset = view === "gallery" ? 0.03 : view === "kanban" ? 0.08 : 0;
+
+		map.panTo({ lat: selectedPlace.lat, lng: selectedPlace.lng - offset });
+	}, [view, selectedPlace]);
 
 	return (
 		<Map

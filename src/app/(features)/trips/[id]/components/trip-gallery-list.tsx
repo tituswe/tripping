@@ -26,18 +26,26 @@ import { TripGalleryDay } from "./trip-gallery-day";
 
 interface TripGalleryListProps {
 	trip: TripModel;
+	selectedPlace: PlaceModel | null;
+	setSelectedPlace: (place: PlaceModel | null) => void;
 	selectedDate: Date | null;
 	setSelectedDate: (day: Date | null) => void;
 }
 
 export function TripGalleryList({
 	trip,
+	selectedPlace,
+	setSelectedPlace,
 	selectedDate,
 	setSelectedDate
 }: TripGalleryListProps) {
 	const [placesMap, setPlacesMap] = useState<Record<string, PlaceModel[]>>(
 		getPlacesMap(trip)
 	);
+
+	useEffect(() => {
+		setPlacesMap(getPlacesMap(trip));
+	}, [trip]);
 
 	const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -110,6 +118,10 @@ export function TripGalleryList({
 		const data = event.active;
 
 		setActiveId(data.id as string);
+
+		const dragPlace = trip.places.find((place) => place.placeId === data.id);
+
+		setSelectedPlace(dragPlace || null);
 	}
 
 	async function handleDragOver(event: DragOverEvent) {
@@ -240,16 +252,18 @@ export function TripGalleryList({
 			end: new Date(trip.to)
 		});
 
-		const groups = trip.places.reduce((acc, place) => {
-			const dateString = place.date?.toDateString();
-			if (dateString) {
-				if (!acc[dateString]) {
-					acc[dateString] = [];
+		const groups = trip.places
+			.sort((a, b) => a.sortOrder - b.sortOrder)
+			.reduce((acc, place) => {
+				const dateString = place.date?.toDateString();
+				if (dateString) {
+					if (!acc[dateString]) {
+						acc[dateString] = [];
+					}
+					acc[dateString].push(place);
 				}
-				acc[dateString].push(place);
-			}
-			return acc;
-		}, {} as Record<string, PlaceModel[]>);
+				return acc;
+			}, {} as Record<string, PlaceModel[]>);
 
 		return dates.reduce((acc, date) => {
 			const dateString = date.toDateString();

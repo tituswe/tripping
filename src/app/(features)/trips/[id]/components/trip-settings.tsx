@@ -75,7 +75,7 @@ export function TripSettings({ trip }: TripSettingsProps) {
 						Settings
 					</DropdownMenuLabel>
 					<DropdownMenuSeparator />
-					{session?.user?.id === trip.creatorId && (
+					{session?.user?.email === trip.creator.email && (
 						<DropdownMenuItem
 							className="text-destructive cursor-pointer text-xs"
 							onSelect={handleDeleteClick}

@@ -134,7 +134,7 @@ export function DashboardTripCard({ trip }: DashboardTripCardProps) {
 						e.stopPropagation();
 					}}
 				>
-					{session?.user?.id === trip.creatorId && (
+					{session?.user?.email === trip.creator.email && (
 						<DropdownMenuItem
 							className="text-destructive cursor-pointer"
 							onSelect={handleDeleteClick}

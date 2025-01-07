@@ -9,11 +9,14 @@ export default async function TripPage({ params }: { params: { id: string } }) {
 	const trip: TripModel = await getTrip(params.id);
 	const session = await auth();
 
-	if (!session) {
+	if (!session || !session.user?.email) {
 		redirect("/dashboard");
 	}
 
-	if (session.user?.email !== trip.creator.email) {
+	if (
+		!trip.invited.map((user) => user.email).includes(session.user?.email) &&
+		trip.creator.email !== session.user?.email
+	) {
 		redirect("/dashboard");
 	}
 

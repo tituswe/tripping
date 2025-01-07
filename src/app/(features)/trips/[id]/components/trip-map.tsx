@@ -69,8 +69,8 @@ export function TripMap({
 
 		const offset = view === "gallery" ? 0.016 : view === "kanban" ? 0.024 : 0;
 
-		map.panTo({ lat: selectedPlace.lat, lng: selectedPlace.lng - offset });
 		map.setZoom(15);
+		map.panTo({ lat: selectedPlace.lat, lng: selectedPlace.lng - offset });
 	}, [view, selectedPlace]);
 
 	return (

@@ -108,9 +108,11 @@ export function TripGallery({
 			</div>
 
 			{/* SELECTED PLACE POPUP */}
-			{view === "gallery" && selectedPlace && (
+			{selectedPlace && (
 				<div
-					className={`absolute hidden lg:block top-0 left-[388px] z-20 h-0 sm:h-screen sm:w-[452px] p-6 rounded-lg`}
+					className={`absolute hidden lg:block top-0 left-[388px] z-20 h-0 sm:h-screen sm:w-[452px] p-6 rounded-lg ${
+						view === "gallery" ? "opacity-100" : "opacity-0"
+					} transition-opacity ease-in-out`}
 				>
 					<Card className="h-full relative rounded-lg">
 						<Button

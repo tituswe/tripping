@@ -16,7 +16,7 @@ export function DashboardNavbar() {
 				trippin
 			</Link>
 
-			<div className="flex justify-center items-center w-32 space-x-1.5">
+			<div className="flex justify-end items-center w-32 space-x-1.5">
 				<ModeToggle />
 				<UserNav />
 			</div>

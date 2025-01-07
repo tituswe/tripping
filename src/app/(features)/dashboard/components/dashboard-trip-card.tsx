@@ -2,11 +2,12 @@
 
 import { TripModel } from "@/lib/types";
 import { format } from "date-fns";
-import { Dot, Ellipsis, MapPin, Trash2, User } from "lucide-react";
+import { Ellipsis, MapPin, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { deleteTrip } from "@/actions/actions";
+import { GooglePhoto } from "@/components/admin-panel/google-photo";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -27,6 +28,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 
 interface DashboardTripCardProps {
 	trip: TripModel;
@@ -70,44 +72,38 @@ export function DashboardTripCard({ trip }: DashboardTripCardProps) {
 	};
 
 	return (
-		<div
-			className="relative flex flex-col cursor-pointer rounded-lg group"
-			onClick={() => router.push(`/trips/${trip.id}`)}
+		<Link
+			href={`/trips/${trip.id}`}
+			className="relative flex cursor-pointer rounded-lg group"
 		>
-			<div className="w-full h-full aspect-square overflow-hidden rounded-lg">
-				{photoUrl ? (
-					<img
-						src={photoUrl}
-						alt={"place-image"}
-						className="w-full h-full object-cover rounded-lg shadow-sm transition-transform duration-300 group-hover:scale-110 group-hover:rounded-lg"
-					/>
-				) : (
-					<div className="bg-muted w-full h-full rounded-lg shadow-sm" />
-				)}
-			</div>
-			<div className="flex flex-row items-center">
+			<GooglePhoto
+				placeId={trip.location.placeId}
+				className="w-[80px] h-[80px] aspect-square rounded-lg"
+			/>
+			<div className="flex flex-row items-center ml-4 flex-grow">
 				<div className="mt-2">
-					<span className="text-sm font-medium line-clamp-1 text-ellipsis">
+					<span className="text-md font-medium line-clamp-1 text-ellipsis">
 						{trip.title || `Trip to ${trip.location.name}`}
 					</span>
-					<div className="flex items-center text-xs font-light text-muted-foreground truncate line-clamp-1 text-ellipsis">
-						{trip.from && <p>{format(trip.from, "MMM dd, yyyy")}</p>}
-						{trip.from && <Dot className="h-4 w-4 flex-shrink-0" />}
+					<div className="flex flex-col space-y-3 text-xs font-light text-muted-foreground truncate line-clamp-1 text-ellipsis">
 						{trip.places.length > 0 && (
 							<div className="flex items-center">
 								<MapPin className="mr-0.5 h-3 w-3 flex-shrink-0" />
-								<p>{trip.places.length <= 99 ? trip.places.length : "99+"}</p>
+								<p>
+									{trip.places.length <= 99 ? trip.places.length : "99+"} places
+								</p>
 							</div>
 						)}
 						{trip.places.length <= 0 && <p>No places added</p>}
-						<Dot className="h-4 w-4 flex-shrink-0" />
-						<div className="flex items-center">
-							<User className="mr-0.5 h-3 w-3 flex-shrink-0" />
-							<p>{trip.invited.length <= 8 ? trip.invited.length + 1 : "9+"}</p>
-						</div>
+						{trip.from && trip.to && (
+							<p className="font-medium">
+								{format(trip.from, "MMM dd, yyyy")} -{" "}
+								{format(trip.to, "MMM dd, yyyy")}
+							</p>
+						)}
 					</div>
 				</div>
-				<Avatar className="translate-y-1 ml-auto h-6 w-6 outline outline-1 outline-muted-foreground">
+				<Avatar className="absolute right-1.5 bottom-1.5 h-6 w-6 outline outline-1 outline-muted-foreground">
 					<AvatarImage src={trip.creator.image || ""} alt="Avatar" />
 					<AvatarFallback className="bg-muted text-xs">
 						{trip.creator.name?.charAt(0)}
@@ -177,7 +173,7 @@ export function DashboardTripCard({ trip }: DashboardTripCardProps) {
 					</AlertDialogFooter>
 				</AlertDialogContent>
 			</AlertDialog>
-		</div>
+		</Link>
 	);
 
 	async function fetchPlacePhoto(placeId: string): Promise<string | null> {

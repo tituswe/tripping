@@ -52,7 +52,9 @@ export function TripGalleryCard({ place, isOverlay }: TripGalleryCardProps) {
 				/>
 
 				<div className="ml-3 flex flex-col">
-					<h3 className="text-sm font-medium mr-6">{place.name || "Unamed"}</h3>
+					<h3 className="text-sm font-medium mr-6 line-clamp-1">
+						{place.name || "Unamed"}
+					</h3>
 					<div className="flex flex-row items-center space-x-1 my-1.5">
 						<StarFilledIcon className="w-3 h-3 text-yellow-400" />
 						<p className="text-xs font-light">{place.rating || "No rating"}</p>

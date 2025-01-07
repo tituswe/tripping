@@ -11,12 +11,12 @@ import { TripKanban } from "./components/trip-kanban";
 import { TripMap } from "./components/trip-map";
 import { TripViewOptions } from "./components/trip-view-options";
 
-interface TripClientProps {
+interface ClientProps {
 	users: UserModel[];
 	trip: TripModel;
 }
 
-export function TripClient({ users, trip }: TripClientProps) {
+export function Client({ users, trip }: ClientProps) {
 	const [hoveredPlace, setHoveredPlace] = useState<PlaceModel | null>(null);
 	const [selectedPlace, setSelectedPlace] = useState<PlaceModel | null>(null);
 	const [selectedDate, setSelectedDate] = useState<Date | null>(trip.from);

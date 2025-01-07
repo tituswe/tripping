@@ -1,6 +1,7 @@
 "use client";
 
 import { reorderPlaces } from "@/actions/actions";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 import { PlaceModel, TripModel } from "@/lib/types";
 import {
 	closestCenter,
@@ -36,6 +37,7 @@ export function TripKanbanBoard({
 	selectedDate,
 	setSelectedDate
 }: TripKanbanBoardProps) {
+	const isMobile = useIsMobile();
 	const [placesMap, setPlacesMap] = useState<Record<string, PlaceModel[]>>(
 		getPlacesMap(trip)
 	);
@@ -55,13 +57,37 @@ export function TripKanbanBoard({
 	);
 
 	return trip.from ? (
-		<DndContext
-			sensors={sensors}
-			collisionDetection={closestCenter}
-			onDragStart={handleDragStart}
-			onDragOver={handleDragOver}
-			onDragEnd={handleDragEnd}
-		>
+		!isMobile ? (
+			<DndContext
+				sensors={sensors}
+				collisionDetection={closestCenter}
+				onDragStart={handleDragStart}
+				onDragOver={handleDragOver}
+				onDragEnd={handleDragEnd}
+			>
+				<div className="flex flex-row flex-grow gap-1.5 mx-3 overflow-x-auto">
+					{Object.entries(placesMap).map(([dateString, places]) => (
+						<TripKanbanDay
+							key={dateString}
+							id={dateString}
+							places={places}
+							from={trip.from!}
+							selectedDate={selectedDate}
+							setSelectedDate={setSelectedDate}
+							dateString={dateString}
+						/>
+					))}
+					<DragOverlay>
+						{activeId ? (
+							<TripKanbanCard
+								place={trip.places.find((place) => place.placeId === activeId)!}
+								isOverlay
+							/>
+						) : null}
+					</DragOverlay>
+				</div>
+			</DndContext>
+		) : (
 			<div className="flex flex-row flex-grow gap-1.5 mx-3 overflow-x-auto">
 				{Object.entries(placesMap).map(([dateString, places]) => (
 					<TripKanbanDay
@@ -74,16 +100,8 @@ export function TripKanbanBoard({
 						dateString={dateString}
 					/>
 				))}
-				<DragOverlay>
-					{activeId ? (
-						<TripKanbanCard
-							place={trip.places.find((place) => place.placeId === activeId)!}
-							isOverlay
-						/>
-					) : null}
-				</DragOverlay>
 			</div>
-		</DndContext>
+		)
 	) : (
 		<div className="h-full flex justify-center items-center">
 			<p className="text-xs text-muted-foreground -translate-y-12">

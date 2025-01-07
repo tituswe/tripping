@@ -1,10 +1,10 @@
-import { NewTrip } from "@/app/(features)/trips/new/components/new-trip";
 import { ContentLayout } from "@/components/admin-panel/content-layout";
+import { Client } from "./client";
 
 export default function NewTripPage() {
 	return (
 		<ContentLayout title="New Trip">
-			<NewTrip />
+			<Client />
 		</ContentLayout>
 	);
 }

@@ -2,7 +2,7 @@ import { getTrip, getUsers } from "@/actions/actions";
 import { auth } from "@/lib/auth";
 import { TripModel, UserModel } from "@/lib/types";
 import { redirect } from "next/navigation";
-import { TripClient } from "./client";
+import { Client } from "./client";
 
 export default async function TripPage({ params }: { params: { id: string } }) {
 	const users: UserModel[] = await getUsers();
@@ -20,5 +20,5 @@ export default async function TripPage({ params }: { params: { id: string } }) {
 		redirect("/dashboard");
 	}
 
-	return <TripClient users={users} trip={trip} />;
+	return <Client users={users} trip={trip} />;
 }

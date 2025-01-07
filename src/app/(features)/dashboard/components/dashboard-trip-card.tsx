@@ -24,6 +24,8 @@ import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
 	DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
@@ -130,6 +132,8 @@ export function DashboardTripCard({ trip }: DashboardTripCardProps) {
 						e.stopPropagation();
 					}}
 				>
+					<DropdownMenuLabel>Options</DropdownMenuLabel>
+					<DropdownMenuSeparator />
 					{session?.user?.email === trip.creator.email && (
 						<DropdownMenuItem
 							className="text-destructive cursor-pointer"

@@ -19,6 +19,7 @@ import { useEffect, useState } from "react";
 
 import { reorderPlaces } from "@/actions/actions";
 import { Separator } from "@/components/ui/separator";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 import { PlaceModel, TripModel } from "@/lib/types";
 import { TripDayTabs } from "./trip-day-tabs";
 import { TripGalleryCard } from "./trip-gallery-card";
@@ -39,6 +40,7 @@ export function TripGalleryList({
 	selectedDate,
 	setSelectedDate
 }: TripGalleryListProps) {
+	const isMobile = useIsMobile();
 	const [placesMap, setPlacesMap] = useState<Record<string, PlaceModel[]>>(
 		getPlacesMap(trip)
 	);
@@ -76,33 +78,49 @@ export function TripGalleryList({
 				<div className="h-1" />
 				<Separator />
 			</div>
-			<DndContext
-				sensors={sensors}
-				collisionDetection={closestCenter}
-				onDragStart={handleDragStart}
-				onDragOver={handleDragOver}
-				onDragEnd={handleDragEnd}
-			>
-				{Object.entries(placesMap).map(([dateString, places]) => (
-					<TripGalleryDay
-						key={dateString}
-						id={dateString}
-						places={places}
-						from={trip.from!}
-						selectedDate={selectedDate}
-						setSelectedDate={setSelectedDate}
-						dateString={dateString}
-					/>
-				))}
-				<DragOverlay>
-					{activeId ? (
-						<TripGalleryCard
-							place={trip.places.find((place) => place.placeId === activeId)!}
-							isOverlay
+			{!isMobile ? (
+				<DndContext
+					sensors={sensors}
+					collisionDetection={closestCenter}
+					onDragStart={handleDragStart}
+					onDragOver={handleDragOver}
+					onDragEnd={handleDragEnd}
+				>
+					{Object.entries(placesMap).map(([dateString, places]) => (
+						<TripGalleryDay
+							key={dateString}
+							id={dateString}
+							places={places}
+							from={trip.from!}
+							selectedDate={selectedDate}
+							setSelectedDate={setSelectedDate}
+							dateString={dateString}
 						/>
-					) : null}
-				</DragOverlay>
-			</DndContext>
+					))}
+					<DragOverlay>
+						{activeId ? (
+							<TripGalleryCard
+								place={trip.places.find((place) => place.placeId === activeId)!}
+								isOverlay
+							/>
+						) : null}
+					</DragOverlay>
+				</DndContext>
+			) : (
+				<>
+					{Object.entries(placesMap).map(([dateString, places]) => (
+						<TripGalleryDay
+							key={dateString}
+							id={dateString}
+							places={places}
+							from={trip.from!}
+							selectedDate={selectedDate}
+							setSelectedDate={setSelectedDate}
+							dateString={dateString}
+						/>
+					))}
+				</>
+			)}
 		</>
 	) : (
 		<div className="h-[calc(100vh_-_200px)] flex justify-center items-center">

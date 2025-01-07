@@ -143,13 +143,13 @@ export const LocationInput = ({ selectedPlace, onPlaceSelect }: Props) => {
 			<input
 				value={inputValue}
 				className={cn(
-					"flex h-12 w-full rounded-l-full rounded-r-full md:rounded-r-none border border-input bg-transparent px-5 py-2 shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+					"flex h-12 w-full rounded-l-full rounded-r-full md:rounded-r-none border border-input bg-background px-5 py-2 shadow-sm text-md transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
 				)}
 				onInput={(event: FormEvent<HTMLInputElement>) => onInputChange(event)}
 				onKeyDown={handleKeyDown}
 				onFocus={() => setIsFocused(true)}
 				onBlur={handleBlur}
-				placeholder="Start searching"
+				placeholder="Find a place..."
 				ref={inputRef}
 			/>
 

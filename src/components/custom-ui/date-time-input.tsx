@@ -36,7 +36,7 @@ export function DateTimeInput({
 						)}
 					>
 						{
-							<div className="w-full flex justify-evenly  font-medium text-muted-foreground">
+							<div className="w-full flex justify-evenly text-md text-muted-foreground">
 								<span
 									className={`flex-grow border-r w-32 pl-1.5 ${
 										dateRange?.from && "text-primary"

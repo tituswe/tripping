@@ -3,6 +3,7 @@
 import { createPlace } from "@/actions/actions";
 import { GooglePhoto } from "@/components/admin-panel/google-photo";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -10,7 +11,7 @@ import { PlaceModel, TripModel, UserModel } from "@/lib/types";
 import { snakeToNormalCase } from "@/lib/utils";
 import { PlaceReview } from "@prisma/client";
 import { StarFilledIcon } from "@radix-ui/react-icons";
-import { ChevronDown, ChevronLeft, Copy, Kanban } from "lucide-react";
+import { ChevronDown, ChevronLeft, Copy, Kanban, X } from "lucide-react";
 import { ViewType } from "../types";
 import { TripDates } from "./trip-dates";
 import { TripGalleryList } from "./trip-gallery-list";
@@ -111,7 +112,16 @@ export function TripGallery({
 				<div
 					className={`absolute hidden lg:block top-0 left-[388px] z-20 h-0 sm:h-screen sm:w-[452px] p-6 rounded-lg`}
 				>
-					<Card className="h-full rounded-lg">
+					<Card className="h-full relative rounded-lg">
+						<Button
+							className="absolute top-3 z-30 right-3"
+							size={"icon"}
+							variant={"secondary"}
+							onClick={() => setSelectedPlace(null)}
+						>
+							<X className="w-5 h-5 text-muted-foreground" />
+						</Button>
+
 						<ScrollArea className="h-full">
 							<GooglePhoto
 								placeId={selectedPlace?.placeId}

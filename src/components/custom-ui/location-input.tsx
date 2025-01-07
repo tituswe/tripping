@@ -139,25 +139,22 @@ export const LocationInput = ({ selectedPlace, onPlaceSelect }: Props) => {
 	};
 
 	return (
-		<div className="autocomplete-container relative space-y-1">
-			<span className="text-sm text-muted-foreground font-semibold">
-				Where to?
-			</span>
+		<div className="autocomplete-container relative space-y-3">
 			<input
 				value={inputValue}
 				className={cn(
-					"flex h-12 w-full rounded-md border border-input bg-transparent px-4 py-2 text-lg font-semibold shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+					"flex h-12 w-full rounded-l-full rounded-r-full md:rounded-r-none border border-input bg-transparent px-5 py-2 shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
 				)}
 				onInput={(event: FormEvent<HTMLInputElement>) => onInputChange(event)}
 				onKeyDown={handleKeyDown}
 				onFocus={() => setIsFocused(true)}
 				onBlur={handleBlur}
-				placeholder="Where are we going?"
+				placeholder="Start searching"
 				ref={inputRef}
 			/>
 
 			{isFocused && predictionResults.length > 0 && (
-				<ul className="absolute top-20 w-full z-10 border rounded bg-background">
+				<ul className="absolute top-12 w-full z-10 border rounded-xl bg-background">
 					{predictionResults.map(
 						({ place_id, structured_formatting, types }, index) => {
 							const type = placeType(types);
@@ -167,16 +164,22 @@ export const LocationInput = ({ selectedPlace, onPlaceSelect }: Props) => {
 									className={cn(
 										"p-3 flex flex-row border-b transition hover:bg-secondary cursor-pointer",
 										{
+											"rounded-t-xl": index === 0
+										},
+										{
+											"rounded-b-xl": index === predictionResults.length - 1
+										},
+										{
 											"bg-secondary": index === selectedIndex
 										}
 									)}
 									onClick={() => handleSuggestionClick(place_id)}
 								>
 									<div className="flex flex-col">
-										<span className="font-semibold">
+										<span className="font-medium text-sm">
 											{structured_formatting.main_text}
 										</span>
-										<span className="text-sm text-muted-foreground">
+										<span className="text-xs text-muted-foreground">
 											{structured_formatting.secondary_text}
 										</span>
 									</div>

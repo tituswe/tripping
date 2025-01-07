@@ -1,7 +1,6 @@
 "use client";
 
 import { format } from "date-fns";
-import { Calendar as CalendarIcon } from "lucide-react";
 import * as React from "react";
 import { DateRange } from "react-day-picker";
 
@@ -26,24 +25,20 @@ export function DateTimeInput({
 }: DateTimeInputProps) {
 	return (
 		<div className={cn("grid gap-2", className)}>
-			<span className="text-sm text-muted-foreground font-semibold">
-				How long?
-			</span>
 			<Popover>
 				<PopoverTrigger asChild>
 					<Button
 						id="date"
 						variant={"outline"}
 						className={cn(
-							"w-full h-12 justify-start text-left font-normal",
+							"w-full h-12 shadow-sm rounded-l-full md:rounded-l-none rounded-r-full justify-start text-left font-normal",
 							!dateRange && "text-muted-foreground"
 						)}
 					>
-						<CalendarIcon className="mr-2 h-5 w-5 text-muted-foreground" />
 						{
-							<div className="w-full flex justify-evenly text-lg font-semibold text-muted-foreground">
+							<div className="w-full flex justify-evenly  font-medium text-muted-foreground">
 								<span
-									className={`flex-grow border-r mx-3 ${
+									className={`flex-grow border-r w-32 pl-1.5 ${
 										dateRange?.from && "text-primary"
 									}`}
 								>
@@ -52,7 +47,7 @@ export function DateTimeInput({
 										: "From"}
 								</span>
 								<span
-									className={`flex-grow mx-3 ${
+									className={`flex-grow w-32 ml-4 ${
 										dateRange?.to && "text-primary"
 									}`}
 								>

@@ -40,14 +40,14 @@ export function Menu({ trips }: MenuProps) {
 						</Link>
 					</li>
 				))}
-				<Separator className="mt-3 mb-6" />
+				<Separator className="mt-3 mb-5" />
 				<ScrollArea className="mb-20">
 					{tripOptions.map((item) => (
 						<Link key={item.href} href={item.href}>
 							<TooltipProvider disableHoverableContent>
 								<Tooltip delayDuration={100}>
 									<TooltipTrigger asChild>
-										<li className="w-16 h-16 flex flex-col items-center justify-center space-y-1 cursor-pointer group transition">
+										<li className="w-16 h-16 mt-3 flex flex-col items-center justify-center space-y-1 cursor-pointer group transition">
 											<GooglePhoto
 												placeId={item.locationId}
 												className="w-[40px] height-[40px] aspect-square rounded-md"

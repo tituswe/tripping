@@ -26,6 +26,7 @@ import {
 	DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
+import { useSession } from "next-auth/react";
 
 interface DashboardTripCardProps {
 	trip: TripModel;
@@ -35,6 +36,7 @@ export function DashboardTripCard({ trip }: DashboardTripCardProps) {
 	const { toast } = useToast();
 	const router = useRouter();
 	const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+	const { data: session } = useSession();
 
 	useEffect(() => {
 		fetchPlacePhoto(trip.location.placeId).then((url) => {
@@ -132,13 +134,15 @@ export function DashboardTripCard({ trip }: DashboardTripCardProps) {
 						e.stopPropagation();
 					}}
 				>
-					<DropdownMenuItem
-						className="text-destructive cursor-pointer"
-						onSelect={handleDeleteClick}
-					>
-						<Trash2 className="mr-2 h-4 w-4" />
-						Delete
-					</DropdownMenuItem>
+					{session?.user?.id === trip.creatorId && (
+						<DropdownMenuItem
+							className="text-destructive cursor-pointer"
+							onSelect={handleDeleteClick}
+						>
+							<Trash2 className="mr-2 h-4 w-4" />
+							Delete
+						</DropdownMenuItem>
+					)}
 				</DropdownMenuContent>
 			</DropdownMenu>
 

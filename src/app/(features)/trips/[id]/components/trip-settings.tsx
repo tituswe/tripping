@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { TripModel } from "@/lib/types";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 interface TripSettingsProps {
@@ -34,6 +35,7 @@ interface TripSettingsProps {
 export function TripSettings({ trip }: TripSettingsProps) {
 	const router = useRouter();
 	const { toast } = useToast();
+	const { data: session } = useSession();
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 	const [isSettingsDropdownOpen, setIsSettingsDropdownOpen] = useState(false);
 
@@ -73,13 +75,15 @@ export function TripSettings({ trip }: TripSettingsProps) {
 						Settings
 					</DropdownMenuLabel>
 					<DropdownMenuSeparator />
-					<DropdownMenuItem
-						className="text-destructive cursor-pointer text-xs"
-						onSelect={handleDeleteClick}
-					>
-						<p>Delete</p>
-						<Trash2 className="ml-auto h-3 w-3" />
-					</DropdownMenuItem>
+					{session?.user?.id === trip.creatorId && (
+						<DropdownMenuItem
+							className="text-destructive cursor-pointer text-xs"
+							onSelect={handleDeleteClick}
+						>
+							<p>Delete</p>
+							<Trash2 className="ml-auto h-3 w-3" />
+						</DropdownMenuItem>
+					)}
 				</DropdownMenuContent>
 			</DropdownMenu>
 

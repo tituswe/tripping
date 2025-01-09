@@ -1,13 +1,6 @@
 "use client";
 
-import { TripModel } from "@/lib/types";
-import { format } from "date-fns";
-import { Ellipsis, MapPin, Trash2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-
-import { deleteTrip } from "@/actions/actions";
-import { GooglePhoto } from "@/components/admin-panel/google-photo";
+import { deleteTrip, leaveTrip } from "@/actions/actions";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -18,7 +11,6 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle
 } from "@/components/ui/alert-dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -29,29 +21,43 @@ import {
 	DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
+import { TripModel } from "@/lib/types";
+import { ArrowLeftCircle, Ellipsis, Trash2 } from "lucide-react";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-interface DashboardTripCardProps {
+interface DashboardOptionsDropdownProps {
 	trip: TripModel;
+	className?: string;
 }
 
-export function DashboardTripCard({ trip }: DashboardTripCardProps) {
-	const { toast } = useToast();
-	const router = useRouter();
-	const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+export function DashboardOptionsDropdown({
+	trip,
+	className
+}: DashboardOptionsDropdownProps) {
 	const { data: session } = useSession();
-
-	useEffect(() => {
-		fetchPlacePhoto(trip.location.placeId).then((url) => {
-			if (url) {
-				setPhotoUrl(url);
-			}
-		});
-	}, [trip.location.placeId]);
-
-	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+	const router = useRouter();
+	const { toast } = useToast();
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+	const handleLeaveClick = async () => {
+		try {
+			await leaveTrip(trip.id);
+			router.push(`/dashboard`);
+			toast({
+				title: "Leaving trip",
+				description: "You have left the trip."
+			});
+		} catch (error: any) {
+			toast({
+				title: "Error",
+				description: error.message || "There was an error leaving the trip.",
+				variant: "destructive"
+			});
+		}
+	};
 
 	const handleDeleteClick = () => {
 		setIsDropdownOpen(false);
@@ -64,6 +70,10 @@ export function DashboardTripCard({ trip }: DashboardTripCardProps) {
 		try {
 			await deleteTrip(trip.id);
 			router.push(`/dashboard`);
+			toast({
+				title: "Deleting trip",
+				description: "You have deleted the trip."
+			});
 		} catch (error: any) {
 			toast({
 				title: "Error",
@@ -72,53 +82,14 @@ export function DashboardTripCard({ trip }: DashboardTripCardProps) {
 			});
 		}
 	};
-
 	return (
-		<Link
-			href={`/trips/${trip.id}`}
-			className="relative flex cursor-pointer rounded-lg group"
-		>
-			<GooglePhoto
-				placeId={trip.location.placeId}
-				className="w-[80px] h-[80px] aspect-square rounded-lg"
-			/>
-			<div className="flex flex-row items-center ml-4 flex-grow">
-				<div className="mt-2">
-					<span className="text-md font-medium line-clamp-1 text-ellipsis">
-						{trip.title || `Trip to ${trip.location.name}`}
-					</span>
-					<div className="flex flex-col space-y-3 text-xs font-light text-muted-foreground truncate line-clamp-1 text-ellipsis">
-						{trip.places.length > 0 && (
-							<div className="flex items-center">
-								<MapPin className="mr-0.5 h-3 w-3 flex-shrink-0" />
-								<p>
-									{trip.places.length <= 99 ? trip.places.length : "99+"} places
-								</p>
-							</div>
-						)}
-						{trip.places.length <= 0 && <p>No places added</p>}
-						{trip.from && trip.to && (
-							<p className="font-medium">
-								{format(trip.from, "MMM dd, yyyy")} -{" "}
-								{format(trip.to, "MMM dd, yyyy")}
-							</p>
-						)}
-					</div>
-				</div>
-				<Avatar className="absolute right-1.5 bottom-1.5 h-6 w-6 outline outline-1 outline-muted-foreground">
-					<AvatarImage src={trip.creator.image || ""} alt="Avatar" />
-					<AvatarFallback className="bg-muted text-xs">
-						{trip.creator.name?.charAt(0)}
-					</AvatarFallback>
-				</Avatar>
-			</div>
-
+		<>
 			<DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
 				<DropdownMenuTrigger asChild>
 					<Button
 						variant={"secondary"}
 						size="xs"
-						className="absolute right-1.5 top-1.5 rounded-full"
+						className={`absolute right-1.5 top-1.5 rounded-full ${className}`}
 						onClick={(e) => {
 							e.stopPropagation();
 						}}
@@ -134,6 +105,15 @@ export function DashboardTripCard({ trip }: DashboardTripCardProps) {
 				>
 					<DropdownMenuLabel>Options</DropdownMenuLabel>
 					<DropdownMenuSeparator />
+					{trip.invited.some((user) => user.email === session?.user?.email) && (
+						<DropdownMenuItem
+							className="cursor-pointer"
+							onSelect={handleLeaveClick}
+						>
+							<ArrowLeftCircle className="mr-2 h-4 w-4" />
+							Leave trip
+						</DropdownMenuItem>
+					)}
 					{session?.user?.email === trip.creator.email && (
 						<DropdownMenuItem
 							className="text-destructive cursor-pointer"
@@ -177,18 +157,6 @@ export function DashboardTripCard({ trip }: DashboardTripCardProps) {
 					</AlertDialogFooter>
 				</AlertDialogContent>
 			</AlertDialog>
-		</Link>
+		</>
 	);
-
-	async function fetchPlacePhoto(placeId: string): Promise<string | null> {
-		const res = await fetch(`/api/google-photo?placeId=${placeId}`);
-		const data = await res.json();
-
-		if (res.ok) {
-			return data.photoUrl;
-		} else {
-			console.error("Error fetching photo:", data.error);
-			return null;
-		}
-	}
 }

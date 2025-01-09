@@ -1,9 +1,9 @@
 "use client";
 
-import { Cog, Trash2 } from "lucide-react";
+import { ArrowLeftCircle, Cog, Trash2 } from "lucide-react";
 import { useState } from "react";
 
-import { deleteTrip } from "@/actions/actions";
+import { deleteTrip, leaveTrip } from "@/actions/actions";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -39,6 +39,19 @@ export function TripSettings({ trip }: TripSettingsProps) {
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 	const [isSettingsDropdownOpen, setIsSettingsDropdownOpen] = useState(false);
 
+	const handleLeaveClick = async () => {
+		try {
+			await leaveTrip(trip.id);
+			router.push(`/dashboard`);
+		} catch (error: any) {
+			toast({
+				title: "Error",
+				description: error.message || "There was an error leaving the trip.",
+				variant: "destructive"
+			});
+		}
+	};
+
 	const handleDeleteClick = () => {
 		setIsSettingsDropdownOpen(false);
 		setTimeout(() => {
@@ -71,10 +84,19 @@ export function TripSettings({ trip }: TripSettingsProps) {
 					</Button>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent align="end">
-					<DropdownMenuLabel className="text-xs font-medium">
+					<DropdownMenuLabel className="text-sm font-medium">
 						Settings
 					</DropdownMenuLabel>
 					<DropdownMenuSeparator />
+					{trip.invited.some((user) => user.email === session?.user?.email) && (
+						<DropdownMenuItem
+							className="cursor-pointer"
+							onSelect={handleLeaveClick}
+						>
+							<ArrowLeftCircle className="mr-2 h-4 w-4" />
+							Leave trip
+						</DropdownMenuItem>
+					)}
 					{session?.user?.email === trip.creator.email && (
 						<DropdownMenuItem
 							className="text-destructive cursor-pointer text-xs"

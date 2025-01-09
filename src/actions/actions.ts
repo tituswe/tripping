@@ -253,6 +253,36 @@ export async function updateTrip(
 	return updatedTripModel;
 }
 
+export async function leaveTrip(id: string): Promise<void> {
+	const session = await auth();
+
+	if (!session || !session.user?.email) {
+		throw new Error("Unauthorized");
+	}
+
+	const userEmail = session.user?.email;
+
+	const tripModelToLeave = await prisma.trip.findFirst({
+		where: { id },
+		include: { invited: true }
+	});
+
+	if (!tripModelToLeave?.invited.some((user) => user.email === userEmail)) {
+		throw new Error("You are not in this trip.");
+	}
+
+	await prisma.trip.update({
+		where: { id },
+		data: {
+			invited: {
+				disconnect: { email: userEmail }
+			}
+		}
+	});
+
+	revalidatePath(`/trips`);
+}
+
 export async function deleteTrip(id: string): Promise<void> {
 	const session = await auth();
 

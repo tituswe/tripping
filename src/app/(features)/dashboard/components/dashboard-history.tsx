@@ -1,7 +1,7 @@
 "use client";
 
 import { TripModel } from "@/lib/types";
-import { DashboardTripCard } from "./dashboard-trip-card";
+import { DashboardHistoryTripCard } from "./dashboard-history-trip-card";
 
 interface DashboardHistoryProps {
 	trips: TripModel[];
@@ -12,7 +12,7 @@ export function DashboardHistory({ trips }: DashboardHistoryProps) {
 		<div className="border-b pb-12">
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 				{trips.map((trip, index) => (
-					<DashboardTripCard key={index} trip={trip} />
+					<DashboardHistoryTripCard key={index} trip={trip} />
 				))}
 			</div>
 			{trips.length === 0 && (

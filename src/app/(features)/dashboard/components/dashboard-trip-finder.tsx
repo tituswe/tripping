@@ -1,10 +1,8 @@
 "use client";
 
 import { createTrip } from "@/actions/actions";
-import { GooglePhoto } from "@/components/admin-panel/google-photo";
 import { DateTimeInput } from "@/components/custom-ui/date-time-input";
 import { LocationInput } from "@/components/custom-ui/location-input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useGeolocation } from "@/hooks/use-geolocation";
@@ -19,6 +17,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { DateRange } from "react-day-picker";
+import {
+	DashboardUpcomingTripCard,
+	DashboardUpcomingTripCardHorizontal
+} from "./dashboard-upcoming-trip-card";
 
 interface DashboardTripFinderProps {
 	trips: TripModel[];
@@ -96,7 +98,7 @@ function DashboardTripFinderContent({ trips }: DashboardTripFinderProps) {
 
 	return (
 		<div className="border rounded-xl md:rounded-l-xl flex">
-			<div className="w-[680px]">
+			<div className="w-[640px]">
 				<div className="p-8">
 					<PlaneTakeoff className="h-8 w-8" />
 					{trips.length ? (
@@ -105,63 +107,17 @@ function DashboardTripFinderContent({ trips }: DashboardTripFinderProps) {
 							<ScrollArea className="md:hidden max-h-56">
 								<div className="flex flex-col space-y-3 py-3">
 									{trips.map((trip, index) => (
-										<li key={index} className="flex border-b pb-3">
-											<Link
-												href="/trips/[id]"
-												as={`/trips/${trip.id}`}
-												className="flex flex-grow justify-between items-center"
-											>
-												<div className="flex items-center">
-													<GooglePhoto
-														placeId={trip.location.placeId}
-														className="w-[64px] h-[64px] aspect-square rounded-lg"
-													/>
-													<div className="ml-3">
-														<p className="text-md">
-															{trip.title || `Trip to ${trip.location.name}`}
-														</p>
-														<p className="text-sm text-muted-foreground">
-															{trip.location.name}
-														</p>
-													</div>
-												</div>
-
-												<div className="flex flex-col items-end">
-													<Avatar className="h-8 w-8">
-														<AvatarImage
-															src={trip.creator.image || ""}
-															alt="Avatar"
-														/>
-														<AvatarFallback className="bg-muted">
-															{trip.creator.name?.charAt(0)}
-														</AvatarFallback>
-													</Avatar>
-													<p className="text-xs text-muted-foreground mt-2">
-														Created by {trip.creator.name?.split(" ")[0]}
-													</p>
-												</div>
-											</Link>
-										</li>
+										<DashboardUpcomingTripCardHorizontal
+											key={index}
+											trip={trip}
+										/>
 									))}
 								</div>
 							</ScrollArea>
 							<ScrollArea className="hidden md:block w-auto mt-3 pb-3">
 								<div className="flex w-max space-x-5">
 									{trips.map((trip, index) => (
-										<li
-											key={index}
-											className="flex flex-col justify-center items-center overflow-hidden"
-										>
-											<Link href="/trips/[id]" as={`/trips/${trip.id}`}>
-												<GooglePhoto
-													placeId={trip.location.placeId}
-													className="w-[80px] h-[80px] aspect-square rounded-lg"
-												/>
-												<p className="text-sm font-medium text-center w-full truncate px-1 mt-2">
-													{trip.title || trip.location.name}
-												</p>
-											</Link>
-										</li>
+										<DashboardUpcomingTripCard key={index} trip={trip} />
 									))}
 								</div>
 								<ScrollBar orientation="horizontal" />

@@ -38,7 +38,7 @@ export function DateTimeInput({
 						{
 							<div className="w-full flex justify-evenly text-md text-muted-foreground">
 								<span
-									className={`flex-grow border-r w-32 pl-1.5 ${
+									className={`flex-grow border-r w-28 pl-1.5 ${
 										dateRange?.from && "text-primary"
 									}`}
 								>
@@ -47,7 +47,7 @@ export function DateTimeInput({
 										: "From"}
 								</span>
 								<span
-									className={`flex-grow w-32 ml-4 ${
+									className={`flex-grow w-28 ml-4 ${
 										dateRange?.to && "text-primary"
 									}`}
 								>

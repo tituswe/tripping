@@ -14,21 +14,21 @@ datasource db {
 }
 
 model User {
-  id            String          @id @default(cuid())
+  id            String    @id @default(cuid())
   name          String?
-  email         String          @unique
+  email         String    @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
- 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
 
-  createdTrips  Trip[] @relation("CreatedTrips")
-  invitedTrips  Trip[] @relation("InvitedTrips")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  createdTrips Trip[] @relation("CreatedTrips")
+  invitedTrips Trip[] @relation("InvitedTrips")
 }
- 
+
 model Account {
   userId            String
   type              String
@@ -41,36 +41,36 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
- 
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
- 
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+
   @@id([provider, providerAccountId])
 }
- 
+
 model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
- 
+
 model VerificationToken {
   identifier String
   token      String
   expires    DateTime
- 
+
   @@id([identifier, token])
 }
 
 model Location {
-  id               String     @id @default(cuid())
-  placeId          String     @unique
+  id               String    @id @default(cuid())
+  placeId          String    @unique
   name             String?
   formattedAddress String?
   country          String?
@@ -79,32 +79,32 @@ model Location {
   lat              Float?
   lng              Float?
   locationType     String?
-  createdAt        DateTime?   @default(now())
-  updatedAt        DateTime?   @updatedAt
+  createdAt        DateTime? @default(now())
+  updatedAt        DateTime? @updatedAt
 
-  trips            Trip[]
+  trips Trip[]
 }
 
 model Trip {
-  id          String     @id @default(cuid())
-  location    Location   @relation(fields: [locationId], references: [id], onDelete: Cascade)
-  locationId  String
-  creator     User       @relation("CreatedTrips", fields: [creatorId], references: [id], onDelete: Cascade)
-  creatorId   String
-  invited     User[]     @relation("InvitedTrips")
-  title       String?    
-  from        DateTime?
-  to          DateTime?
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id         String    @id @default(cuid())
+  location   Location  @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  locationId String
+  creator    User      @relation("CreatedTrips", fields: [creatorId], references: [id], onDelete: Cascade)
+  creatorId  String
+  invited    User[]    @relation("InvitedTrips")
+  title      String?
+  from       DateTime?
+  to         DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
-  places      Place[]
+  places Place[]
 }
 
 model Place {
-  id               String     @id @default(cuid())
-  placeId          String     @unique
-  trip             Trip       @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  id               String    @id @default(cuid())
+  placeId          String    @unique
+  trip             Trip      @relation(fields: [tripId], references: [id], onDelete: Cascade)
   tripId           String
   sortOrder        Int
   date             DateTime?
@@ -120,15 +120,15 @@ model Place {
   openingHours     String[]
   rating           Float?
   userRatingsTotal Int?
-  createdAt        DateTime?   @default(now())
-  updatedAt        DateTime?   @updatedAt
+  createdAt        DateTime? @default(now())
+  updatedAt        DateTime? @updatedAt
 
-  reviews          PlaceReview[]
+  reviews PlaceReview[]
 }
 
 model PlaceReview {
-  id                      String     @id @default(cuid())
-  place                   Place      @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  id                      String    @id @default(cuid())
+  place                   Place     @relation(fields: [placeId], references: [id], onDelete: Cascade)
   placeId                 String
   authorName              String?
   authorUrl               String?

@@ -41,6 +41,8 @@ export function DashboardUpcomingTripCardHorizontal({
 			>
 				<div className="flex items-center">
 					<GooglePhoto
+						width={80}
+						height={80}
 						placeId={trip.location.placeId}
 						className="w-[80px] h-[80px] aspect-square rounded-lg"
 					/>

@@ -48,7 +48,7 @@ export function GooglePhoto({
 				/>
 			) : (
 				<div
-					className={`w-[${width}px] h-[${width}px] flex-shrink-0 rounded-md bg-gray-200 flex items-center justify-center transition group-hover:shadow-md`}
+					className={`w-[${width}px] h-[${height}px] flex-shrink-0 rounded-md bg-gray-200 flex items-center justify-center transition group-hover:shadow-md`}
 				>
 					<ImageIcon className="w-6 h-6 text-secondary" />
 				</div>

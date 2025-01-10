@@ -2,7 +2,7 @@
 
 import { useStore } from "@/hooks/use-store";
 import { useTripView } from "@/hooks/use-trip-view";
-import { PlaceModel, TripModel, UserModel } from "@/lib/types";
+import { PlaceModel, TripModel } from "@/lib/types";
 import { GoogleMapsProvider } from "@/providers/google-maps-provider";
 import { useEffect, useState } from "react";
 import { TripConfigOptions } from "./components/trip-config-options";
@@ -12,11 +12,10 @@ import { TripMap } from "./components/trip-map";
 import { TripViewOptions } from "./components/trip-view-options";
 
 interface ClientProps {
-	users: UserModel[];
 	trip: TripModel;
 }
 
-export function Client({ users, trip }: ClientProps) {
+export function Client({ trip }: ClientProps) {
 	const [hoveredPlace, setHoveredPlace] = useState<PlaceModel | null>(null);
 	const [selectedPlace, setSelectedPlace] = useState<PlaceModel | null>(null);
 	const [selectedDate, setSelectedDate] = useState<Date | null>(trip.from);
@@ -57,7 +56,6 @@ export function Client({ users, trip }: ClientProps) {
 				/>
 				<TripViewOptions view={view} setView={setView} />
 				<TripGallery
-					users={users}
 					trip={trip}
 					view={view}
 					setView={setView}
@@ -67,7 +65,6 @@ export function Client({ users, trip }: ClientProps) {
 					setSelectedDate={setSelectedDate}
 				/>
 				<TripKanban
-					users={users}
 					trip={trip}
 					view={view}
 					setView={setView}

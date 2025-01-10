@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { PlaceModel, TripModel, UserModel } from "@/lib/types";
+import { PlaceModel, TripModel } from "@/lib/types";
 import { snakeToNormalCase } from "@/lib/utils";
 import { PlaceReview } from "@prisma/client";
 import { StarFilledIcon } from "@radix-ui/react-icons";
@@ -23,7 +23,6 @@ import { TripTitle } from "./trip-title";
 import { TripViewOptionIconButton } from "./trip-view-option-icon-button";
 
 interface TripGalleryProps {
-	users: UserModel[];
 	trip: TripModel;
 	view: ViewType;
 	setView: (view: ViewType) => void;
@@ -34,7 +33,6 @@ interface TripGalleryProps {
 }
 
 export function TripGallery({
-	users,
 	trip,
 	view,
 	setView,
@@ -87,7 +85,7 @@ export function TripGallery({
 									<div className="flex justify-between items-center px-5 bg-background  duration-700 ease-in-out">
 										<TripDates trip={trip} />
 										<div className="flex flex-row items-center space-x-1.5">
-											<TripParty users={users} trip={trip} />
+											<TripParty trip={trip} />
 											<TripSettings trip={trip} />
 										</div>
 									</div>

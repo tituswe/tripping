@@ -10,7 +10,7 @@ import {
 	BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
 
-export default function AccountPage() {
+export default function Page() {
 	return (
 		<ContentLayout title="Account">
 			<Breadcrumb>

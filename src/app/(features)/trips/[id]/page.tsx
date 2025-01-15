@@ -4,7 +4,7 @@ import { TripModel } from "@/lib/types";
 import { redirect } from "next/navigation";
 import { Client } from "./client";
 
-export default async function TripPage({ params }: { params: { id: string } }) {
+export default async function Page({ params }: { params: { id: string } }) {
 	const trip: TripModel = await getTrip(params.id);
 	const session = await auth();
 

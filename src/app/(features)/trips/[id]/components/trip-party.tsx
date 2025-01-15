@@ -3,6 +3,7 @@
 import { Link, PartyPopper, UserCog } from "lucide-react";
 
 import { InviteLinkDialog } from "@/components/custom-ui/invite-link-dialog";
+import { ManagePartyDialog } from "@/components/custom-ui/manage-party-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -82,14 +83,16 @@ export function TripParty({ trip }: TripPartyProps) {
 								Share invite link
 							</Button>
 						</InviteLinkDialog>
-						<Button
-							size="sm"
-							variant="outline"
-							className="text-xs flex items-center justify-center"
-						>
-							<UserCog className="w-3 h-3 mr-1.5" />
-							Manage party
-						</Button>
+						<ManagePartyDialog trip={trip}>
+							<Button
+								size="sm"
+								variant="outline"
+								className="text-xs flex items-center justify-center"
+							>
+								<UserCog className="w-3 h-3 mr-1.5" />
+								Manage party
+							</Button>
+						</ManagePartyDialog>
 					</div>
 					<ul>
 						{sortedUsers.map((user, index) => (

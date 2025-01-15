@@ -1,5 +1,6 @@
 "use client";
 
+import { createTripInvite } from "@/actions/actions";
 import {
 	Dialog,
 	DialogContent,
@@ -14,21 +15,31 @@ import { Link } from "lucide-react";
 import { useState } from "react";
 import { Button } from "../ui/button";
 
-interface InviteLinkDialog {
+interface InviteLinkDialogProps {
 	trip: TripModel;
 	children: React.ReactNode;
 }
 
-export function InviteLinkDialog({ children, trip }: InviteLinkDialog) {
+export function InviteLinkDialog({ children, trip }: InviteLinkDialogProps) {
 	const { toast } = useToast();
 	const [open, setOpen] = useState(false);
 
-	const handleCopy = () => {
-		navigator.clipboard.writeText(window.location.href);
-		toast({
-			title: "Copied link",
-			description: "Share link to friends to invite them to the trip."
-		});
+	const handleCopy = async () => {
+		try {
+			const invite = await createTripInvite(trip.id);
+			const inviteLink = `${window.location.origin}/invites/${invite.id}`;
+
+			navigator.clipboard.writeText(inviteLink);
+			toast({
+				title: "Copied link",
+				description: "Share link to friends to invite them to the trip."
+			});
+		} catch (e: any) {
+			toast({
+				title: "Error",
+				description: e.message
+			});
+		}
 	};
 
 	return (
@@ -46,20 +57,20 @@ export function InviteLinkDialog({ children, trip }: InviteLinkDialog) {
 						Copy the link to allow others to join your trip. The link will be
 						valid for 7 days.
 					</DialogDescription>
-					<div className="flex justify-end space-x-3">
-						<Button
-							variant="destructiveGhost"
-							className="rounded-full"
-							onClick={() => setOpen(false)}
-						>
-							Cancel
-						</Button>
-						<Button className="rounded-full" onClick={handleCopy}>
-							<Link className="w-5 h-5 mr-2" />
-							Copy link
-						</Button>
-					</div>
 				</DialogHeader>
+				<div className="flex justify-end space-x-3">
+					<Button
+						variant="destructiveGhost"
+						className="rounded-full"
+						onClick={() => setOpen(false)}
+					>
+						Cancel
+					</Button>
+					<Button className="rounded-full" onClick={handleCopy}>
+						<Link className="w-5 h-5 mr-2" />
+						Copy link
+					</Button>
+				</div>
 			</DialogContent>
 		</Dialog>
 	);

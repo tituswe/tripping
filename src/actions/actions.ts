@@ -8,6 +8,7 @@ import {
 	LocationRequest,
 	PlaceModel,
 	PlaceRequest,
+	TripInviteModel,
 	TripModel,
 	UserModel
 } from "@/lib/types";
@@ -253,6 +254,55 @@ export async function updateTrip(
 	return updatedTripModel;
 }
 
+export async function joinTrip(id: string): Promise<TripModel> {
+	const session = await auth();
+
+	if (!session || !session.user?.email) {
+		throw new Error("Unauthorized");
+	}
+
+	const userEmail = session.user?.email;
+
+	const tripModelToJoin = await prisma.trip.findFirst({
+		where: { id },
+		include: { invited: true, creator: true }
+	});
+
+	if (
+		tripModelToJoin?.invited.some((user) => user.email === userEmail) ||
+		tripModelToJoin?.creator.email === userEmail
+	) {
+		throw new Error("You are already in this trip.");
+	}
+
+	const updatedTrip = await prisma.trip.update({
+		where: { id },
+		data: {
+			invited: {
+				connect: { email: userEmail }
+			}
+		},
+		include: {
+			location: true,
+			places: {
+				include: { reviews: true }
+			},
+			creator: true,
+			invited: true
+		}
+	});
+
+	const updatedTripModel = {
+		...updatedTrip,
+		location: { ...updatedTrip.location },
+		places: updatedTrip.places.map((place) => ({ ...place }))
+	};
+
+	revalidatePath(`/trips`);
+
+	return updatedTripModel;
+}
+
 export async function leaveTrip(id: string): Promise<void> {
 	const session = await auth();
 
@@ -442,4 +492,102 @@ export async function deletePlace(id: string): Promise<void> {
 	});
 
 	revalidatePath(`/trips/${deletedPlace.tripId}`);
+}
+
+export async function createTripInvite(
+	tripId: string
+): Promise<TripInviteModel> {
+	const session = await auth();
+
+	if (!session || !session.user?.email) {
+		throw new Error("Unauthorized");
+	}
+
+	const userEmail = session.user.email;
+
+	const user = await prisma.user.findFirst({
+		where: { email: userEmail }
+	});
+
+	if (!user) {
+		throw new Error("User not found");
+	}
+
+	const existingInvite = await prisma.tripInvite.findFirst({
+		where: {
+			tripId,
+			inviterId: user.id
+		}
+	});
+
+	const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+
+	if (existingInvite) {
+		const updatedInvite = await prisma.tripInvite.update({
+			where: { id: existingInvite.id },
+			data: {
+				expiresAt
+			},
+			include: {
+				trip: {
+					include: {
+						location: true,
+						places: {
+							include: { reviews: true }
+						},
+						creator: true,
+						invited: true
+					}
+				}
+			}
+		});
+
+		return updatedInvite;
+	}
+
+	const newInvite = await prisma.tripInvite.create({
+		data: {
+			tripId,
+			inviterId: user.id,
+			expiresAt
+		},
+		include: {
+			trip: {
+				include: {
+					location: true,
+					places: {
+						include: { reviews: true }
+					},
+					creator: true,
+					invited: true
+				}
+			}
+		}
+	});
+
+	return newInvite;
+}
+
+export async function getTripInvite(id: string): Promise<TripInviteModel> {
+	const invite = await prisma.tripInvite.findFirst({
+		where: { id },
+		include: {
+			trip: {
+				include: {
+					location: true,
+					places: {
+						include: { reviews: true }
+					},
+					creator: true,
+					invited: true
+				}
+			}
+		}
+	});
+
+	if (!invite) {
+		throw new Error("Invite not found");
+	}
+
+	return invite;
 }

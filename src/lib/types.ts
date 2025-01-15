@@ -27,3 +27,20 @@ export type TripModel = Prisma.TripGetPayload<{
 }>;
 
 export type UserModel = Prisma.UserGetPayload<{}>;
+
+export type TripInviteModel = Prisma.TripInviteGetPayload<{
+	include: {
+		trip: {
+			include: {
+				location: true;
+				places: {
+					include: {
+						reviews: true;
+					};
+				};
+				creator: true;
+				invited: true;
+			};
+		};
+	};
+}>;
